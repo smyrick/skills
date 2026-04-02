@@ -23,6 +23,7 @@ Skills are agent-readable instructions, not code. They make common work reproduc
 | Skill | Description | Key Tools |
 |-------|-------------|-----------|
 | [apollo-epic-refiner](./skills/apollo-epic-refiner/SKILL.md) | Take a rough Jira epic in the Apollo Solutions (AS) project and turn it into a sharply-defined, manager-ready epic | Atlassian MCP, Anthropic API |
+| [codebase-summary](./skills/codebase-summary/SKILL.md) | Analyze and document codebase architecture with ARCHITECTURE.md files, including entry points, APIs, core modules, and Mermaid diagrams | File system tools (Read, Glob, Grep) |
 | [plan-mode](./skills/plan-mode/SKILL.md) | Create structured implementation plans with acceptance criteria that can be handed off to a less capable agent | AskQuestion tool |
 
 ---
