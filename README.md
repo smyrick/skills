@@ -1,6 +1,6 @@
-# Shane's Skills Library
+# Shane Myrick's Skills Library
 
-> A personal library of reusable AI agent skills for **Shane Hegde, Solutions Director at Apollo GraphQL**.
+> A personal library of reusable AI agent skills for **Shane Myrick**.
 > Skills encode repeatable workflows — each one tells an AI agent exactly how to handle a specific task, using the right tools, in the right order, with the right context.
 
 ---
@@ -12,7 +12,7 @@ A skill is a Markdown file (`SKILL.md`) that lives in a named folder under `skil
 - **A trigger description** — when should the agent use this skill?
 - **Step-by-step workflow** — exactly what to do, in what order
 - **Tool references** — which MCPs, APIs, or integrations are required
-- **Apollo-specific context** — team conventions, cloud IDs, project keys, personas
+- **Optional org- or project-specific context** — when a workflow needs them: conventions, cloud IDs, project keys, personas
 
 Skills are agent-readable instructions, not code. They make common work reproducible without starting from scratch every time.
 
@@ -36,13 +36,31 @@ List skills without installing: `npx skills add smyrick/skills --list`. The depr
 
 ---
 
+## Validate
+
+From the repository root, check that every `skills/*/SKILL.md` has valid frontmatter (`name`, `description`, `compatibility`):
+
+```bash
+npm install
+npm run validate
+```
+
+For stricter checks (recommended before opening a PR), including optional metadata:
+
+```bash
+npm run validate:strict
+```
+
+CI runs `validate:strict` on every push and pull request.
+
+---
+
 ## Skill Index
 
 | Skill | Description | Key Tools |
 |-------|-------------|-----------|
-| [apollo-epic-refiner](./skills/apollo-epic-refiner/SKILL.md) | Take a rough Jira epic in the Apollo Solutions (AS) project and turn it into a sharply-defined, manager-ready epic | Atlassian MCP, Anthropic API |
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Analyze and document codebase architecture with ARCHITECTURE.md files, including entry points, APIs, core modules, and Mermaid diagrams | File system tools (Read, Glob, Grep) |
-| [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author a new skill in this library (frontmatter, workflow, README index, Apollo context) | Read, Write, StrReplace; optional Atlassian MCP |
+| [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author a new skill in this library (frontmatter, workflow, README index, org-specific context when needed) | Read, Write, StrReplace; optional Atlassian MCP |
 | [plan-mode](./skills/plan-mode/SKILL.md) | Create structured implementation plans with acceptance criteria that can be handed off to a less capable agent | AskQuestion tool |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | Create a PRD through interview, codebase exploration, and module design, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
@@ -55,7 +73,8 @@ List skills without installing: `npx skills add smyrick/skills --list`. The depr
 Skills in this repo are installed at `~/.skills/skills/` on your machine. Once installed, Claude will automatically load the right skill based on your request — no manual steps needed.
 
 If you want to point Claude to a skill by name:
-> "Use the apollo-epic-refiner skill to clean up AS-421"
+
+> "Use the plan-mode skill to plan this feature before we implement it"
 
 ### As a Reference
 
@@ -69,6 +88,7 @@ Any agent with access to this repo can read a `SKILL.md` directly and follow its
 README.md                        ← You are here
 CONTRIBUTING.md                  ← How to add or improve skills
 package.json                     ← npm run add-skill → scaffolds under skills/
+scripts/validate-skills.mjs      ← npm run validate / validate:strict
 skills/
   <skill-name>/
     SKILL.md                     ← The skill itself (agent-readable instructions)
@@ -94,14 +114,12 @@ Want to contribute one? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
 
-## Conventions & Apollo Context
+## Optional shared tooling
 
-These constants appear across multiple skills and are recorded here for reference:
+Generic pointers sometimes referenced from skills (no tenant or employer-specific IDs):
 
 | Constant | Value |
 |----------|-------|
-| Atlassian Cloud ID | `b8116c26-1732-446c-9a3b-e138b1e55296` |
-| Jira Project — Apollo Solutions | `AS` |
 | Preferred Claude model | `claude-sonnet-4-20250514` |
 | Atlassian MCP URL | `https://mcp.atlassian.com/v1/mcp` |
 

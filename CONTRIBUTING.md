@@ -1,6 +1,6 @@
 # Contributing a Skill
 
-This guide is written for **both humans and AI agents**. If you're an agent reading this to add a new skill on Shane's behalf, follow these steps exactly.
+This guide is written for **both humans and AI agents**. If you're an agent reading this to add a new skill on the repository owner's behalf, follow these steps exactly.
 
 ---
 
@@ -8,9 +8,9 @@ This guide is written for **both humans and AI agents**. If you're an agent read
 
 Add a skill when a workflow meets these criteria:
 
-1. **Repeatable** — Shane (or the team) does it more than once a month
+1. **Repeatable** — You or your team does it more than once a month
 2. **Multi-step** — it involves at least 2–3 tool calls or decision points
-3. **Lossy without guidance** — a generic agent would forget important Apollo context (cloud IDs, project keys, personas, conventions)
+3. **Lossy without guidance** — a generic agent would forget important context (cloud IDs, project keys, personas, conventions)
 4. **Valuable to encode** — having written instructions makes the output meaningfully better
 
 If a task is truly one-off or trivial, don't add a skill — just do the task.
@@ -55,10 +55,15 @@ description: >
   Be specific about trigger phrases, request types, and the intended user.
   This text is what the agent reads to decide whether to load the skill.
 compatibility: "List required MCPs or integrations, e.g. Atlassian MCP, Slack MCP"
+author: Your Name
+license: MIT
+repository: https://github.com/smyrick/skills
 ---
 ```
 
 The `description` field is the most important part. It determines when the skill gets triggered. Write it as if you're telling the agent: "Load this skill if the user says X, or wants to do Y, or provides Z."
+
+Keep `description` between **20 and 500 characters** (after trimming) so `npm run validate` passes.
 
 ### 4. Write the workflow
 
@@ -72,7 +77,7 @@ After the frontmatter, write the skill body in Markdown. A good skill includes:
   - Which tool/MCP to call and with what parameters
   - What to do with the result
   - What to ask the user, if anything
-- `## Apollo Context` (if relevant) — any team-specific constants, conventions, or framing the agent needs
+- `## Organization-specific context` (if relevant) — tenant-specific constants, conventions, or framing the agent needs (Jira project keys, Atlassian cloud ID, and so on)
 
 **Optional but encouraged:**
 
@@ -86,8 +91,8 @@ Don't say "look up the Jira issue." Say:
 
 ```
 Use Atlassian:getJiraIssue with:
-- cloudId: b8116c26-1732-446c-9a3b-e138b1e55296
-- issueIdOrKey: <the AS-* key from the URL>
+- cloudId: <your-atlassian-cloud-id>
+- issueIdOrKey: <the issue key from the URL, e.g. PROJ-123>
 - responseContentFormat: markdown
 ```
 
@@ -103,15 +108,29 @@ Add a row to the **Skill Index** table in `README.md`:
 
 Also remove it from the **Planned Skills** list if it was listed there.
 
-### 7. Review checklist before committing
+### 7. Validate
+
+From the repository root:
+
+```bash
+npm install
+npm run validate
+npm run validate:strict
+```
+
+Fix any reported errors before committing. CI runs `validate:strict` on push and pull requests.
+
+### 8. Review checklist before committing
 
 - [ ] Frontmatter is valid YAML with `name`, `description`, and `compatibility`
-- [ ] `description` clearly states when to use the skill (specific trigger phrases or request types)
+- [ ] `description` is 20–500 characters and states when to use the skill (specific trigger phrases or request types)
 - [ ] Workflow steps are numbered and tool calls include full parameters
-- [ ] Apollo-specific constants (cloud IDs, project keys) are spelled out — don't rely on context
+- [ ] Tenant- or org-specific constants (cloud IDs, project keys) are spelled out in the skill where needed — don't rely on chat context
+- [ ] `author`, `license`, and `repository` are set (required for `validate:strict`)
 - [ ] README.md skill index is updated
 - [ ] Folder name matches `name` in frontmatter
 - [ ] No placeholder text left from the scaffold or draft
+- [ ] `npm run validate:strict` passes
 
 ---
 
@@ -123,33 +142,25 @@ If you're improving a skill (fixing a broken step, adding a new section, updatin
 2. Note what changed in your commit message
 3. If the trigger description changed meaningfully, update the frontmatter `description` too
 
-If you're making a breaking change (completely different workflow), consider creating a new skill with a versioned name (e.g., `apollo-epic-refiner-v2`) rather than overwriting the existing one.
+If you're making a breaking change (completely different workflow), consider creating a new skill with a versioned name (e.g., `my-skill-v2`) rather than overwriting the existing one.
 
 ---
 
 ## Skill Quality Bar
 
-A skill is ready to ship when an AI agent with no prior context about Shane, Apollo, or the task can read the `SKILL.md` and complete the workflow correctly — without asking clarifying questions that the skill should have already answered.
+A skill is ready to ship when an AI agent with no prior context about you, your employer, or the task can read the `SKILL.md` and complete the workflow correctly — without asking clarifying questions that the skill should have already answered.
 
 If you find yourself thinking "the agent would need to know X to do this step," write X into the skill.
 
 ---
 
-## Apollo Shared Constants
+## Optional shared tooling
 
-These values appear across multiple skills. Always use the canonical values below:
-
-| Constant | Value |
-|----------|-------|
-| Atlassian Cloud ID | `b8116c26-1732-446c-9a3b-e138b1e55296` |
-| Jira Project — Apollo Solutions | `AS` |
-| Atlassian MCP URL | `https://mcp.atlassian.com/v1/mcp` |
-| Preferred Claude model | `claude-sonnet-4-20250514` |
-| Anthropic API endpoint | `https://api.anthropic.com/v1/messages` |
+Generic values sometimes referenced from skills are listed in [README.md — Optional shared tooling](./README.md) (for example, Atlassian MCP URL and a suggested Claude model). **Do not** commit real tenant IDs or internal project keys to a public fork; keep those in private skills or in local-only notes.
 
 ---
 
 ## Questions?
 
-If you're an agent and something in a workflow is ambiguous, ask Shane before proceeding with a guess.
-If you're a human contributor, open an issue or just edit the file directly — this is Shane's personal repo.
+If you're an agent and something in a workflow is ambiguous, ask the repository owner before proceeding with a guess.
+If you're a human contributor, open an issue or just edit the file directly — this is a personal repo.

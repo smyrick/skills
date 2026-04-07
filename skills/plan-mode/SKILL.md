@@ -1,13 +1,12 @@
 ---
 name: plan-mode
 description: >
-  Use this skill when the user asks to plan, design, or architect a feature or change
-  before implementing it. Triggers include: "plan this", "let's think through",
-  "break this down", "create a plan", "design this", "what's the approach", or any
-  request where the user wants a structured implementation plan before coding.
-  Also use when the user is in plan mode, wants a handoff document, or says they want
-  to hand off work to another agent. This skill produces a self-contained artifact
-  that a less capable agent can execute without ambiguity.
+  Produce a structured implementation plan before coding. Use when the user asks to
+  plan, design, architect, or break down work; wants a handoff doc for another agent;
+  or is in plan mode. Output is self-contained so a less capable agent can execute it.
+author: Shane Myrick
+license: MIT
+repository: https://github.com/smyrick/skills
 compatibility: "AskQuestion tool (Cursor) or user prompting (Claude Code). No external tools required."
 ---
 

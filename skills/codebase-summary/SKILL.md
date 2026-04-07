@@ -1,12 +1,12 @@
 ---
 name: codebase-summary
 description: >
-  Use this skill when the user asks to understand, summarize, or document a codebase's
-  architecture. Triggers include: "summarize this codebase", "create an architecture doc",
-  "document the codebase structure", "what's the architecture", "help me understand this
-  project", or any request where the user wants a high-level overview of code organization,
-  entry points, APIs, and core modules. This skill reads existing ARCHITECTURE.md files
-  if present, or helps create comprehensive ones with text descriptions and Mermaid diagrams.
+  Document or explore a codebase's architecture. Use when the user asks to summarize
+  the codebase, create an architecture doc, explain structure, or understand entry points,
+  APIs, and core modules. Reads existing ARCHITECTURE.md or helps create one with Mermaid.
+author: Shane Myrick
+license: MIT
+repository: https://github.com/smyrick/skills
 compatibility: "File system access (Read, Glob, Grep tools). No external MCPs required."
 ---
 

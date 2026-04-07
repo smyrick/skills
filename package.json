@@ -1,8 +1,13 @@
 {
   "name": "smyrick-skills",
   "private": true,
-  "description": "Personal agent skills library for Shane Hegde (Apollo GraphQL)",
+  "description": "Personal agent skills library for Shane Myrick",
   "scripts": {
-    "add-skill": "cd skills && npx skills init"
+    "add-skill": "cd skills && npx skills init",
+    "validate": "node scripts/validate-skills.mjs",
+    "validate:strict": "node scripts/validate-skills.mjs --strict"
+  },
+  "devDependencies": {
+    "yaml": "^2.8.3"
   }
 }

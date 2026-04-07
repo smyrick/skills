@@ -1,8 +1,12 @@
 ---
 name: create-a-skill
 description: >
-  Adds or scaffolds a new agent skill in smyrick/skills (YAML frontmatter, workflow steps, Apollo context, README index).
-  Use when the user wants to create, write, add, or scaffold a skill; define a new SKILL.md; or extend this skills library.
+  Scaffold and document a new agent skill in smyrick/skills: YAML frontmatter, workflow,
+  README index, and org-specific Jira or Confluence constants when needed. Use when the
+  user wants to create, add, write, or scaffold a skill or extend this skills library.
+author: Shane Myrick
+license: MIT
+repository: https://github.com/smyrick/skills
 compatibility: "Read, Write, StrReplace, Glob, Grep; optional Atlassian MCP if the workflow updates Jira from a skill"
 ---
 
@@ -26,7 +30,7 @@ Ask the user (or infer from context):
 
 1. **Task / domain** — What repeatable workflow does the skill cover?
 2. **Triggers** — What should the agent hear from the user to load this skill? (phrases, artifacts, intents)
-3. **Tools** — Which MCPs, APIs, or editor tools are required? Any Apollo-specific IDs or projects?
+3. **Tools** — Which MCPs, APIs, or editor tools are required? Any tenant-specific IDs or Jira/Confluence projects?
 4. **Scripts** — Is there deterministic automation (validation, formatting), or is prose-only enough?
 5. **Extra files** — Will `SKILL.md` exceed ~100 lines or mix unrelated domains? If yes, plan `REFERENCE.md`, `EXAMPLES.md`, or `scripts/` (see below).
 
@@ -70,7 +74,7 @@ compatibility: "Tools and MCPs required, e.g. Atlassian MCP, Read/Write"
 
 - `## When to use this skill` — 2–4 bullets, **more specific** than the frontmatter
 - `## Workflow` — numbered steps; each tool call must include **full parameters** (see Step 4)
-- `## Apollo Context` — include when the workflow needs Apollo Solutions / Jira / team framing; delete the section if irrelevant
+- `## Organization-specific context` — include when the workflow needs team Jira/Confluence framing or tenant constants; delete the section if irrelevant
 
 **Optional:**
 
@@ -97,22 +101,24 @@ Never write "look up the Jira issue." Write the concrete call, for example:
 
 ```
 Use Atlassian:getJiraIssue with:
-- cloudId: b8116c26-1732-446c-9a3b-e138b1e55296
-- issueIdOrKey: <AS-* key from URL>
+- cloudId: <your-atlassian-cloud-id>
+- issueIdOrKey: <issue key from URL, e.g. PROJ-123>
 - responseContentFormat: markdown
 ```
 
-Use the **canonical constants** from README / CONTRIBUTING (Atlassian cloud ID, `AS` project, MCP URL, preferred model) inside the skill where relevant.
+Duplicate any **tenant or org constants** (Atlassian cloud ID, Jira project keys, MCP URL, preferred model) from the skill’s Quick Reference or from [README.md — Optional shared tooling](../../README.md) inside the skill where relevant so agents do not rely on chat context.
 
 ### Step 5 — Progressive disclosure (optional files)
 
 Add **only when needed:**
 
-| Situation | Add |
-|-----------|-----|
-| Long reference material | `REFERENCE.md` linked from `SKILL.md` |
-| Many input/output examples | `EXAMPLES.md` linked from `SKILL.md` |
+
+| Situation                                               | Add                                                |
+| ------------------------------------------------------- | -------------------------------------------------- |
+| Long reference material                                 | `REFERENCE.md` linked from `SKILL.md`              |
+| Many input/output examples                              | `EXAMPLES.md` linked from `SKILL.md`               |
 | Deterministic, repeatable code (validation, transforms) | `scripts/` with clear invocation from the workflow |
+
 
 Split out files when `SKILL.md` would exceed ~100 lines or mix rarely used advanced material with the main flow.
 
@@ -139,34 +145,38 @@ Present the draft and confirm:
 
 ### Step 8 — Review checklist before commit
 
-- [ ] Valid YAML: `name`, `description`, `compatibility`
-- [ ] `description` includes concrete "Use when …" triggers
-- [ ] Workflow steps numbered; tool calls include parameters
-- [ ] Apollo constants spelled out where applicable
-- [ ] README Skill Index updated
-- [ ] `skills/<name>/` matches `name`
-- [ ] No template placeholders
+- Valid YAML: `name`, `description`, `compatibility`
+- `description` includes concrete "Use when …" triggers
+- Workflow steps numbered; tool calls include parameters
+- Org/tenant constants spelled out where applicable
+- README Skill Index updated
+- `skills/<name>/` matches `name`
+- No template placeholders
+- From repo root: `npm run validate` passes; `npm run validate:strict` passes before opening a PR
 
 ---
 
-## Apollo Context
+## Organization-specific context
 
-When the skill touches Jira, Confluence, or Apollo Solutions workflows, pull constants from **[README.md — Conventions & Apollo Context](../../README.md)** and duplicate the relevant rows in the new skill’s **Quick Reference** or inline steps so agents do not depend on chat context.
+When the skill touches Jira, Confluence, or team-specific workflows, pull any shared pointers from **[README.md — Optional shared tooling](../../README.md)** and duplicate the relevant values in the new skill’s **Quick Reference** or inline steps so agents do not depend on chat context.
 
 ---
 
 ## Example (minimal)
 
-**User:** "Add a skill that reminds agents how to format AS epic titles."
+**User:** "Add a skill that reminds agents how to format Jira epic titles."
 
-**Actions:** Run `npm run add-skill -- as-epic-title-format`, fill frontmatter with triggers ("epic title", "AS epic", "rename epic"), add a short Workflow with Atlassian calls if issues are updated, add `## Apollo Context`, add README index row.
+**Actions:** Run `npm run add-skill -- jira-epic-title-format`, fill frontmatter with triggers ("epic title", "rename epic", "Jira epic"), add a short Workflow with Atlassian calls if issues are updated, add `## Organization-specific context` if tenant IDs apply, add README index row.
 
 ---
 
 ## Quick Reference
 
-| Resource | Location |
-|----------|----------|
-| Human/agent contributing guide | [CONTRIBUTING.md](../../CONTRIBUTING.md) |
-| Shared constants table | [README.md](../../README.md) |
+
+| Resource                          | Location                                      |
+| --------------------------------- | --------------------------------------------- |
+| Human/agent contributing guide    | [CONTRIBUTING.md](../../CONTRIBUTING.md)      |
+| Shared constants table            | [README.md](../../README.md)                  |
 | Install all skills from this repo | `npx skills add smyrick/skills` (or repo URL) |
+
+
