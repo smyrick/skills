@@ -33,7 +33,15 @@ skills/
     SKILL.md
 ```
 
-Copy `skills/_template/SKILL.md` as your starting point.
+**Scaffold:** from the repository root, run:
+
+```bash
+npm run add-skill -- <your-skill-name>
+```
+
+That runs `npx skills init` inside `skills/` and creates `skills/<your-skill-name>/SKILL.md`. Replace the generated stub with real content.
+
+**Authoring guide:** follow the agent workflow in [`skills/create-a-skill/SKILL.md`](./skills/create-a-skill/SKILL.md) (requirements, frontmatter, tool precision, README index). It encodes the same rules as this document for agents executing on your behalf.
 
 ### 3. Fill in the frontmatter
 
@@ -103,7 +111,7 @@ Also remove it from the **Planned Skills** list if it was listed there.
 - [ ] Apollo-specific constants (cloud IDs, project keys) are spelled out — don't rely on context
 - [ ] README.md skill index is updated
 - [ ] Folder name matches `name` in frontmatter
-- [ ] No placeholder text left from the template
+- [ ] No placeholder text left from the scaffold or draft
 
 ---
 

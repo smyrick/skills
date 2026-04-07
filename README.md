@@ -18,13 +18,33 @@ Skills are agent-readable instructions, not code. They make common work reproduc
 
 ---
 
+## Install (CLI)
+
+Install every skill from this repo into your coding agents (Cursor, Claude Code, Codex, OpenCode, and [others supported by the skills CLI](https://github.com/vercel-labs/skills)):
+
+```bash
+npx skills add smyrick/skills
+```
+
+Or with the full URL:
+
+```bash
+npx skills add https://github.com/smyrick/skills
+```
+
+List skills without installing: `npx skills add smyrick/skills --list`. The deprecated `npx add-skill` forwards to `npx skills add`.
+
+---
+
 ## Skill Index
 
 | Skill | Description | Key Tools |
 |-------|-------------|-----------|
 | [apollo-epic-refiner](./skills/apollo-epic-refiner/SKILL.md) | Take a rough Jira epic in the Apollo Solutions (AS) project and turn it into a sharply-defined, manager-ready epic | Atlassian MCP, Anthropic API |
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Analyze and document codebase architecture with ARCHITECTURE.md files, including entry points, APIs, core modules, and Mermaid diagrams | File system tools (Read, Glob, Grep) |
+| [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author a new skill in this library (frontmatter, workflow, README index, Apollo context) | Read, Write, StrReplace; optional Atlassian MCP |
 | [plan-mode](./skills/plan-mode/SKILL.md) | Create structured implementation plans with acceptance criteria that can be handed off to a less capable agent | AskQuestion tool |
+| [write-a-prd](./skills/write-a-prd/SKILL.md) | Create a PRD through interview, codebase exploration, and module design, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
 ---
 
@@ -48,11 +68,12 @@ Any agent with access to this repo can read a `SKILL.md` directly and follow its
 ```
 README.md                        ← You are here
 CONTRIBUTING.md                  ← How to add or improve skills
+package.json                     ← npm run add-skill → scaffolds under skills/
 skills/
   <skill-name>/
     SKILL.md                     ← The skill itself (agent-readable instructions)
-  _template/
-    SKILL.md                     ← Starter template for new skills
+  create-a-skill/
+    SKILL.md                     ← Skill that guides authoring new skills
 ```
 
 Skills are organized as one folder per skill. The folder name is the skill's ID — use lowercase, hyphenated names (e.g., `customer-qbr-prep`, `slack-deal-summary`).

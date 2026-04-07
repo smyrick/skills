@@ -1,0 +1,8 @@
+{
+  "name": "smyrick-skills",
+  "private": true,
+  "description": "Personal agent skills library for Shane Hegde (Apollo GraphQL)",
+  "scripts": {
+    "add-skill": "cd skills && npx skills init"
+  }
+}
