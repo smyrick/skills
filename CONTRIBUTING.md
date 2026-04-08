@@ -85,6 +85,8 @@ After the frontmatter, write the skill body in Markdown. A good skill includes:
 - `## Common Pitfalls` — things that go wrong and how to avoid them
 - `## Quick Reference` — constants, IDs, or lookup tables the agent will need mid-workflow
 
+**Length (guideline):** Keep the main `SKILL.md` dense—about **~500 lines or fewer** when practical (a **suggestion**, not a limit). Longer is acceptable when the workflow needs it. Prefer tight, high-signal prose and move long reference or examples to linked files (`REFERENCE.md`, `EXAMPLES.md`, `scripts/`) as described in [create-a-skill](./skills/create-a-skill/SKILL.md).
+
 ### 5. Be precise about tool calls
 
 Don't say "look up the Jira issue." Say:
@@ -131,6 +133,7 @@ Fix any reported errors before committing. CI runs `validate:strict` on push and
 - [ ] Folder name matches `name` in frontmatter
 - [ ] No placeholder text left from the scaffold or draft
 - [ ] `npm run validate:strict` passes
+- [ ] Main `SKILL.md` aims for brevity (guideline: ~500 lines or less when practical; longer OK if justified); depth is in linked files where appropriate
 
 ---
 
