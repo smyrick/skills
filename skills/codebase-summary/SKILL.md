@@ -1,14 +1,14 @@
 ---
-name: codebase-summary
+
+## name: codebase-summary
 description: >
   Document or explore a codebase's architecture. Use when the user asks to summarize
   the codebase, create an architecture doc, explain structure, or understand entry points,
   APIs, and core modules. Reads existing ARCHITECTURE.md or helps create one with Mermaid.
 author: Shane Myrick
 license: MIT
-repository: https://github.com/smyrick/skills
+repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
 compatibility: "File system access (Read, Glob, Grep tools). No external MCPs required."
----
 
 # Codebase Summary: Architecture Documentation and Visualization
 
@@ -34,10 +34,12 @@ and Mermaid diagrams showing structure, entry points, APIs, and core modules.
 Before analyzing from scratch, look for existing documentation that can inform your work.
 
 Use the `Glob` tool to search for architecture documentation:
+
 - Pattern: `**/ARCHITECTURE.md` or `**/architecture.md`
 - Also check for: `**/README.md`, `**/docs/architecture/*`, `**/DESIGN.md`
 
 If an ARCHITECTURE.md exists:
+
 - Use `Read` tool to view its contents
 - Assess whether it's current and complete
 - Ask the user: **"I found an existing ARCHITECTURE.md. Would you like me to:"**
@@ -47,6 +49,7 @@ If an ARCHITECTURE.md exists:
   - Just analyze it and provide insights
 
 If no ARCHITECTURE.md exists:
+
 - Proceed to Step 2 to analyze the codebase
 - Plan to create a new ARCHITECTURE.md at the repo root
 
@@ -55,11 +58,13 @@ If no ARCHITECTURE.md exists:
 Identify the project type, primary languages, and build system.
 
 Use `Glob` tool to find:
+
 - Configuration files: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`
 - Source directories: `src/`, `lib/`, `app/`, `pkg/`, `internal/`
 - Test directories: `test/`, `tests/`, `__tests__/`, `spec/`
 
 Read the main configuration file to understand:
+
 - Project name and description
 - Primary language and version
 - Key dependencies and frameworks
@@ -67,6 +72,7 @@ Read the main configuration file to understand:
 - Entry point configurations
 
 Ask the user if needed:
+
 1. **"What type of project is this?"** (web app, library, CLI tool, API service, monorepo, etc.)
 2. **"Are there any critical architectural patterns I should highlight?"** (microservices, event-driven, MVC, etc.)
 3. **"What level of detail do you want?"** (high-level overview, detailed module breakdown, both)
@@ -77,20 +83,24 @@ Entry points are where code execution begins. These are critical for understandi
 
 **For different project types, look for:**
 
-| Project Type | Common Entry Points |
-|--------------|-------------------|
-| **Node.js/TypeScript** | `index.js`, `server.js`, `app.ts`, `main.ts`, check `package.json` "main" and "bin" fields |
-| **Python** | `__main__.py`, `main.py`, `app.py`, `cli.py`, check `pyproject.toml` scripts or `setup.py` entry_points |
-| **Go** | `main.go` files, check `cmd/` directory for multiple entry points |
-| **Rust** | `main.rs`, `lib.rs`, check `Cargo.toml` [[bin]] sections |
-| **Java** | Classes with `public static void main()`, check build config for mainClass |
-| **Web Apps** | `index.html`, `App.jsx`, `App.tsx`, `main.jsx` |
+
+| Project Type           | Common Entry Points                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Node.js/TypeScript** | `index.js`, `server.js`, `app.ts`, `main.ts`, check `package.json` "main" and "bin" fields              |
+| **Python**             | `__main__.py`, `main.py`, `app.py`, `cli.py`, check `pyproject.toml` scripts or `setup.py` entry_points |
+| **Go**                 | `main.go` files, check `cmd/` directory for multiple entry points                                       |
+| **Rust**               | `main.rs`, `lib.rs`, check `Cargo.toml` [[bin]] sections                                                |
+| **Java**               | Classes with `public static void main()`, check build config for mainClass                              |
+| **Web Apps**           | `index.html`, `App.jsx`, `App.tsx`, `main.jsx`                                                          |
+
 
 Use `Grep` tool to find:
+
 - Pattern: `func main|def main|public static void main|if __name__ == "__main__"`
 - File type filters based on detected language
 
 Document:
+
 - Primary entry point (where the app starts)
 - Secondary entry points (CLI commands, background workers, multiple services)
 - How users/systems invoke the code (CLI args, HTTP requests, events)
@@ -102,25 +112,22 @@ Identify who/what consumes this codebase.
 **Look for:**
 
 1. **HTTP/API Servers**: Express, FastAPI, Flask, Gin, Actix, Spring Boot, etc.
-   - Use `Grep` to find route definitions: `app.get|app.post|@route|@app.route|router.|Route::`
-   - Document REST endpoints, GraphQL schemas, or gRPC services
-
+  - Use `Grep` to find route definitions: `app.get|app.post|@route|@app.route|router.|Route::`
+  - Document REST endpoints, GraphQL schemas, or gRPC services
 2. **CLI Interfaces**: Commander, Click, Cobra, Clap, etc.
-   - Look for command definitions and argument parsing
-   - Document available commands and their purposes
-
+  - Look for command definitions and argument parsing
+  - Document available commands and their purposes
 3. **Library/SDK**: Exported functions and classes
-   - Check `exports`, `module.exports`, `__all__`, `pub fn`, public APIs
-   - Document the public interface
-
+  - Check `exports`, `module.exports`, `__all_`_, `pub fn`, public APIs
+  - Document the public interface
 4. **UI Clients**: React, Vue, Angular components
-   - Identify component hierarchies and page routes
-   - Document user-facing entry points
-
+  - Identify component hierarchies and page routes
+  - Document user-facing entry points
 5. **Event Consumers**: Message queues, webhooks, scheduled jobs
-   - Look for event handlers, subscribers, cron jobs
+  - Look for event handlers, subscribers, cron jobs
 
 For each interface type, document:
+
 - Interface type (REST API, GraphQL, CLI, SDK, UI)
 - Key endpoints/commands/components
 - Authentication/authorization approach
@@ -131,14 +138,17 @@ For each interface type, document:
 Map the major functional areas of the codebase.
 
 Use `Glob` to list directories under:
+
 - `src/`, `lib/`, `app/`, `pkg/`, `internal/`, `modules/`, `components/`
 
 For each significant directory, use `Read` to examine:
+
 - Index files (`index.js`, `__init__.py`, `mod.rs`, etc.)
 - README files within subdirectories
 - Main implementation files
 
 Categorize modules by responsibility:
+
 - **Data/Models**: Database schemas, ORM models, data structures
 - **Business Logic**: Core application logic, domain services
 - **API/Routes**: HTTP handlers, controllers, resolvers
@@ -149,11 +159,14 @@ Categorize modules by responsibility:
 - **Testing**: Test utilities, fixtures, mocks
 
 Create a module inventory:
-| Module Path | Responsibility | Key Exports |
-|------------|----------------|-------------|
+
+
+| Module Path | Responsibility      | Key Exports                             |
+| ----------- | ------------------- | --------------------------------------- |
 | `src/auth/` | User authentication | `authenticateUser()`, `validateToken()` |
-| `src/api/` | REST API endpoints | Express routes, controllers |
-| ... | ... | ... |
+| `src/api/`  | REST API endpoints  | Express routes, controllers             |
+| ...         | ...                 | ...                                     |
+
 
 ### Step 6 — Map Key Dependencies and Data Flow
 
@@ -162,20 +175,19 @@ Understand how components interact.
 **Identify:**
 
 1. **Database/Storage**:
-   - Connection libraries (mongoose, sqlalchemy, gorm, diesel)
-   - Where schemas/models are defined
-   - Migration systems
-
+  - Connection libraries (mongoose, sqlalchemy, gorm, diesel)
+  - Where schemas/models are defined
+  - Migration systems
 2. **External Services**:
-   - API clients for third-party services
-   - Message queues, caches, object storage
-
+  - API clients for third-party services
+  - Message queues, caches, object storage
 3. **Data Flow Patterns**:
-   - Request → Controller → Service → Repository → Database
-   - Event → Handler → Processor → Queue
-   - User Input → Validation → Business Logic → Response
+  - Request → Controller → Service → Repository → Database
+  - Event → Handler → Processor → Queue
+  - User Input → Validation → Business Logic → Response
 
 Use `Grep` to trace common patterns:
+
 - Database queries: `SELECT|INSERT|UPDATE|query(|execute(|find|create|save`
 - HTTP clients: `fetch(|axios|requests.|http.Get|reqwest::`
 - Logging: `logger.|log.|console.|print|println!|fmt.Print`
@@ -200,9 +212,12 @@ graph TB
     BL --> Ext
 ```
 
+
+
 Customize this based on your findings. Common patterns:
 
 **Layered Architecture:**
+
 ```mermaid
 graph TB
     subgraph "Presentation Layer"
@@ -229,7 +244,10 @@ graph TB
     Logic --> Cache
 ```
 
+
+
 **Microservices Architecture:**
+
 ```mermaid
 graph LR
     Client[Client]
@@ -255,6 +273,8 @@ graph LR
     User --> DB2
     Order --> DB3
 ```
+
+
 
 **Diagram 2: Entry Points and Flow**
 
@@ -290,6 +310,8 @@ flowchart TD
     Handler --> Response
 ```
 
+
+
 **Diagram 3: Module Dependencies**
 
 Show how major modules depend on each other:
@@ -312,6 +334,8 @@ graph TD
     DB --> Utils
     Core --> Utils
 ```
+
+
 
 Adapt these templates based on what you discovered in Steps 2-6.
 
@@ -370,6 +394,7 @@ Create a comprehensive architecture document using this structure:
 **Authentication**: [method]
 
 Key endpoints:
+
 - `GET /api/resource` — [description]
 - `POST /api/resource` — [description]
 - [more endpoints...]
@@ -377,6 +402,7 @@ Key endpoints:
 ### [Interface Type 2: e.g., CLI]
 
 Available commands:
+
 - `command-name action` — [description]
 - [more commands...]
 
@@ -384,6 +410,7 @@ Available commands:
 
 Entry URL: [URL or file]
 Key pages/routes:
+
 - `/path` — [description]
 - [more routes...]
 
@@ -394,10 +421,12 @@ Key pages/routes:
 **Responsibility**: [What this module does]
 
 **Key Files**:
+
 - `file.ext` — [purpose]
 - `file2.ext` — [purpose]
 
 **Key Exports/APIs**:
+
 - `functionName()` — [description]
 - `ClassName` — [description]
 
@@ -413,17 +442,23 @@ Key pages/routes:
 [Your diagram from Step 7]
 ```
 
+
+
 ### Request Flow
 
 ```mermaid
 [Your flow diagram from Step 7]
 ```
 
+
+
 ### Module Dependencies
 
 ```mermaid
 [Your dependency diagram from Step 7]
 ```
+
+
 
 ## Data Layer
 
@@ -434,6 +469,7 @@ Key pages/routes:
 - **Schema Location**: `path/to/schemas/`
 
 Key tables/collections:
+
 - `table_name` — [purpose]
 - [more tables...]
 
@@ -461,10 +497,12 @@ Key tables/collections:
 **Location**: `path/to/config/`
 
 **Environment Variables**:
+
 - `VAR_NAME` — [purpose, example value]
 - [more vars...]
 
 **Config Files**:
+
 - `config.yaml` — [purpose]
 
 ## Testing
@@ -475,6 +513,7 @@ Key tables/collections:
 **Run Tests**: `[command]`
 
 Test coverage areas:
+
 - Unit tests in `tests/unit/`
 - Integration tests in `tests/integration/`
 - [Other test types]
@@ -496,6 +535,7 @@ Test coverage areas:
 ## Common Patterns
 
 [Document any architectural patterns used]:
+
 - **Error Handling**: [How errors are handled and propagated]
 - **Logging**: [Logging strategy and tools]
 - **Authentication**: [Auth pattern]
@@ -522,6 +562,7 @@ Test coverage areas:
 - [Link to API documentation]
 - [Link to deployment docs]
 - [Link to design docs]
+
 ```
 
 ### Step 9 — Present and Save
@@ -658,3 +699,5 @@ Look for these clues:
 | **Serverless** | Handler functions, no long-running server |
 | **Event-Driven** | Message queues, pub/sub, event handlers |
 | **MVC** | `models/`, `views/`, `controllers/` directories |
+```
+

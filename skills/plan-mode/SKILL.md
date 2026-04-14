@@ -1,25 +1,38 @@
 ---
-name: plan-mode
+
+## name: plan-mode
 description: >
-  Produce a structured implementation plan before coding. Use when the user asks to
-  plan, design, architect, or break down work; wants a handoff doc for another agent;
-  or is in plan mode. Output is self-contained so a less capable agent can execute it.
+  Produce a structured implementation plan before coding. Walk the design tree until
+  shared understanding, then output a handoff doc another agent can execute. Use when
+  the user asks to plan, design, architect, or break down work; wants a handoff doc for
+  another agent; is in plan mode; or wants to stress-test a plan before implementation.
+  Output is self-contained so a less capable agent can execute it.
 author: Shane Myrick
 license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: "AskQuestion tool (Cursor) or user prompting (Claude Code). No external tools required."
----
+repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
+compatibility: "AskQuestion tool (Cursor) or user prompting (Claude Code). Readonly codebase search/read for factual answers; no external tools required."
 
 # Plan Mode: Structured Implementation Planning
 
 Create implementation plans detailed enough for a less capable or faster agent to
 execute without making design decisions. Every plan ends with a concrete handoff artifact.
 
+## At a glance
+
+- Aim for **shared understanding** with the user before you write steps.
+- Treat open decisions as a **design tree**: resolve **upstream** choices before **downstream** ones.
+- **Explore the codebase first** for anything factual (patterns, files, config); **ask** for goals, tradeoffs, and scope the code cannot answer.
+- Ask **one focused question at a time** when the answer unlocks the next branch; give a **recommended answer** (with a one-line why) plus options.
+- Finish with the **handoff artifact** (template below) so a less capable agent can execute without guessing.
+
+*Credits:* The interview and design-tree pattern is adapted from [grill-me](https://github.com/mattpocock/skills/blob/main/grill-me/SKILL.md) (Matt Pocock).
+
 ## When to use this skill
 
 - User asks to "plan", "design", "architect", or "break down" a task before coding
 - User wants a handoff document for another agent or team member
 - User is in plan mode and wants to think through an approach
+- User wants to stress-test a plan, walk open design decisions, or reach shared understanding before coding
 - The task is complex enough that jumping straight to code would risk rework
 - User says "let's think about this first" or "what's the best approach"
 
@@ -27,50 +40,72 @@ execute without making design decisions. Every plan ends with a concrete handoff
 
 ## Workflow
 
-### Step 1 — Gather Context with Questions
+### Step 1 — Map the design tree and gather context
 
-Before drafting anything, deeply understand the task. Use the `AskQuestion` tool
-(or ask conversationally if unavailable) to fill every gap in your understanding.
+Before drafting anything, reach **shared understanding** with the user. Treat unresolved
+choices as a **design tree**: parent decisions unlock child decisions. Walk **each branch**
+and resolve **dependencies in order** (upstream before downstream). Optionally keep a
+short mental list of open branches and tick them off so nothing is skipped.
 
-**Required context to gather:**
+**Explore before you ask.** Use readonly search and reads of the codebase, repo docs, and
+config for anything **discoverable**: where similar features live, naming and patterns,
+env keys, test layout, existing conventions. **Do not** ask the user to confirm facts you
+can verify yourself.
 
-| Context | Why it matters |
-|---------|---------------|
-| Goal | What is the user trying to accomplish and why? |
-| Scope | What's in scope vs explicitly out of scope? |
-| Constraints | Performance, compatibility, style, timeline, or tech constraints? |
-| Existing patterns | Are there similar patterns in the codebase to follow? |
-| Success criteria | How will the user know this is done correctly? |
-| Dependencies | External systems, APIs, teams, or blocking work? |
+**Ask** when the code cannot decide: product goals, explicit in/out scope, priorities,
+tradeoffs, compliance or policy, or stylistic preferences when multiple valid approaches
+exist.
 
-**Use AskQuestion aggressively.** Ask about anything ambiguous. A 2-minute clarification
-saves 20 minutes of rework. Group related questions into a single AskQuestion call.
+**Required context** (some via exploration, some via questions):
 
-Good AskQuestion topics:
-- "Which of these approaches do you prefer?" with concrete options
-- "Should this handle [edge case X]?" when the requirement is unclear
-- "Are there existing patterns I should follow?" when you see multiple conventions
-- "What's the priority: speed of delivery vs comprehensive coverage?"
 
-After gathering answers, **explore the codebase** to validate assumptions, find existing
-patterns, and identify the specific files and functions the plan will reference.
+| Context           | How you usually get it                                                |
+| ----------------- | --------------------------------------------------------------------- |
+| Goal              | Ask (what we're accomplishing and why).                               |
+| Scope             | Ask; validate against repo layout if helpful.                         |
+| Constraints       | Ask; cross-check config or docs if they encode limits.                |
+| Existing patterns | **Explore first**; ask only if conventions conflict.                  |
+| Success criteria  | Ask; tie to tests or behavior you found in code.                      |
+| Dependencies      | Ask for org, API, or team blockers; explore for in-repo dependencies. |
+
+
+**Question discipline (one branch at a time).** Default to **one focused** `AskQuestion`
+(or one conversational question) at a time when the answer unblocks the next decision.
+For each question, state your **recommended answer** in one line (why you lean that way),
+then give concrete options so the user can agree or correct you.
+
+**Batching:** Use a single `AskQuestion` with multiple prompts **only** when questions are
+**independent** (no ordering dependency) **and** you need both answers in one shot.
+Otherwise prefer sequential questions so the tree stays clear.
+
+Thorough clarification still matters: a few precise questions beat a vague plan. Prefer
+depth over stuffing many unrelated questions into one message.
+
+Good topics **after** you've explored what you can:
+
+- "Which of these approaches do you prefer?" with options **and** your recommendation
+- "Should this handle [edge case X]?" when code or product intent is unclear
+- Priority when speed of delivery vs comprehensive coverage conflicts
+
+After questions and exploration, **spot-check the codebase** so the plan names real
+files, functions, and patterns—not guesses.
 
 ### Step 2 — Draft the Plan
 
 Write a structured plan following the **Handoff Artifact Template** below. Focus on:
 
 - **Specificity** — Name exact files, functions, types, config keys. The executing agent
-  can't infer what you mean by "update the auth module."
+can't infer what you mean by "update the auth module."
 - **Order** — Number steps in execution order. Mark dependencies explicitly.
 - **Acceptance criteria** — Every step has testable criteria so the executing agent knows
-  when it's done.
+when it's done.
 - **Edge cases** — Call out non-obvious gotchas the executing agent might miss.
 - **Small steps** — Each step should be completable in a single focused session. If a step
-  feels large, break it down further.
+feels large, break it down further.
 - **Context scoping** — Each step should carry its own 1–2 sentence context so a fast model
-  can execute it without re-reading the full plan.
+can execute it without re-reading the full plan.
 - **Failure guidance** — Every step needs an "If this fails" action. Fast models will
-  hallucinate fixes without explicit recovery instructions.
+hallucinate fixes without explicit recovery instructions.
 
 #### Prescriptive vs Descriptive
 
@@ -87,14 +122,17 @@ Write a structured plan following the **Handoff Artifact Template** below. Focus
 ### Step 3 — Review the Plan with the User
 
 After drafting, use `AskQuestion` again to validate the plan. This is critical — never
-skip the review.
+skip the review. The goal is **shared understanding** on scope, step order, and risks—not
+only running through a checklist.
 
 **Question 1 — Coverage check:**
 
 Present a summary of what IS and IS NOT covered, then ask:
+
 > "Does this plan cover everything you need, or are there missing pieces?"
 
 Offer options like:
+
 - "Looks complete — move on"
 - "Missing something — let me explain"
 - "Too much scope — let's trim"
@@ -123,12 +161,14 @@ in the repo root) so the executing agent can be pointed to it. This avoids conte
 window waste from pasting long plans into chat.
 
 To kick off the executing agent, suggest a prompt like:
+
 > "Read `PLAN.md` and execute the steps in order. Check each step's acceptance criteria
 > before moving to the next."
 
 For small plans (1–3 steps), pasting directly into chat is fine.
 
 Tell the user:
+
 > "Here's the finalized plan, saved to `PLAN.md`. You can hand this directly to an
 > agent in implementation mode. Want to start executing it now, or save it for later?"
 
@@ -212,16 +252,19 @@ and which order to execute them.
 
 ## Common Pitfalls
 
-- **Skipping the question phase** — Agents tend to jump to drafting. Force yourself to
-  ask at least 2–3 clarifying questions before writing a single plan step.
+- **Skipping exploration** — Asking "where does X live?" when search or ripgrep answers it
+wastes the user's time. Resolve factual branches in the codebase first.
+- **Skipping user-facing branches** — Jumping to a plan before resolving decisions only the
+user can own invites rework. Interview thoroughly: sequential questions, recommendations,
+until judgment calls are settled.
 - **Being too abstract** — "Update the config" is useless to a less capable agent. Name
-  the file, the key, and the value.
+the file, the key, and the value.
 - **Forgetting the "don't" list** — Explicitly state what the executing agent should NOT
-  do. Less capable agents will try helpful-but-wrong things without guardrails.
+do. Less capable agents will try helpful-but-wrong things without guardrails.
 - **Skipping the review** — The plan review catches 80% of gaps. Never deliver a plan
-  without at least one round of user validation via AskQuestion.
+without at least one round of user validation via AskQuestion.
 - **Giant steps** — If a step would take more than ~15 minutes to implement, it's too big.
-  Break it down.
+Break it down.
 
 ---
 
@@ -229,17 +272,21 @@ and which order to execute them.
 
 **User request:** "Plan out adding dark mode to the settings page"
 
-**Step 1 output (questions):**
+**Step 1 output (explore, then one branch at a time):**
 
-> Using AskQuestion: "A few things to clarify before I plan this out:"
-> 1. "Should dark mode be system-preference-aware, or manual toggle only?"
->    - System preference with manual override
->    - Manual toggle only
-> 2. "Where should the preference be stored?"
->    - localStorage
->    - User profile / API
->    - Both (local with sync)
-> 3. "Are there existing theme variables, or do we need to create the token system?"
+> Read `src/utils/colors.ts` and settings-related components: colors are hardcoded
+> constants; no CSS custom properties yet. No `useTheme` hook exists.
+>
+> AskQuestion (one at a time), with recommendation:
+> "Should dark mode follow system preference with a manual override, or manual toggle only?
+> **Recommendation:** system preference with manual override — matches common UX and your
+> question implied a toggle on settings."
+>
+> - System preference with manual override
+> - Manual toggle only
+>
+> [After answer] Next question: storage (localStorage vs API vs both), again with a
+> recommended default; then theme token approach if still ambiguous.
 
 **Step 4 output (artifact excerpt):**
 
@@ -273,3 +320,4 @@ names conflict with an existing CSS framework, prefix with `--app-`.
 **Files**: `src/hooks/useTheme.ts` (new file)
 ...
 ```
+

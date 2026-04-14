@@ -1,29 +1,26 @@
 ---
-name: write-a-prd
+
+## name: write-a-prd
 description: Create a PRD through user interview, codebase exploration, and module design, then submit as a GitHub issue. Use when user wants to write a PRD, create a product requirements document, or plan a new feature.
 author: Shane Myrick
 license: MIT
-repository: https://github.com/smyrick/skills
+repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
 compatibility: "Read, Glob, Grep; GitHub (issues) or equivalent for submitting the PRD."
----
 
 This skill will be invoked when the user wants to create a PRD. You may skip steps if you don't consider them necessary.
 
 1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
-
 2. Explore the repo to verify their assertions and understand the current state of the codebase.
-
 3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
-
 4. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
 
 A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-5. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be submitted as a GitHub issue.
+1. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be submitted as a GitHub issue.
 
-<prd-template>
+
 
 ## Problem Statement
 
@@ -37,11 +34,9 @@ The solution to the problem, from the user's perspective.
 
 A LONG, numbered list of user stories. Each user story should be in the format of:
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+1. As an , I want a , so that 
 
-<user-story-example>
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
 
 This list of user stories should be extremely extensive and cover all aspects of the feature.
 
@@ -75,4 +70,3 @@ A description of the things that are out of scope for this PRD.
 
 Any further notes about the feature.
 
-</prd-template>
