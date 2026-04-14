@@ -1,6 +1,7 @@
 {
   "name": "smyrick-skills",
   "private": true,
+  "license": "MIT",
   "description": "Personal agent skills library for Shane Myrick",
   "scripts": {
     "add-skill": "cd skills && npx skills init",

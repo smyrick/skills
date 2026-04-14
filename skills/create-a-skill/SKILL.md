@@ -56,10 +56,12 @@ skill-name/
 
 ### Storage Locations
 
-| Type | Path | Scope |
-|------|------|-------|
-| Personal | ~/.cursor/skills/skill-name/ | Available across all your projects |
-| Project | .cursor/skills/skill-name/ | Shared with anyone using the repository |
+
+| Type     | Path                         | Scope                                   |
+| -------- | ---------------------------- | --------------------------------------- |
+| Personal | ~/.cursor/skills/skill-name/ | Available across all your projects      |
+| Project  | .cursor/skills/skill-name/   | Shared with anyone using the repository |
+
 
 **IMPORTANT**: Never create skills in `~/.cursor/skills-cursor/`. This directory is reserved for Cursor's internal built-in skills and is managed automatically by the system.
 
@@ -84,10 +86,12 @@ Concrete examples of using this skill.
 
 ### Required Metadata Fields
 
-| Field | Requirements | Purpose |
-|-------|--------------|---------|
-| `name` | Max 64 chars, lowercase letters/numbers/hyphens only | Unique identifier for the skill |
-| `description` | Max 1024 chars, non-empty | Helps agent decide when to apply the skill |
+
+| Field         | Requirements                                         | Purpose                                    |
+| ------------- | ---------------------------------------------------- | ------------------------------------------ |
+| `name`        | Max 64 chars, lowercase letters/numbers/hyphens only | Unique identifier for the skill            |
+| `description` | Max 1024 chars, non-empty                            | Helps agent decide when to apply the skill |
+
 
 ---
 
@@ -98,17 +102,15 @@ The description is **critical** for skill discovery. The agent uses it to decide
 ### Description Best Practices
 
 1. **Write in third person** (the description is injected into the system prompt):
-   - ✅ Good: "Processes Excel files and generates reports"
-   - ❌ Avoid: "I can help you process Excel files"
-   - ❌ Avoid: "You can use this to process Excel files"
-
+  - ✅ Good: "Processes Excel files and generates reports"
+  - ❌ Avoid: "I can help you process Excel files"
+  - ❌ Avoid: "You can use this to process Excel files"
 2. **Be specific and include trigger terms**:
-   - ✅ Good: "Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction."
-   - ❌ Vague: "Helps with documents"
-
+  - ✅ Good: "Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction."
+  - ❌ Vague: "Helps with documents"
 3. **Include both WHAT and WHEN**:
-   - WHAT: What the skill does (specific capabilities)
-   - WHEN: When the agent should use it (trigger scenarios)
+  - WHAT: What the skill does (specific capabilities)
+  - WHEN: When the agent should use it (trigger scenarios)
 
 ### Description Examples
 
@@ -137,11 +139,13 @@ The context window is shared with conversation history, other skills, and reques
 **Default assumption**: The agent is already very smart. Only add context it doesn't already have.
 
 Challenge each piece of information:
+
 - "Does the agent really need this explanation?"
 - "Can I assume the agent knows this?"
 - "Does this paragraph justify its token cost?"
 
 **Good (concise)**:
+
 ```markdown
 ## Extract PDF text
 
@@ -156,6 +160,7 @@ with pdfplumber.open("file.pdf") as pdf:
 ```
 
 **Bad (verbose)**:
+
 ```markdown
 ## Extract PDF text
 
@@ -190,11 +195,13 @@ Put essential information in SKILL.md; detailed reference material in separate f
 
 Match specificity to the task's fragility:
 
-| Freedom Level | When to Use | Example |
-|---------------|-------------|---------|
-| **High** (text instructions) | Multiple valid approaches, context-dependent | Code review guidelines |
-| **Medium** (pseudocode/templates) | Preferred pattern with acceptable variation | Report generation |
-| **Low** (specific scripts) | Fragile operations, consistency critical | Database migrations |
+
+| Freedom Level                     | When to Use                                  | Example                |
+| --------------------------------- | -------------------------------------------- | ---------------------- |
+| **High** (text instructions)      | Multiple valid approaches, context-dependent | Code review guidelines |
+| **Medium** (pseudocode/templates) | Preferred pattern with acceptable variation  | Report generation      |
+| **Low** (specific scripts)        | Fragile operations, consistency critical     | Database migrations    |
+
 
 ---
 
@@ -313,6 +320,7 @@ For quality-critical tasks, implement validation loops:
 ## Utility Scripts
 
 Pre-made scripts offer advantages over generated code:
+
 - More reliable than generated code
 - Save tokens (no code in context)
 - Save time (no code generation)
@@ -340,10 +348,12 @@ Make clear whether the agent should **execute** the script (most common) or **re
 ## Anti-Patterns to Avoid
 
 ### 1. Windows-Style Paths
+
 - ✅ Use: `scripts/helper.py`
 - ❌ Avoid: `scripts\helper.py`
 
 ### 2. Too Many Options
+
 ```markdown
 # Bad - confusing
 "You can use pypdf, or pdfplumber, or PyMuPDF, or..."
@@ -354,6 +364,7 @@ For scanned PDFs requiring OCR, use pdf2image with pytesseract instead."
 ```
 
 ### 3. Time-Sensitive Information
+
 ```markdown
 # Bad - will become outdated
 "If you're doing this before August 2025, use the old API."
@@ -370,11 +381,14 @@ Use the v2 API endpoint.
 ```
 
 ### 4. Inconsistent Terminology
+
 Choose one term and use it throughout:
+
 - ✅ Always "API endpoint" (not mixing "URL", "route", "path")
 - ✅ Always "field" (not mixing "box", "element", "control")
 
 ### 5. Vague Skill Names
+
 - ✅ Good: `processing-pdfs`, `analyzing-spreadsheets`
 - ❌ Avoid: `helper`, `utils`, `tools`
 
@@ -387,6 +401,7 @@ When helping a user create a skill, follow this process:
 ### Phase 1: Discovery
 
 Gather information about:
+
 1. The skill's purpose and primary use case
 2. Storage location (personal vs project)
 3. Trigger scenarios
@@ -424,6 +439,7 @@ If you have access to the AskQuestion tool, use it for efficient structured gath
 Here's a complete example of a well-structured skill:
 
 **Directory structure:**
+
 ```
 code-review/
 ├── SKILL.md
@@ -432,6 +448,7 @@ code-review/
 ```
 
 **SKILL.md:**
+
 ```markdown
 ---
 name: code-review
@@ -478,21 +495,25 @@ Format feedback as:
 Before finalizing a skill, verify:
 
 ### Core Quality
-- [ ] Description is specific and includes key terms
-- [ ] Description includes both WHAT and WHEN
-- [ ] Written in third person
-- [ ] SKILL.md body is under 500 lines
-- [ ] Consistent terminology throughout
-- [ ] Examples are concrete, not abstract
+
+- Description is specific and includes key terms
+- Description includes both WHAT and WHEN
+- Written in third person
+- SKILL.md body is under 500 lines
+- Consistent terminology throughout
+- Examples are concrete, not abstract
 
 ### Structure
-- [ ] File references are one level deep
-- [ ] Progressive disclosure used appropriately
-- [ ] Workflows have clear steps
-- [ ] No time-sensitive information
+
+- File references are one level deep
+- Progressive disclosure used appropriately
+- Workflows have clear steps
+- No time-sensitive information
 
 ### If Including Scripts
-- [ ] Scripts solve problems rather than punt
-- [ ] Required packages are documented
-- [ ] Error handling is explicit and helpful
-- [ ] No Windows-style paths
+
+- Scripts solve problems rather than punt
+- Required packages are documented
+- Error handling is explicit and helpful
+- No Windows-style paths
+
