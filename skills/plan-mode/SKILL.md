@@ -1,6 +1,5 @@
 ---
-
-## name: plan-mode
+name: plan-mode
 description: >
   Produce a structured implementation plan before coding. Walk the design tree until
   shared understanding, then output a handoff doc another agent can execute. Use when
@@ -9,8 +8,9 @@ description: >
   Output is self-contained so a less capable agent can execute it.
 author: Shane Myrick
 license: MIT
-repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
+repository: https://github.com/smyrick/skills
 compatibility: "AskQuestion tool (Cursor) or user prompting (Claude Code). Readonly codebase search/read for factual answers; no external tools required."
+---
 
 # Plan Mode: Structured Implementation Planning
 

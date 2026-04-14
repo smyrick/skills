@@ -1,14 +1,14 @@
 ---
-
-## name: codebase-summary
+name: codebase-summary
 description: >
   Document or explore a codebase's architecture. Use when the user asks to summarize
   the codebase, create an architecture doc, explain structure, or understand entry points,
   APIs, and core modules. Reads existing ARCHITECTURE.md or helps create one with Mermaid.
 author: Shane Myrick
 license: MIT
-repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
+repository: https://github.com/smyrick/skills
 compatibility: "File system access (Read, Glob, Grep tools). No external MCPs required."
+---
 
 # Codebase Summary: Architecture Documentation and Visualization
 
