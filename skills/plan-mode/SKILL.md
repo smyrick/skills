@@ -156,21 +156,50 @@ Revise the plan based on feedback. If changes are substantial, do another review
 Output the final plan as a single self-contained markdown artifact using the template
 below. This is the deliverable — it must be actionable without any conversation context.
 
-**Preferred delivery: save to a file.** Write the artifact to a file (e.g., `PLAN.md`
-in the repo root) so the executing agent can be pointed to it. This avoids context
-window waste from pasting long plans into chat.
+**Preferred delivery: save to a file** under a **plan directory** that matches Cursor’s
+workspace plans convention, with a **unique filename** (slug + random id). This avoids
+context-window waste from pasting long plans into chat and mirrors how Cursor Plan mode
+stores plans when saved to the workspace.
+
+**Where to write (in order):**
+
+1. **Prefer an already-ignored plan folder** — Before saving, read `.gitignore` and
+   `.cursorignore` (if present). If the repo already ignores a directory you recognize
+   as the team’s plan or AI-artifact location, and that path is already in use or clearly
+   intended for plans (e.g. `.agent/plans/`, `docs/.plans/`), write there instead of
+   inventing a new path.
+2. **Default** — `<workspace-root>/.cursor/plans/`. Create the directory if it does not
+   exist. This aligns with [Cursor Plan mode](https://cursor.com/help/ai-features/plan-mode)
+   “Save to workspace.” The path is **workspace-relative** in any environment (Cursor,
+   Claude Code, or other tools); `.cursor/plans/` is a conventional folder name.
+3. **Do not** introduce a new non-standard folder unless the user or the repo already
+   established it.
+
+**Filename:** `<short-slug>_<random-id>.md`
+
+- **Slug** — From the plan title: lowercase, hyphenated, ASCII, trimmed to about 40
+  characters max.
+- **Random id** — Collision-resistant, Cursor-style: a **UUID v4** without braces, or
+  **16 hexadecimal characters** from a high-entropy source (not a timestamp alone).
+
+Example path: `.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f50697.md`
+
+**Gitignore:** If nothing in the repo ignores `.cursor/plans/` and the user wants plans
+local-only, they may add `.cursor/plans/` to `.gitignore`. Do **not** edit `.gitignore`
+unless the user asks.
 
 To kick off the executing agent, suggest a prompt like:
 
-> "Read `PLAN.md` and execute the steps in order. Check each step's acceptance criteria
-> before moving to the next."
+> "Read `<exact relative path you saved>` and execute the steps in order. Check each step's
+> acceptance criteria before moving to the next."
 
 For small plans (1–3 steps), pasting directly into chat is fine.
 
 Tell the user:
 
-> "Here's the finalized plan, saved to `PLAN.md`. You can hand this directly to an
-> agent in implementation mode. Want to start executing it now, or save it for later?"
+> "Here's the finalized plan, saved to `<exact relative path you saved>`. You can hand
+> this directly to an agent in implementation mode. Want to start executing it now, or
+> save it for later?"
 
 ---
 
@@ -288,7 +317,11 @@ Break it down.
 > [After answer] Next question: storage (localStorage vs API vs both), again with a
 > recommended default; then theme token approach if still ambiguous.
 
-**Step 4 output (artifact excerpt):**
+**Step 4 output:** Save the full artifact to something like
+`.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f50697.md` (slug + UUID
+or 16 hex chars), then point the user and the executing agent at that exact path.
+
+**Artifact excerpt:**
 
 ```markdown
 # Implementation Plan: Dark Mode for Settings Page
