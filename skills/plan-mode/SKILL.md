@@ -1,5 +1,6 @@
 ---
-name: plan-mode
+
+## name: plan-mode
 description: >
   Produce a structured implementation plan before coding. Walk the design tree until
   shared understanding, then output a handoff doc another agent can execute. Use when
@@ -8,14 +9,15 @@ description: >
   Output is self-contained so a less capable agent can execute it.
 author: Shane Myrick
 license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: "AskQuestion tool (Cursor) or user prompting (Claude Code). Readonly codebase search/read for factual answers; no external tools required."
----
+repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
+compatibility: "AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan mode owns the plan; otherwise file handoff. Readonly codebase search/read for factual answers."
 
 # Plan Mode: Structured Implementation Planning
 
 Create implementation plans detailed enough for a less capable or faster agent to
-execute without making design decisions. Every plan ends with a concrete handoff artifact.
+execute without making design decisions. Every plan ends with a concrete handoff artifact
+on the right surface: the **IDE plan** (e.g. Cursor `CreatePlan`) when Plan mode owns it,
+or a **markdown file** when it does not.
 
 ## At a glance
 
@@ -23,7 +25,7 @@ execute without making design decisions. Every plan ends with a concrete handoff
 - Treat open decisions as a **design tree**: resolve **upstream** choices before **downstream** ones.
 - **Explore the codebase first** for anything factual (patterns, files, config); **ask** for goals, tradeoffs, and scope the code cannot answer.
 - Ask **one focused question at a time** when the answer unlocks the next branch; give a **recommended answer** (with a one-line why) plus options.
-- Finish with the **handoff artifact** (template below) so a less capable agent can execute without guessing.
+- Finish with the **handoff artifact** (template below) so a less capable agent can execute without guessing — on the **IDE plan** when Cursor Plan mode is active, otherwise in an **existing or new file** as described in Step 4.
 
 *Credits:* The interview and design-tree pattern is adapted from [grill-me](https://github.com/mattpocock/skills/blob/main/grill-me/SKILL.md) (Matt Pocock).
 
@@ -156,31 +158,48 @@ Revise the plan based on feedback. If changes are substantial, do another review
 Output the final plan as a single self-contained markdown artifact using the template
 below. This is the deliverable — it must be actionable without any conversation context.
 
-**Preferred delivery: save to a file** under a **plan directory** that matches Cursor’s
-workspace plans convention, with a **unique filename** (slug + random id). This avoids
-context-window waste from pasting long plans into chat and mirrors how Cursor Plan mode
-stores plans when saved to the workspace.
+#### Choose the plan surface (IDE vs file)
+
+Put the handoff in **one** place. Use the first row that applies; **do not** duplicate the
+same plan in both the IDE plan UI and a **new** `.cursor/plans/*.md` for the same planning
+thread.
+
+| Priority | When | What to do |
+| -------- | ---- | ---------- |
+| 1 | **Cursor Plan mode** is active (e.g. system or developer context says plan mode is on, or you are instructed to use **`CreatePlan`**) | Treat the **IDE plan** as authoritative. Deliver and revise the structured plan through **`CreatePlan`** (including after user feedback). **Do not** create a **new** parallel `.cursor/plans/*.md` unless the user explicitly asks for an extra workspace copy or export. |
+| 2 | The user **@-mentions** a markdown file, gives an explicit path, or asks to use an existing plan document | **Edit that file in place**; iterate there instead of inventing a second filename. |
+| 3 | This conversation **already** established a plan file path | **Keep updating that same path**; do not generate a new slug + random id file. |
+| 4 | Standalone planning **outside** IDE Plan mode, no file bound yet | **Save a new file** (see “Saving to the workspace” below). |
+
+**Claude Code and other tools** without `CreatePlan`: if the user points at an open plan
+file or path, use priority 2 or 3; otherwise use 4.
+
+#### Saving to the workspace (priority 4 or explicit export)
+
+When the IDE does **not** own the plan — or the user asks for a persisted copy — save under
+a **plan directory** with a **unique filename** (slug + random id). This avoids
+context-window waste from pasting long plans into chat.
 
 **Where to write (in order):**
 
 1. **Prefer an already-ignored plan folder** — Before saving, read `.gitignore` and
-   `.cursorignore` (if present). If the repo already ignores a directory you recognize
+  `.cursorignore` (if present). If the repo already ignores a directory you recognize
    as the team’s plan or AI-artifact location, and that path is already in use or clearly
    intended for plans (e.g. `.agent/plans/`, `docs/.plans/`), write there instead of
    inventing a new path.
 2. **Default** — `<workspace-root>/.cursor/plans/`. Create the directory if it does not
-   exist. This aligns with [Cursor Plan mode](https://cursor.com/help/ai-features/plan-mode)
-   “Save to workspace.” The path is **workspace-relative** in any environment (Cursor,
-   Claude Code, or other tools); `.cursor/plans/` is a conventional folder name.
+  exist. This aligns with [Cursor Plan mode](https://cursor.com/help/ai-features/plan-mode)
+   “Save to workspace” when plans are stored as files. The path is **workspace-relative**
+   in any environment (Cursor, Claude Code, or other tools); `.cursor/plans/` is a conventional folder name.
 3. **Do not** introduce a new non-standard folder unless the user or the repo already
-   established it.
+  established it.
 
 **Filename:** `<short-slug>_<random-id>.md`
 
 - **Slug** — From the plan title: lowercase, hyphenated, ASCII, trimmed to about 40
-  characters max.
+characters max.
 - **Random id** — Collision-resistant, Cursor-style: a **UUID v4** without braces, or
-  **16 hexadecimal characters** from a high-entropy source (not a timestamp alone).
+**16 hexadecimal characters** from a high-entropy source (not a timestamp alone).
 
 Example path: `.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f50697.md`
 
@@ -188,18 +207,20 @@ Example path: `.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f
 local-only, they may add `.cursor/plans/` to `.gitignore`. Do **not** edit `.gitignore`
 unless the user asks.
 
-To kick off the executing agent, suggest a prompt like:
+**Kicking off the executing agent**
 
-> "Read `<exact relative path you saved>` and execute the steps in order. Check each step's
-> acceptance criteria before moving to the next."
+- If you **saved a file**, suggest a prompt like:
+  > "Read `<exact relative path you saved>` and execute the steps in order. Check each step's
+  > acceptance criteria before moving to the next."
+- If you delivered via **`CreatePlan`** only, tell the user to use the **confirmed Cursor
+  plan** as the handoff (no second invented path).
 
 For small plans (1–3 steps), pasting directly into chat is fine.
 
-Tell the user:
+**Tell the user** (match the surface you used):
 
-> "Here's the finalized plan, saved to `<exact relative path you saved>`. You can hand
-> this directly to an agent in implementation mode. Want to start executing it now, or
-> save it for later?"
+- **File:** "Here's the finalized plan, saved to `<exact relative path you saved>`. You can hand this directly to an agent in implementation mode. Want to start executing it now, or save it for later?"
+- **IDE plan (`CreatePlan`):** "Here's the finalized plan in the Cursor plan (confirmed via CreatePlan). You can hand this to an agent in implementation mode after you accept it. Want to start executing it now, or refine it first?"
 
 ---
 
@@ -292,6 +313,9 @@ the file, the key, and the value.
 do. Less capable agents will try helpful-but-wrong things without guardrails.
 - **Skipping the review** — The plan review catches 80% of gaps. Never deliver a plan
 without at least one round of user validation via AskQuestion.
+- **Duplicating the plan** — Saving a **new** `.cursor/plans/*.md` while **Cursor Plan mode**
+already owns the doc via **`CreatePlan`** splits the source of truth. Use one surface per
+thread unless the user asks for an export.
 - **Giant steps** — If a step would take more than ~15 minutes to implement, it's too big.
 Break it down.
 
@@ -317,7 +341,9 @@ Break it down.
 > [After answer] Next question: storage (localStorage vs API vs both), again with a
 > recommended default; then theme token approach if still ambiguous.
 
-**Step 4 output:** Save the full artifact to something like
+**Step 4 output:** If **Cursor Plan mode** is active, deliver the full artifact through
+**`CreatePlan`** and revise there after review — do not also mint a new `.cursor/plans/`
+file for the same thread. Otherwise save the full artifact to something like
 `.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f50697.md` (slug + UUID
 or 16 hex chars), then point the user and the executing agent at that exact path.
 
