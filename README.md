@@ -61,6 +61,7 @@ CI runs `validate:strict` on every push and pull request.
 |-------|-------------|-----------|
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Analyze and document codebase architecture with ARCHITECTURE.md files, including entry points, APIs, core modules, and Mermaid diagrams | File system tools (Read, Glob, Grep) |
 | [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author a new skill in this library (frontmatter, workflow, README index, org-specific context when needed) | Read, Write, StrReplace; optional Atlassian MCP |
+| [humanize-text](./skills/humanize-text/SKILL.md) | Rewrite text to remove common AI-output tells (em-dashes, "delve", colon-led impact statements, etc.) while preserving meaning | Read, Write, Edit |
 | [plan-mode](./skills/plan-mode/SKILL.md) | Create structured implementation plans with acceptance criteria that can be handed off to a less capable agent | AskQuestion tool |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | Create a PRD through interview, codebase exploration, and module design, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
