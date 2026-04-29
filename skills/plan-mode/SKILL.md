@@ -1,6 +1,7 @@
 ---
 
 ## name: plan-mode
+
 description: >
   Produce a structured implementation plan before coding. Walk the design tree until
   shared understanding, then output a handoff doc another agent can execute. Use when
@@ -164,12 +165,14 @@ Put the handoff in **one** place. Use the first row that applies; **do not** dup
 same plan in both the IDE plan UI and a **new** `.cursor/plans/*.md` for the same planning
 thread.
 
-| Priority | When | What to do |
-| -------- | ---- | ---------- |
-| 1 | **Cursor Plan mode** is active (e.g. system or developer context says plan mode is on, or you are instructed to use **`CreatePlan`**) | Treat the **IDE plan** as authoritative. Deliver and revise the structured plan through **`CreatePlan`** (including after user feedback). **Do not** create a **new** parallel `.cursor/plans/*.md` unless the user explicitly asks for an extra workspace copy or export. |
-| 2 | The user **@-mentions** a markdown file, gives an explicit path, or asks to use an existing plan document | **Edit that file in place**; iterate there instead of inventing a second filename. |
-| 3 | This conversation **already** established a plan file path | **Keep updating that same path**; do not generate a new slug + random id file. |
-| 4 | Standalone planning **outside** IDE Plan mode, no file bound yet | **Save a new file** (see “Saving to the workspace” below). |
+
+| Priority | When                                                                                                                                  | What to do                                                                                                                                                                                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | **Cursor Plan mode** is active (e.g. system or developer context says plan mode is on, or you are instructed to use `**CreatePlan`**) | Treat the **IDE plan** as authoritative. Deliver and revise the structured plan through `**CreatePlan`** (including after user feedback). **Do not** create a **new** parallel `.cursor/plans/*.md` unless the user explicitly asks for an extra workspace copy or export. |
+| 2        | The user **@-mentions** a markdown file, gives an explicit path, or asks to use an existing plan document                             | **Edit that file in place**; iterate there instead of inventing a second filename.                                                                                                                                                                                         |
+| 3        | This conversation **already** established a plan file path                                                                            | **Keep updating that same path**; do not generate a new slug + random id file.                                                                                                                                                                                             |
+| 4        | Standalone planning **outside** IDE Plan mode, no file bound yet                                                                      | **Save a new file** (see “Saving to the workspace” below).                                                                                                                                                                                                                 |
+
 
 **Claude Code and other tools** without `CreatePlan`: if the user points at an open plan
 file or path, use priority 2 or 3; otherwise use 4.
@@ -212,8 +215,8 @@ unless the user asks.
 - If you **saved a file**, suggest a prompt like:
   > "Read `<exact relative path you saved>` and execute the steps in order. Check each step's
   > acceptance criteria before moving to the next."
-- If you delivered via **`CreatePlan`** only, tell the user to use the **confirmed Cursor
-  plan** as the handoff (no second invented path).
+- If you delivered via `**CreatePlan`** only, tell the user to use the **confirmed Cursor
+plan** as the handoff (no second invented path).
 
 For small plans (1–3 steps), pasting directly into chat is fine.
 
@@ -314,7 +317,7 @@ do. Less capable agents will try helpful-but-wrong things without guardrails.
 - **Skipping the review** — The plan review catches 80% of gaps. Never deliver a plan
 without at least one round of user validation via AskQuestion.
 - **Duplicating the plan** — Saving a **new** `.cursor/plans/*.md` while **Cursor Plan mode**
-already owns the doc via **`CreatePlan`** splits the source of truth. Use one surface per
+already owns the doc via `**CreatePlan`** splits the source of truth. Use one surface per
 thread unless the user asks for an export.
 - **Giant steps** — If a step would take more than ~15 minutes to implement, it's too big.
 Break it down.
@@ -342,7 +345,7 @@ Break it down.
 > recommended default; then theme token approach if still ambiguous.
 
 **Step 4 output:** If **Cursor Plan mode** is active, deliver the full artifact through
-**`CreatePlan`** and revise there after review — do not also mint a new `.cursor/plans/`
+`**CreatePlan`** and revise there after review — do not also mint a new `.cursor/plans/`
 file for the same thread. Otherwise save the full artifact to something like
 `.cursor/plans/dark-mode-settings-page_7c9e2f1a4b3d4068a0b1c2d3e4f50697.md` (slug + UUID
 or 16 hex chars), then point the user and the executing agent at that exact path.
