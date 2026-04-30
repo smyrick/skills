@@ -12,7 +12,7 @@ description: >
 author: Shane Myrick
 license: MIT
 repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
-compatibility: "AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan mode owns the plan; otherwise file handoff. Task tool subagents (explore, generalPurpose) for deep research. Readonly codebase search/read for factual answers."
+compatibility: "AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan mode owns the plan; otherwise file handoff. Task tool subagents (explore, generalPurpose) for deep research. Readonly codebase search/read for factual answers. /multitask (Cursor 3.2+) for async parallel subagents with queue bypass during research and execution phases."
 
 # Plan Mode: Research-Driven Implementation Planning
 
@@ -54,6 +54,11 @@ subagents to explore in parallel, then compact their findings into dense context
 drives better questions and a more grounded plan.
 
 #### 1a. Launch parallel research subagents
+
+**If running in Cursor (3.2+):** Prefix your research delegation with `/multitask`
+to enable async subagent execution and queue bypass. This lets all research agents
+run in parallel without blocking each other or the parent session — maximizing
+throughput on the most time-consuming part of the workflow.
 
 Use the `Task` tool with `subagent_type="explore"` (readonly, fast) to investigate
 multiple areas of the codebase simultaneously. Each subagent should have a focused
@@ -261,6 +266,10 @@ unless the user asks.
   > "Read `<exact relative path you saved>` and execute the plan. For each phase, launch
   > subagents for each step in parallel. Wait for all subagents in a phase to complete
   > and verify acceptance criteria before starting the next phase."
+  >
+  > **In Cursor (3.2+):** Prefix with `/multitask` so phases execute via async subagents
+  > with queue bypass:
+  > `/multitask Read <path> and execute the plan phase by phase, running each phase's steps as parallel subagents.`
 - If you delivered via `**CreatePlan`** only, tell the user to use the **confirmed Cursor
 plan** as the handoff (no second invented path).
 
@@ -289,6 +298,9 @@ each step within a phase in parallel.
 >
 > Each step is self-contained: the subagent only needs to read its own step, not the
 > full plan.
+>
+> **If running in Cursor (3.2+):** Use `/multitask` to run steps within a phase as async
+> subagents with queue bypass for maximum parallelism.
 
 ## Objective
 [1–2 sentences: what we're building and why]
