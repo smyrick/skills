@@ -1,18 +1,15 @@
 ---
-
-## name: research-and-plan
-
-description: >
-  Produce a structured implementation plan through deep research and user collaboration.
-  Use subagents to explore the codebase, gather context, and compact learnings before
-  walking the design tree to shared understanding. Output a handoff artifact structured
-  for an orchestration agent that delegates work to parallel subagents.
-  Use when the user asks to plan, design, architect, or break down work; wants a handoff
-  doc for another agent; is in plan mode; or wants to stress-test a plan before implementation.
+name: research-and-plan
+description: |
+  Produce a structured implementation plan through deep research and user collaboration. Use subagents to explore the codebase, compact findings, and walk the design tree to shared understanding. Output a handoff artifact for an orchestration agent that delegates to parallel subagents. Use when the user asks to plan, design, architect, break down work, create a handoff doc, or stress-test a plan before implementation.
 author: Shane Myrick
 license: MIT
-repository: [https://github.com/smyrick/skills](https://github.com/smyrick/skills)
-compatibility: "AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan mode owns the plan; otherwise file handoff. Task tool subagents (explore, generalPurpose) for deep research. Readonly codebase search/read for factual answers. /multitask (Cursor 3.2+) for async parallel subagents with queue bypass during research and execution phases."
+repository: https://github.com/smyrick/skills
+compatibility: AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan
+  mode owns the plan; otherwise file handoff. Task tool subagents (explore, generalPurpose) for deep
+  research. Readonly codebase search/read for factual answers. /multitask (Cursor 3.2+) for async
+  parallel subagents with queue bypass during research and execution phases.
+---
 
 # Plan Mode: Research-Driven Implementation Planning
 
@@ -508,4 +505,3 @@ pattern used by the notification toggle in the same file.
 / Dark) that calls `setTheme`. Place it as the first section on the page.
 ...
 ```
-

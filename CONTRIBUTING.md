@@ -116,11 +116,11 @@ From the repository root:
 
 ```bash
 npm install
-npm run validate
-npm run validate:strict
+npm run format
+npm run check
 ```
 
-Fix any reported errors before committing. CI runs `validate:strict` on push and pull requests.
+Fix any reported errors before committing. CI runs `npm run check` on push and pull requests.
 
 ### 8. Review checklist before committing
 
@@ -128,11 +128,12 @@ Fix any reported errors before committing. CI runs `validate:strict` on push and
 - [ ] `description` is 20–500 characters and states when to use the skill (specific trigger phrases or request types)
 - [ ] Workflow steps are numbered and tool calls include full parameters
 - [ ] Tenant- or org-specific constants (cloud IDs, project keys) are spelled out in the skill where needed — don't rely on chat context
-- [ ] `author`, `license`, and `repository` are set (required for `validate:strict`)
+- [ ] `author`, `license`, and `repository` are set
 - [ ] README.md skill index is updated
 - [ ] Folder name matches `name` in frontmatter
 - [ ] No placeholder text left from the scaffold or draft
-- [ ] `npm run validate:strict` passes
+- [ ] `npm run format` has been applied
+- [ ] `npm run check` passes
 - [ ] Main `SKILL.md` aims for brevity (guideline: ~500 lines or less when practical; longer OK if justified); depth is in linked files where appropriate
 
 ---

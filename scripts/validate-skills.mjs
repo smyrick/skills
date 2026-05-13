@@ -11,11 +11,13 @@ import YAML from "yaml";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const skillsDir = path.join(repoRoot, "skills");
+const readmePath = path.join(repoRoot, "README.md");
 
-const strict = process.argv.includes("--strict");
 const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const URL_RE = /^https?:\/\/\S+$/;
 const DESC_MIN = 20;
 const DESC_MAX = 500;
+const REQUIRED_STRING_FIELDS = ["name", "description", "author", "license", "repository", "compatibility"];
 
 function listSkillFiles() {
   if (!fs.existsSync(skillsDir)) {
@@ -52,29 +54,36 @@ function parseFrontmatter(content) {
   }
 }
 
+function validateStringField(doc, field, errors) {
+  if (typeof doc[field] !== "string" || !doc[field].trim()) {
+    errors.push(`Missing or invalid \`${field}\` (non-empty string required)`);
+  }
+}
+
 function checkSkill(filePath) {
   const rel = path.relative(repoRoot, filePath);
   const errors = [];
-  const warnings = [];
 
   let content;
   try {
     content = fs.readFileSync(filePath, "utf8");
   } catch (e) {
-    return { rel, errors: [`Cannot read file: ${e.message}`], warnings };
+    return { rel, errors: [`Cannot read file: ${e.message}`] };
   }
 
   const parsed = parseFrontmatter(content);
   if (parsed.error) {
     errors.push(parsed.error);
-    return { rel, errors, warnings };
+    return { rel, errors };
   }
 
   const { doc } = parsed;
+  for (const field of REQUIRED_STRING_FIELDS) {
+    validateStringField(doc, field, errors);
+  }
+
   const name = doc.name;
-  if (typeof name !== "string" || !name.trim()) {
-    errors.push("Missing or invalid `name` (non-empty string required)");
-  } else {
+  if (typeof name === "string" && name.trim()) {
     if (name.length < 1 || name.length > 64) {
       errors.push(`\`name\` length must be 1–64 (got ${name.length})`);
     }
@@ -100,24 +109,44 @@ function checkSkill(filePath) {
     }
   }
 
-  const compat = doc.compatibility;
-  if (typeof compat !== "string" || !compat.trim()) {
-    errors.push("Missing or invalid `compatibility` (non-empty string required)");
+  if (typeof doc.repository === "string" && !URL_RE.test(doc.repository.trim())) {
+    errors.push("`repository` must be a plain http(s) URL string");
   }
 
-  if (strict) {
-    if (typeof doc.author !== "string" || !doc.author.trim()) {
-      warnings.push("Missing recommended `author` (non-empty string)");
+  return { rel, errors };
+}
+
+function readSkillIndexLinks() {
+  if (!fs.existsSync(readmePath)) {
+    return { errors: ["README.md is missing"], links: new Set() };
+  }
+
+  const readme = fs.readFileSync(readmePath, "utf8");
+  const links = new Set(
+    [...readme.matchAll(/\]\(\.\/skills\/([^/)]+)\/SKILL\.md\)/g)].map((match) => match[1]),
+  );
+  return { errors: [], links };
+}
+
+function checkReadmeIndex(skillFiles) {
+  const errors = [];
+  const folders = skillFiles.map((filePath) => path.basename(path.dirname(filePath)));
+  const { errors: readmeErrors, links } = readSkillIndexLinks();
+  errors.push(...readmeErrors);
+  if (readmeErrors.length > 0) return { rel: "README.md", errors };
+
+  for (const folder of folders) {
+    if (!links.has(folder)) {
+      errors.push(`Skill index is missing ./skills/${folder}/SKILL.md`);
     }
-    if (typeof doc.license !== "string" || !doc.license.trim()) {
-      warnings.push("Missing recommended `license` (e.g. SPDX id: MIT)");
-    }
-    if (doc.repository != null && typeof doc.repository !== "string") {
-      warnings.push("`repository` should be a string URL if set");
+  }
+  for (const link of links) {
+    if (!folders.includes(link)) {
+      errors.push(`Skill index references missing skill ./skills/${link}/SKILL.md`);
     }
   }
 
-  return { rel, errors, warnings };
+  return { rel: "README.md", errors };
 }
 
 function main() {
@@ -128,18 +157,13 @@ function main() {
   }
 
   let errorCount = 0;
-  let warnCount = 0;
 
-  for (const file of files) {
-    const { rel, errors, warnings } = checkSkill(file);
+  for (const result of [...files.map(checkSkill), checkReadmeIndex(files)]) {
+    const { rel, errors } = result;
     const parts = [];
     if (errors.length) {
       errorCount += errors.length;
       parts.push(...errors.map((m) => `  error: ${m}`));
-    }
-    if (strict && warnings.length) {
-      warnCount += warnings.length;
-      parts.push(...warnings.map((m) => `  warning: ${m}`));
     }
     if (parts.length) {
       console.log(`${rel}`);
@@ -150,15 +174,11 @@ function main() {
   }
 
   console.log("");
-  if (strict && warnCount > 0) {
-    console.log(`Strict mode: ${warnCount} warning(s) treated as failure.`);
-    process.exit(1);
-  }
   if (errorCount > 0) {
     console.log(`Failed: ${errorCount} error(s).`);
     process.exit(1);
   }
-  console.log(`All ${files.length} skill(s) passed.`);
+  console.log(`All ${files.length} skill(s) and README index passed.`);
 }
 
 main();

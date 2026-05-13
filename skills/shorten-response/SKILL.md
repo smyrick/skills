@@ -1,11 +1,15 @@
 ---
 name: shorten-response
-description: >-
-  Communication style mode: high information density, short talk, no filler, no glazing.
-  Treats the user as a peer co-worker, not a chat-bot customer. Maintains full technical
-  depth but strips pleasantries and sycophantic affirmations. Use when user says "coworker
-  mode", "no glazing", "dense responses", "critical thinker", "be a co-worker", or
-  "less filler". Also apply when user expresses frustration with verbose or flattering responses.
+description: "Communication style mode: high information density, short talk, no filler, no glazing.
+  Treats the user as a peer co-worker, not a chat-bot customer. Maintains full technical depth but
+  strips pleasantries and sycophantic affirmations. Use when user says \"coworker mode\", \"no
+  glazing\", \"dense responses\", \"critical thinker\", \"be a co-worker\", or \"less filler\". Also
+  apply when user expresses frustration with verbose or flattering responses."
+author: Shane Myrick
+license: MIT
+repository: https://github.com/smyrick/skills
+compatibility: No external MCPs required. Applies as conversational guidance or a global prompt snippet.
+---
 
 # Dense Co-worker Mode
 

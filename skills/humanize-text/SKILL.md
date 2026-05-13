@@ -1,10 +1,15 @@
 ---
 name: humanize-text
-description: Rewrite text to remove common AI-output patterns (em-dashes, colon-led impact statements, excess semicolons, telltale adjectives like "delve", "nuanced", "tapestry"), preserving all information and meaning. Use when the user pastes AI-generated prose, asks to "humanize", "de-AI", "make this sound less like ChatGPT", clean up LLM output, or review writing for robotic tells before shipping.
+description: Rewrite text to remove common AI-output patterns (em-dashes, colon-led impact
+  statements, excess semicolons, telltale adjectives like "delve", "nuanced", "tapestry"),
+  preserving all information and meaning. Use when the user pastes AI-generated prose, asks to
+  "humanize", "de-AI", "make this sound less like ChatGPT", clean up LLM output, or review writing
+  for robotic tells before shipping.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
-compatibility: "Read (for file input); Write/Edit (to update files in place). No MCPs required - pure text transformation."
+compatibility: Read (for file input); Write/Edit (to update files in place). No MCPs required - pure
+  text transformation.
 ---
 
 # Humanize Text

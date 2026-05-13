@@ -1,10 +1,12 @@
 ---
 name: write-a-prd
-description: Create a PRD through user interview, codebase exploration, and module design, then submit as a GitHub issue. Use when user wants to write a PRD, create a product requirements document, or plan a new feature.
+description: Create a PRD through user interview, codebase exploration, and module design, then
+  submit as a GitHub issue. Use when user wants to write a PRD, create a product requirements
+  document, or plan a new feature.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
-compatibility: "Read, Glob, Grep; GitHub (issues) or equivalent for submitting the PRD."
+compatibility: Read, Glob, Grep; GitHub (issues) or equivalent for submitting the PRD.
 ---
 
 This skill will be invoked when the user wants to create a PRD. You may skip steps if you don't consider them necessary.
@@ -69,4 +71,3 @@ A description of the things that are out of scope for this PRD.
 ## Further Notes
 
 Any further notes about the feature.
-

@@ -38,20 +38,21 @@ List skills without installing: `npx skills add smyrick/skills --list`. The depr
 
 ## Validate
 
-From the repository root, check that every `skills/*/SKILL.md` has valid frontmatter (`name`, `description`, `compatibility`):
+From the repository root, format and check every `skills/*/SKILL.md`:
 
 ```bash
 npm install
-npm run validate
+npm run format
+npm run check
 ```
 
-For stricter checks (recommended before opening a PR), including optional metadata:
+To check without writing changes:
 
 ```bash
-npm run validate:strict
+npm run format:check
 ```
 
-CI runs `validate:strict` on every push and pull request.
+CI runs `npm run check` on every push and pull request.
 
 ---
 
@@ -62,7 +63,8 @@ CI runs `validate:strict` on every push and pull request.
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Analyze and document codebase architecture with ARCHITECTURE.md files, including entry points, APIs, core modules, and Mermaid diagrams | File system tools (Read, Glob, Grep) |
 | [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author a new skill in this library (frontmatter, workflow, README index, org-specific context when needed) | Read, Write, StrReplace; optional Atlassian MCP |
 | [humanize-text](./skills/humanize-text/SKILL.md) | Rewrite text to remove common AI-output tells (em-dashes, "delve", colon-led impact statements, etc.) while preserving meaning | Read, Write, Edit |
-| [plan-mode](./skills/plan-mode/SKILL.md) | Create structured implementation plans with acceptance criteria that can be handed off to a less capable agent | AskQuestion tool |
+| [research-and-plan](./skills/research-and-plan/SKILL.md) | Create structured implementation plans through deep research, user collaboration, and parallel subagent handoff | AskQuestion, CreatePlan, Task subagents |
+| [shorten-response](./skills/shorten-response/SKILL.md) | Switch responses into dense co-worker mode: short, critical, low-filler communication without reducing technical depth | Conversational guidance |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | Create a PRD through interview, codebase exploration, and module design, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
 ---
@@ -75,7 +77,7 @@ Skills in this repo are installed at `~/.skills/skills/` on your machine. Once i
 
 If you want to point Claude to a skill by name:
 
-> "Use the plan-mode skill to plan this feature before we implement it"
+> "Use the research-and-plan skill to plan this feature before we implement it"
 
 ### As a Reference
 
@@ -89,7 +91,8 @@ Any agent with access to this repo can read a `SKILL.md` directly and follow its
 README.md                        ← You are here
 CONTRIBUTING.md                  ← How to add or improve skills
 package.json                     ← npm run add-skill → scaffolds under skills/
-scripts/validate-skills.mjs      ← npm run validate / validate:strict
+scripts/format-skills.mjs        ← npm run format / format:check
+scripts/validate-skills.mjs      ← npm run validate
 skills/
   <skill-name>/
     SKILL.md                     ← The skill itself (agent-readable instructions)
