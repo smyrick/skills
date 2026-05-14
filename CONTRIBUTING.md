@@ -41,7 +41,7 @@ npm run add-skill -- <your-skill-name>
 
 That runs `npx skills init` inside `skills/` and creates `skills/<your-skill-name>/SKILL.md`. Replace the generated stub with real content.
 
-**Authoring guide:** follow the agent workflow in [`skills/create-a-skill/SKILL.md`](./skills/create-a-skill/SKILL.md) (requirements, frontmatter, tool precision, README index). It encodes the same rules as this document for agents executing on your behalf.
+**Authoring guide:** follow [AGENTS.md](./AGENTS.md) and the checks in `scripts/validate-skills.mjs` (required frontmatter fields, `description` length 20–500, `name` matching the folder, plain `repository` URL, README Skill Index in sync). For general Cursor skill shape, see the [Agent Skills specification](https://agentskills.io/specification).
 
 ### 3. Fill in the frontmatter
 
@@ -85,7 +85,7 @@ After the frontmatter, write the skill body in Markdown. A good skill includes:
 - `## Common Pitfalls` — things that go wrong and how to avoid them
 - `## Quick Reference` — constants, IDs, or lookup tables the agent will need mid-workflow
 
-**Length (guideline):** Keep the main `SKILL.md` dense—about **~500 lines or fewer** when practical (a **suggestion**, not a limit). Longer is acceptable when the workflow needs it. Prefer tight, high-signal prose and move long reference or examples to linked files (`REFERENCE.md`, `EXAMPLES.md`, `scripts/`) as described in [create-a-skill](./skills/create-a-skill/SKILL.md).
+**Length (guideline):** Keep the main `SKILL.md` dense—about **~500 lines or fewer** when practical (a **suggestion**, not a limit). Longer is acceptable when the workflow needs it. Prefer tight, high-signal prose and move long reference or examples to linked files (`REFERENCE.md`, `EXAMPLES.md`, `scripts/`) one level deep from `SKILL.md`.
 
 ### 5. Be precise about tool calls
 

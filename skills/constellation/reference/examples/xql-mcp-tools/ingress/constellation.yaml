@@ -1,7 +1,0 @@
-name: ingress
-type: ingress@1
-dependencies:
-  ../virtual-mcp:
-    route:
-      path: /mcp
-      strategy: prefix

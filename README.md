@@ -60,20 +60,10 @@ CI runs `npm run check` on every push and pull request.
 
 | Skill | Description | Key Tools |
 |-------|-------------|-----------|
-| [apollo-connectors](./skills/apollo-connectors/SKILL.md) | Integrate REST APIs into GraphQL supergraphs with Apollo Connectors (`@source`, `@connect`) | Bash(rover), Read, Write, Edit, Glob, Grep |
-| [apollo-federation](./skills/apollo-federation/SKILL.md) | Author Federation subgraph schemas, entities, directives, and troubleshoot composition | Bash(rover), Read, Write, Edit, Glob, Grep |
-| [apollo-router](./skills/apollo-router/SKILL.md) | Configure and run Apollo Router (v1/v2 YAML), plugins, telemetry, troubleshooting | Bash(router, rover, curl, docker), Read, Write, Edit, Glob, Grep |
-| [caveman](./skills/caveman/SKILL.md) | Ultra-compressed "caveman" communication mode with intensity levels | Conversational guidance |
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Document codebase architecture with ARCHITECTURE.md, entry points, APIs, modules, Mermaid | Read, Glob, Grep |
-| [constellation](./skills/constellation/SKILL.md) | Manage, orchestrate, and protect APIs with constellation (see skill reference links) | Read; constellation CLI per docs |
-| [create-a-skill](./skills/create-a-skill/SKILL.md) | Scaffold and author Cursor Agent Skills (frontmatter, workflow, structure) | Read, Write, StrReplace |
-| [find-skills](./skills/find-skills/SKILL.md) | Discover and install agent skills from the ecosystem | Read; skills CLI |
-| [frontend-slides](./skills/frontend-slides/SKILL.md) | HTML presentations and PPT/PPTX-to-web slides with rich animation | Read, Write, Edit |
 | [humanize-text](./skills/humanize-text/SKILL.md) | Strip AI-output tells while preserving meaning ("humanize", de-AI prose) | Read, Write, Edit |
 | [product-summary](./skills/product-summary/SKILL.md) | Nestable PRODUCT_TERMS.md glossaries (YAML terms); challenges fuzzy language, scenarios, code drift | Read, Glob, Grep; AskQuestion |
 | [research-and-plan](./skills/research-and-plan/SKILL.md) | Research-driven implementation plans, design tree, parallel subagent handoff | AskQuestion, CreatePlan, Task subagents |
-| [rover](./skills/rover/SKILL.md) | Apollo Rover CLI: publish, compose, dev, check, lint, auth | Bash(rover, npm, npx), Read, Write, Edit, Glob, Grep |
-| [rust-best-practices](./skills/rust-best-practices/SKILL.md) | Idiomatic Rust patterns, ownership, errors, performance, tests (Apollo handbook style) | Bash(cargo, rustc, rustfmt, clippy), Read, Write, Edit, Glob, Grep |
 | [shorten-response](./skills/shorten-response/SKILL.md) | Dense co-worker mode: high signal, low filler, no glazing | Conversational guidance |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | PRD via interview and exploration, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
@@ -106,8 +96,8 @@ scripts/validate-skills.mjs      ← npm run validate
 skills/
   <skill-name>/
     SKILL.md                     ← The skill itself (agent-readable instructions)
-  create-a-skill/
-    SKILL.md                     ← Skill that guides authoring new skills
+  codebase-summary/
+    SKILL.md                     ← Example: architecture documentation skill
 ```
 
 Skills are organized as one folder per skill. The folder name is the skill's ID — use lowercase, hyphenated names (e.g., `customer-qbr-prep`, `slack-deal-summary`).

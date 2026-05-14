@@ -1,4 +1,0 @@
-name: virtual-mcp
-type: virtual-mcp@1
-dependencies:
-  ../xql: {}
