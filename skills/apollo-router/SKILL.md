@@ -1,18 +1,14 @@
 ---
 name: apollo-router
-description: >
-  Version-aware guide for configuring and running Apollo Router for federated GraphQL supergraphs.
-  Generates correct YAML for both Router v1.x and v2.x. Use this skill when:
-  (1) setting up Apollo Router to run a supergraph,
-  (2) configuring routing, headers, or CORS,
-  (3) implementing custom plugins (Rhai scripts or coprocessors),
-  (4) configuring telemetry (tracing, metrics, logging),
-  (5) troubleshooting Router performance or connectivity issues.
+description: |
+  Version-aware guide for configuring and running Apollo Router for federated GraphQL supergraphs. Generates correct YAML for both Router v1.x and v2.x. Use this skill when: (1) setting up Apollo Router to run a supergraph, (2) configuring routing, headers, or CORS, (3) implementing custom plugins (Rhai scripts or coprocessors), (4) configuring telemetry (tracing, metrics, logging), (5) troubleshooting Router performance or connectivity issues.
+author: Shane Myrick
 license: MIT
+repository: https://github.com/smyrick/skills
 compatibility: Linux/macOS/Windows. Requires a composed supergraph schema from Rover or GraphOS.
 metadata:
   author: apollographql
-  version: "2.2.1"
+  version: 2.2.1
 allowed-tools: Bash(router:*) Bash(./router:*) Bash(rover:*) Bash(curl:*) Bash(docker:*) Read Write Edit Glob Grep
 ---
 

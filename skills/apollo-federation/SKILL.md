@@ -1,18 +1,14 @@
 ---
 name: apollo-federation
-description: >
-  Guide for authoring Apollo Federation subgraph schemas. Use this skill when:
-  (1) creating new subgraph schemas for a federated supergraph,
-  (2) defining or modifying entities with @key,
-  (3) sharing types/fields across subgraphs with @shareable,
-  (4) working with federation directives (@external, @requires, @provides, @override, @inaccessible),
-  (5) troubleshooting composition errors,
-  (6) any task involving federation schema design patterns.
+description: |
+  Guide for authoring Apollo Federation subgraph schemas. Use this skill when: (1) creating new subgraph schemas for a federated supergraph, (2) defining or modifying entities with @key, (3) sharing types/fields across subgraphs with @shareable, (4) working with federation directives (@external, @requires, @provides, @override, @inaccessible), (5) troubleshooting composition errors, (6) any task involving federation schema design patterns.
+author: Shane Myrick
 license: MIT
+repository: https://github.com/smyrick/skills
 compatibility: Works with any Federation 2.x compatible subgraph library (Apollo Server, GraphQL Yoga, etc.)
 metadata:
   author: apollographql
-  version: "1.0.0"
+  version: 1.0.0
 allowed-tools: Bash(rover:*) Read Write Edit Glob Grep
 ---
 

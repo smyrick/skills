@@ -1,12 +1,9 @@
 ---
-name: create-a-skill
-description: Create Cursor Agent Skills. Use when authoring a new skill or asking about SKILL.md structure.
-author: Shane Myrick
-license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: Cursor agent skills. No external MCPs required.
+name: create-skill
+description: >-
+  Create Cursor Agent Skills. Use when authoring a new skill or asking about
+  SKILL.md structure.
 ---
-
 # Creating Skills in Cursor
 
 This skill guides you through creating effective Agent Skills for Cursor. Skills are markdown files that teach the agent how to perform specific tasks: reviewing PRs using team standards, generating commit messages in a preferred format, querying database schemas, or any specialized workflow.
