@@ -1,0 +1,163 @@
+{
+  "$id": "common.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Common Definitions",
+  "description": "Shared definitions used across all constellation component types. See [components](../components.md) for an overview.",
+  "$defs": {
+    "dependency": {
+      "oneOf": [
+        { "type": "string", "description": "Version string; latest if omitted" },
+        { "$ref": "#/$defs/dependencyObject" }
+      ]
+    },
+    "dependencyObject": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Pinned version; latest if omitted"
+        },
+        "route": { "$ref": "#/$defs/route" },
+        "cors": { "$ref": "#/$defs/cors" },
+        "namespace": {
+          "type": "string",
+          "description": "Logical namespace for composition layers"
+        }
+      },
+      "additionalProperties": false
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "HTTP path prefix (e.g. /graphql, /api/v1)"
+        },
+        "strategy": {
+          "type": "string",
+          "enum": ["prefix", "exact"],
+          "default": "prefix",
+          "description": "Path matching strategy"
+        }
+      },
+      "required": ["path"],
+      "additionalProperties": false
+    },
+    "cors": {
+      "type": "object",
+      "properties": {
+        "allowOrigin": {
+          "type": "string",
+          "description": "Access-Control-Allow-Origin value. Can be \"*\" or a specific origin."
+        }
+      },
+      "required": ["allowOrigin"],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["git", "introspected", "graphos"]
+        },
+        "url": {
+          "type": "string",
+          "description": "Origin URL of the component"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "sourceFiles": {
+      "type": "object",
+      "description": "Map of filename to file content",
+      "additionalProperties": { "type": "string" }
+    },
+    "buildMeta": {
+      "type": "object",
+      "description": "Pre-computed type-specific build data",
+      "additionalProperties": true
+    },
+    "baseComponent": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Qualified component name (e.g. @acme/ingress)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable display name"
+        },
+        "version": {
+          "type": "string",
+          "description": "Semantic version; auto-assigned if omitted"
+        },
+        "description": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Team or individual responsible"
+        },
+        "source": { "$ref": "#/$defs/source" },
+        "manifest": {
+          "type": "string",
+          "description": "Raw constellation.yaml for round-tripping"
+        },
+        "workspacePath": {
+          "type": "string",
+          "description": "Path within workspace for relative resolution"
+        }
+      },
+      "required": ["name"]
+    },
+    "oauthAuth": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "oauth" },
+        "authorizationServerUrl": {
+          "type": "string",
+          "description": "OAuth AS URL; uses RFC 9728 discovery if omitted. Supports ${VAR}."
+        },
+        "scopes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "clientId": {
+          "type": "string",
+          "description": "Supports ${VAR} expansion"
+        },
+        "clientSecret": {
+          "type": "string",
+          "description": "Supports ${VAR} expansion"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "apiKeyAuth": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "api-key" },
+        "headerName": {
+          "type": "string",
+          "description": "HTTP header name for the API key"
+        },
+        "key": {
+          "type": "string",
+          "description": "API key value. Supports ${VAR} expansion."
+        }
+      },
+      "required": ["type", "headerName", "key"],
+      "additionalProperties": false
+    },
+    "auth": {
+      "oneOf": [
+        { "$ref": "#/$defs/oauthAuth" },
+        { "$ref": "#/$defs/apiKeyAuth" }
+      ]
+    }
+  }
+}

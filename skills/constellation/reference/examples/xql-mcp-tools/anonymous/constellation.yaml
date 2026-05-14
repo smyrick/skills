@@ -1,0 +1,6 @@
+name: anonymous
+type: client@1
+config:
+  match: {}
+allowedRoutes:
+  - "*"

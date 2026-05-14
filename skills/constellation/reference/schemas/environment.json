@@ -1,0 +1,48 @@
+{
+  "$id": "environment.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "environment@1",
+  "description": "Root of a component graph representing a deployment environment. See [components](../components.md#environment).",
+  "allOf": [{ "$ref": "common.json#/$defs/baseComponent" }],
+  "properties": {
+    "name": true,
+    "title": true,
+    "version": true,
+    "description": true,
+    "owner": true,
+    "source": true,
+    "manifest": true,
+    "workspacePath": true,
+    "type": {
+      "const": "environment@1"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "forkedFrom": {
+          "type": "string",
+          "description": "Name of parent environment if forked"
+        },
+        "allowsSnapshots": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow non-release versions"
+        },
+        "vars": {
+          "type": "object",
+          "description": "Environment variables passed to runtime. Values support ${VAR} and ${VAR:-default} syntax.",
+          "additionalProperties": { "type": "string" },
+          "default": {}
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": { "$ref": "common.json#/$defs/dependency" }
+    },
+    "sourceFiles": { "$ref": "common.json#/$defs/sourceFiles" }
+  },
+  "required": ["name", "type"],
+  "additionalProperties": false
+}

@@ -1,0 +1,43 @@
+{
+  "$id": "graphql.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "graphql@1",
+  "description": "GraphQL data source proxy. See [components](../components.md#graphql).",
+  "allOf": [{ "$ref": "common.json#/$defs/baseComponent" }],
+  "properties": {
+    "name": true,
+    "title": true,
+    "version": true,
+    "description": true,
+    "owner": true,
+    "source": true,
+    "manifest": true,
+    "workspacePath": true,
+    "type": {
+      "const": "graphql@1"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Upstream GraphQL endpoint URL. Supports ${VAR} expansion."
+        },
+        "headers": {
+          "type": "object",
+          "description": "Custom headers sent to upstream. Supports ${VAR} expansion.",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["url"],
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": { "$ref": "common.json#/$defs/dependency" }
+    },
+    "sourceFiles": { "$ref": "common.json#/$defs/sourceFiles" }
+  },
+  "required": ["name", "type", "config"],
+  "additionalProperties": false
+}

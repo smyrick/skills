@@ -1,0 +1,7 @@
+name: xql
+type: xql@1
+config:
+  codeMode: false
+dependencies:
+  ../products-graphql:
+    namespace: products

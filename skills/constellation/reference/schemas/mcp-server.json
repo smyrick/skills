@@ -1,0 +1,74 @@
+{
+  "$id": "mcp-server.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mcp-server@1",
+  "description": "MCP server proxy/connector. Can be aggregated by [virtual-mcp](virtual-mcp.json). See [components](../components.md#mcp-server).",
+  "allOf": [{ "$ref": "common.json#/$defs/baseComponent" }],
+  "properties": {
+    "name": true,
+    "title": true,
+    "version": true,
+    "description": true,
+    "owner": true,
+    "source": true,
+    "manifest": true,
+    "workspacePath": true,
+    "type": {
+      "const": "mcp-server@1"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Upstream MCP server URL (for sse/streamable-http transports). Supports ${VAR} expansion."
+        },
+        "transport": {
+          "type": "string",
+          "enum": ["stdio", "sse", "streamable-http"],
+          "description": "MCP transport type"
+        },
+        "command": {
+          "type": "string",
+          "description": "Command to run (stdio transport only)"
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Arguments for command (stdio transport only)"
+        },
+        "auth": {
+          "$ref": "common.json#/$defs/auth",
+          "description": "Authentication configuration (OAuth or API key)"
+        }
+      },
+      "required": ["transport"],
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": { "$ref": "common.json#/$defs/dependency" }
+    },
+    "sourceFiles": { "$ref": "common.json#/$defs/sourceFiles" },
+    "buildMeta": {
+      "type": "object",
+      "properties": {
+        "toolDescriptors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "parameters": { "type": "object" }
+            },
+            "required": ["name"]
+          },
+          "description": "Available MCP tools discovered at build time"
+        }
+      }
+    }
+  },
+  "required": ["name", "type", "config"],
+  "additionalProperties": false
+}

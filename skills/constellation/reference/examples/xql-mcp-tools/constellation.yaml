@@ -1,0 +1,9 @@
+name: dev
+type: environment@1
+config:
+  allowsSnapshots: true
+  vars:
+    ENVIRONMENT: dev
+dependencies:
+  ./ingress: {}
+  ./anonymous: {}

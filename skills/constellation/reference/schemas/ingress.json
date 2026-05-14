@@ -1,0 +1,51 @@
+{
+  "$id": "ingress.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ingress@1",
+  "description": "HTTP gateway/router for incoming requests. Routes to downstream components via [dependencies](common.json). See [components](../components.md#ingress).",
+  "allOf": [{ "$ref": "common.json#/$defs/baseComponent" }],
+  "properties": {
+    "name": true,
+    "title": true,
+    "version": true,
+    "description": true,
+    "owner": true,
+    "source": true,
+    "manifest": true,
+    "workspacePath": true,
+    "type": {
+      "const": "ingress@1"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+          "description": "Listen hostname"
+        },
+        "basePath": {
+          "type": "string",
+          "description": "Base path for routing"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "Routes to downstream components. Each dependency should include a route.",
+      "additionalProperties": { "$ref": "common.json#/$defs/dependency" }
+    },
+    "sourceFiles": { "$ref": "common.json#/$defs/sourceFiles" },
+    "buildMeta": {
+      "type": "object",
+      "properties": {
+        "sortedRoutes": {
+          "type": "array",
+          "description": "Topologically sorted routing table (computed at build time)"
+        }
+      }
+    }
+  },
+  "required": ["name", "type"],
+  "additionalProperties": false
+}

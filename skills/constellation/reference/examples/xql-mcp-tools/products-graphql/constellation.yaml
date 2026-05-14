@@ -1,0 +1,4 @@
+name: products-graphql
+type: graphql@1
+config:
+  url: http://localhost:51101/graphql
