@@ -62,6 +62,7 @@ CI runs `npm run check` on every push and pull request.
 |-------|-------------|-----------|
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Document codebase architecture with ARCHITECTURE.md, entry points, APIs, modules, Mermaid | Read, Glob, Grep |
 | [humanize-text](./skills/humanize-text/SKILL.md) | Strip AI-output tells while preserving meaning ("humanize", de-AI prose) | Read, Write, Edit |
+| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | Research and plan non-code decisions (purchases, trips, evaluations) with subagent research | AskQuestion, Task subagents |
 | [product-summary](./skills/product-summary/SKILL.md) | Nestable PRODUCT_TERMS.md glossaries (YAML terms); challenges fuzzy language, scenarios, code drift | Read, Glob, Grep; AskQuestion |
 | [research-and-plan](./skills/research-and-plan/SKILL.md) | Research-driven implementation plans, design tree, parallel subagent handoff | AskQuestion, CreatePlan, Task subagents |
 | [shorten-response](./skills/shorten-response/SKILL.md) | Dense co-worker mode: high signal, low filler, no glazing | Conversational guidance |
