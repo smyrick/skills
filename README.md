@@ -60,7 +60,7 @@ CI runs `npm run check` on every push and pull request.
 
 | Skill | Description | Key Tools |
 |-------|-------------|-----------|
-| [codebase-summary](./skills/codebase-summary/SKILL.md) | Document codebase architecture with ARCHITECTURE.md, entry points, APIs, modules, Mermaid | Read, Glob, Grep |
+| [codebase-summary](./skills/codebase-summary/SKILL.md) | Self-contained ARCHITECTURE.html with entry points, APIs, modules, inline SVG diagrams | Read, Glob, Grep |
 | [humanize-text](./skills/humanize-text/SKILL.md) | Strip AI-output tells while preserving meaning ("humanize", de-AI prose) | Read, Write, Edit |
 | [mock-interview](./skills/mock-interview/SKILL.md) | Run source-grounded mock interviews for technical roles with evidence-based scoring and session notes | File read/search, optional web research, optional subagents |
 | [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | Research and plan non-code decisions (purchases, trips, evaluations) with subagent research | AskQuestion, Task subagents |

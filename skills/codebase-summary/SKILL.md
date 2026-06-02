@@ -1,7 +1,7 @@
 ---
 name: codebase-summary
 description: |
-  Document or explore a codebase's architecture. Use when the user asks to summarize the codebase, create an architecture doc, explain structure, or understand entry points, APIs, and core modules. Reads existing ARCHITECTURE.md or helps create one with Mermaid.
+  Document or explore a codebase's architecture. Use when the user asks to summarize the codebase, create an architecture doc, explain structure, or understand entry points, APIs, and core modules. Produces a self-contained ARCHITECTURE.html with inline SVG diagrams; Markdown only on request.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
@@ -10,18 +10,58 @@ compatibility: File system access (Read, Glob, Grep tools). No external MCPs req
 
 # Codebase Summary: Architecture Documentation and Visualization
 
-A skill for analyzing a codebase and producing comprehensive architecture documentation
-for both humans and AI agents. Generates ARCHITECTURE.md files with text descriptions
-and Mermaid diagrams showing structure, entry points, APIs, and core modules.
+A skill for analyzing a codebase and producing architecture documentation for both
+humans and AI agents. The primary deliverable is a **self-contained** `ARCHITECTURE.html`
+file: inline CSS, hand-authored inline SVG diagrams, and light inline JavaScript (sticky
+TOC, collapsible sections, styled tables). Produce Markdown only when the user explicitly asks.
+
+**Default to a small, focused file.** Detail is controlled by a 1–5 scale; the default is
+**level 2** (concise overview, minimal diagrams). Scale up only when the user asks. Always
+offer to confirm the detail level and the color theme before writing (see
+[Output preferences](#output-preferences-detail-level-and-theme)).
 
 ## When to use this skill
 
 - User asks to "summarize the codebase" or "understand the project structure"
-- User wants to create or update an ARCHITECTURE.md file
+- User wants to create or update architecture documentation (`ARCHITECTURE.html`)
 - User says "document the architecture" or "explain how this codebase is organized"
+- User asks for an **HTML architecture overview**, **shareable artifact**, or **HTML explainer**
 - User is onboarding to a new project and needs a structural overview
 - User wants to visualize the codebase with diagrams
 - User asks "what are the entry points" or "where does the code start"
+
+---
+
+## Output preferences (detail level and theme)
+
+Before writing the artifact, confirm two preferences with the user. Default to the
+smallest useful output and only expand on request.
+
+### Detail level (1–5, default 2)
+
+Smaller is better unless the user wants depth. Map the level to scope, sections, and
+diagrams so the file stays proportional:
+
+
+| Level | Size target        | Scope                                                                                              |
+| ----- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| 1     | Tiny (~1 screen)   | Overview + entry points + 1 high-level SVG diagram. No tables.                                      |
+| **2 (default)** | Small  | Overview, project type, entry points, core-module table, 1 diagram (high-level). Concise prose.     |
+| 3     | Medium             | Level 2 + interfaces, data layer, 2 diagrams (high-level + request flow), short per-module notes.   |
+| 4     | Large              | Level 3 + module dependencies diagram, config, testing, common patterns, collapsible module detail. |
+| 5     | Comprehensive      | All sections fully populated, 3+ diagrams, per-module exports/deps, glossary, build/deploy.          |
+
+
+Ask: **"What detail level do you want (1–5)? Default is 2 — a small, focused file. Higher
+means more sections and diagrams."** Honor an explicit level the user already gave.
+
+### Color theme
+
+Ask: **"Any color theme or branding I should follow (e.g. brand hex colors, a named
+palette, or match an existing site)? Otherwise I'll use a neutral light/dark-adaptive
+theme."** If the user provides colors, map them onto the CSS variables in Step 8
+(`--accent`, `--bg`, `--fg`, `--border`, `--code`) and keep contrast legible in both
+light and dark. If they decline, keep the default `prefers-color-scheme` palette.
 
 ---
 
@@ -33,23 +73,28 @@ Before analyzing from scratch, look for existing documentation that can inform y
 
 Use the `Glob` tool to search for architecture documentation:
 
-- Pattern: `**/ARCHITECTURE.md` or `**/architecture.md`
+- Pattern: `**/ARCHITECTURE.html`, `**/architecture.html`
+- Also: `**/ARCHITECTURE.md`, `**/architecture.md` (legacy)
 - Also check for: `**/README.md`, `**/docs/architecture/*`, `**/DESIGN.md`
 
-If an ARCHITECTURE.md exists:
+If `ARCHITECTURE.html` exists:
 
-- Use `Read` tool to view its contents
+- Use `Read` to view its contents
 - Assess whether it's current and complete
-- Ask the user: **"I found an existing ARCHITECTURE.md. Would you like me to:"**
+- Ask the user: **"I found an existing ARCHITECTURE.html. Would you like me to:"**
   - Update it with fresh analysis
   - Use it as reference for creating a summary
   - Replace it entirely
   - Just analyze it and provide insights
 
-If no ARCHITECTURE.md exists:
+If only `ARCHITECTURE.md` exists (no HTML):
+
+- Read it for context, then plan to create or replace with `ARCHITECTURE.html` unless the user wants Markdown preserved
+
+If no architecture file exists:
 
 - Proceed to Step 2 to analyze the codebase
-- Plan to create a new ARCHITECTURE.md at the repo root
+- Plan to create a new `ARCHITECTURE.html` at the repo root
 
 ### Step 2 — Discover Codebase Structure and Language
 
@@ -73,7 +118,9 @@ Ask the user if needed:
 
 1. **"What type of project is this?"** (web app, library, CLI tool, API service, monorepo, etc.)
 2. **"Are there any critical architectural patterns I should highlight?"** (microservices, event-driven, MVC, etc.)
-3. **"What level of detail do you want?"** (high-level overview, detailed module breakdown, both)
+3. **Detail level (1–5, default 2)** and **color theme** — see
+   [Output preferences](#output-preferences-detail-level-and-theme). Confirm both before
+   writing; default to the small level-2 file and the neutral theme if the user has no preference.
 
 ### Step 3 — Identify Entry Points
 
@@ -116,7 +163,7 @@ Identify who/what consumes this codebase.
   - Look for command definitions and argument parsing
   - Document available commands and their purposes
 3. **Library/SDK**: Exported functions and classes
-  - Check `exports`, `module.exports`, `__all_`_, `pub fn`, public APIs
+  - Check `exports`, `module.exports`, `__all__`, `pub fn`, public APIs
   - Document the public interface
 4. **UI Clients**: React, Vue, Angular components
   - Identify component hierarchies and page routes
@@ -156,7 +203,7 @@ Categorize modules by responsibility:
 - **Configuration**: Config loading, environment management
 - **Testing**: Test utilities, fixtures, mocks
 
-Create a module inventory:
+Create a module inventory (use an HTML `<table>` in the final artifact):
 
 
 | Module Path | Responsibility      | Key Exports                             |
@@ -190,402 +237,219 @@ Use `Grep` to trace common patterns:
 - HTTP clients: `fetch(|axios|requests.|http.Get|reqwest::`
 - Logging: `logger.|log.|console.|print|println!|fmt.Print`
 
-### Step 7 — Generate Mermaid Diagrams
+### Step 7 — Author Inline SVG Diagrams
 
-Create visual representations of the architecture.
+Create visual representations as **inline SVG** embedded in the HTML artifact. Do not use
+Mermaid, CDN diagram libraries, or external image URLs. The file must work fully offline.
 
-**Diagram 1: High-Level Architecture**
+**Number of diagrams scales with the chosen detail level** (default 2 = one diagram):
 
-```mermaid
-graph TB
-    Client[Clients: Web/Mobile/CLI]
-    API[API Layer]
-    BL[Business Logic]
-    Data[Data Layer]
-    Ext[External Services]
+1. **High-level architecture** — clients, API/gateway, business logic, data, external services (levels 1–5)
+2. **Request / execution flow** — from entry point through middleware, handlers, services, data (levels 3–5)
+3. **Module dependencies** — how major directories/packages depend on each other (levels 4–5)
 
-    Client --> API
-    API --> BL
-    BL --> Data
-    BL --> Ext
+At level 1–2 ship only the high-level diagram to keep the file small. Customize to what
+Steps 2–6 revealed.
+
+**SVG authoring rules:**
+
+- Use `viewBox` and `width="100%"` / `height="auto"` for responsiveness
+- Add `<title>` and `<desc>` inside each `<svg>` for accessibility
+- Drive colors from CSS variables on the page (e.g. `var(--accent)`, `var(--border)`, `currentColor`) — never hardcode white fills or light-gray text that vanish in dark mode
+- Keep diagrams readable: limit nodes, label arrows, group layers with `<g>` and optional `<rect>` backgrounds
+- Reuse consistent shapes: `<rect>` for services/modules, rounded rects for processes, `<ellipse>` for databases
+- Arrowheads: define once in `<defs><marker id="arrow">…</marker></defs>` and reference with `marker-end="url(#arrow)"`
+
+**Minimal layered-architecture pattern** (expand with real labels from analysis):
+
+```svg
+<svg viewBox="0 0 480 280" width="100%" role="img" aria-labelledby="arch-title">
+  <title id="arch-title">High-level architecture</title>
+  <desc>Clients connect to API layer, business logic, and data or external services</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="currentColor"/>
+    </marker>
+    <style>
+      .box { fill: var(--code); stroke: var(--border); stroke-width: 1.5; }
+      .label { fill: var(--fg); font: 13px system-ui,sans-serif; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect class="box" x="170" y="20" width="140" height="44" rx="6"/>
+  <text class="label" x="240" y="47">Clients</text>
+  <rect class="box" x="170" y="90" width="140" height="44" rx="6"/>
+  <text class="label" x="240" y="117">API Layer</text>
+  <line x1="240" y1="64" x2="240" y2="90" stroke="currentColor" marker-end="url(#arrow)"/>
+  <!-- add Business Logic, Data Layer, External Services as needed -->
+</svg>
 ```
 
+If a diagram is too complex to hand-author clearly, simplify the view or ask the user which
+relationships matter most. Offer richer diagram UX (tabs, hover annotations) only when the user asks.
 
+### Step 8 — Draft the ARCHITECTURE.html Document
 
-Customize this based on your findings. Common patterns:
+Build a **single self-contained HTML file**: all CSS and JS inline, no external assets
+(no CDN, no web fonts, no remote images). Default interactivity is **light** (sticky TOC,
+collapsible `<details>` sections, styled tables, smooth scroll). Offer richer options
+(tabs, search/filter on modules, theme toggle, SVG hover tooltips) only when the user asks.
 
-**Layered Architecture:**
+**Apply the chosen detail level and theme:**
 
-```mermaid
-graph TB
-    subgraph "Presentation Layer"
-        UI[Web UI]
-        API[REST API]
-    end
+- **Detail level** decides which `<section>` blocks and how many diagrams to include
+  (see the level table in [Output preferences](#output-preferences-detail-level-and-theme)).
+  At level 1–2, drop sections you have nothing substantial to say about rather than
+  emitting empty placeholders — keep the file small.
+- **Theme**: if the user supplied colors, set the `:root` CSS variables below to their
+  palette (and adjust the dark-mode block, or remove it if they want a single fixed theme).
+  Otherwise keep the default neutral light/dark-adaptive palette.
 
-    subgraph "Business Layer"
-        Auth[Authentication]
-        Core[Core Services]
-        Logic[Business Logic]
-    end
+Fill in this skeleton with analysis from Steps 2–6 and SVG from Step 7:
 
-    subgraph "Data Layer"
-        DB[(Database)]
-        Cache[(Cache)]
-    end
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Architecture: PROJECT_NAME</title>
+  <style>
+    /* Theme tokens — override with the user's palette when provided */
+    :root {
+      --bg: #fff; --fg: #1a1a1a; --muted: #666; --accent: #2563eb;
+      --border: #e5e7eb; --code: #f5f5f5;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #9aa4b2; --accent: #58a6ff;
+        --border: #30363d; --code: #161b22;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    nav { position: sticky; top: 1rem; align-self: start; font-size: 0.9rem; }
+    nav a { color: var(--accent); text-decoration: none; display: block; padding: 0.2rem 0; }
+    nav a:hover { text-decoration: underline; }
+    h1 { margin-top: 0; }
+    h2 { margin-top: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.95rem; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: var(--code); }
+    code, pre { background: var(--code); border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    svg { max-width: 100%; height: auto; display: block; margin: 1rem 0; }
+    details { border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; margin: 0.5rem 0; }
+    details summary { cursor: pointer; font-weight: 600; }
+    .diagram-block { margin: 1.5rem 0; }
+    .toolbar { margin: 1rem 0; }
+    .toolbar button { font: inherit; padding: 0.35rem 0.75rem; cursor: pointer; border: 1px solid var(--border); border-radius: 6px; background: var(--code); color: var(--fg); }
+    @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } nav { position: static; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav id="toc" aria-label="Table of contents"><!-- filled by script --></nav>
+    <main>
+      <h1>Architecture: PROJECT_NAME</h1>
+      <p class="meta">Last updated: DATE — High-level architecture for developers and AI agents.</p>
 
-    UI --> Auth
-    API --> Auth
-    Auth --> Core
-    Core --> Logic
-    Logic --> DB
-    Logic --> Cache
+      <section id="overview"><h2>Overview</h2><!-- 1–2 paragraphs --></section>
+
+      <section id="project-type"><h2>Project Type</h2>
+        <table>
+          <tr><th>Type</th><td><!-- Web app, CLI, library, etc. --></td></tr>
+          <tr><th>Primary language</th><td></td></tr>
+          <tr><th>Framework</th><td></td></tr>
+          <tr><th>Build system</th><td></td></tr>
+        </table>
+      </section>
+
+      <section id="entry-points"><h2>Entry Points</h2>
+        <h3>Primary</h3><p><code>path/to/main</code> — description</p>
+        <h3>Secondary</h3><ul><!-- list --></ul>
+        <h3>How to run</h3><pre><!-- dev / prod / test commands --></pre>
+      </section>
+
+      <section id="interfaces"><h2>Client Types and Interfaces</h2>
+        <!-- subsections per interface type; endpoint tables where useful -->
+      </section>
+
+      <section id="modules"><h2>Core Modules</h2>
+        <div class="toolbar"><button type="button" id="toggle-details">Expand / collapse all modules</button></div>
+        <details open><!-- repeat per major module: responsibility, files, exports, deps --></details>
+      </section>
+
+      <section id="diagrams"><h2>Architecture Diagrams</h2>
+        <div class="diagram-block"><h3>High-level</h3><!-- inline SVG --></div>
+        <div class="diagram-block"><h3>Request flow</h3><!-- inline SVG --></div>
+        <div class="diagram-block"><h3>Module dependencies</h3><!-- inline SVG --></div>
+      </section>
+
+      <section id="data-layer"><h2>Data Layer</h2><!-- database, cache, storage --></section>
+      <section id="dependencies"><h2>External Dependencies</h2></section>
+      <section id="configuration"><h2>Configuration</h2></section>
+      <section id="testing"><h2>Testing</h2></section>
+      <section id="build-deploy"><h2>Build and Deployment</h2></section>
+      <section id="patterns"><h2>Common Patterns</h2></section>
+      <section id="glossary"><h2>Glossary</h2></section>
+      <section id="resources"><h2>Additional Resources</h2></section>
+    </main>
+  </div>
+  <script>
+    (function () {
+      const main = document.querySelector('main');
+      const toc = document.getElementById('toc');
+      const headings = main.querySelectorAll('h2, h3');
+      const frag = document.createDocumentFragment();
+      headings.forEach((h) => {
+        if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        const a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.tagName === 'H3' ? '  ' + h.textContent : h.textContent;
+        a.addEventListener('click', (e) => { e.preventDefault(); h.scrollIntoView({ behavior: 'smooth' }); history.pushState(null, '', '#' + h.id); });
+        frag.appendChild(a);
+      });
+      toc.appendChild(frag);
+      const btn = document.getElementById('toggle-details');
+      if (btn) btn.addEventListener('click', () => {
+        const details = main.querySelectorAll('#modules details');
+        const anyOpen = [...details].some((d) => d.open);
+        details.forEach((d) => { d.open = !anyOpen; });
+      });
+    })();
+  </script>
+</body>
+</html>
 ```
 
-
-
-**Microservices Architecture:**
-
-```mermaid
-graph LR
-    Client[Client]
-    Gateway[API Gateway]
-
-    subgraph Services
-        Auth[Auth Service]
-        User[User Service]
-        Order[Order Service]
-    end
-
-    subgraph Storage
-        DB1[(Auth DB)]
-        DB2[(User DB)]
-        DB3[(Order DB)]
-    end
-
-    Client --> Gateway
-    Gateway --> Auth
-    Gateway --> User
-    Gateway --> Order
-    Auth --> DB1
-    User --> DB2
-    Order --> DB3
-```
-
-
-
-**Diagram 2: Entry Points and Flow**
-
-Map how execution flows from entry points through the system:
-
-```mermaid
-flowchart TD
-    Start[Entry Point: main.ts]
-    Server[Initialize Server]
-    Routes[Register Routes]
-    Middleware[Apply Middleware]
-    Listen[Listen on Port]
-
-    Start --> Server
-    Server --> Routes
-    Routes --> Middleware
-    Middleware --> Listen
-
-    Request[Incoming Request]
-    Auth[Auth Middleware]
-    Handler[Route Handler]
-    Service[Business Service]
-    DB[(Database)]
-    Response[Send Response]
-
-    Listen --> Request
-    Request --> Auth
-    Auth --> Handler
-    Handler --> Service
-    Service --> DB
-    DB --> Service
-    Service --> Handler
-    Handler --> Response
-```
-
-
-
-**Diagram 3: Module Dependencies**
-
-Show how major modules depend on each other:
-
-```mermaid
-graph TD
-    API[api/]
-    Auth[auth/]
-    Core[core/]
-    DB[database/]
-    Utils[utils/]
-    Models[models/]
-
-    API --> Auth
-    API --> Core
-    Auth --> DB
-    Core --> DB
-    Core --> Models
-    Auth --> Utils
-    DB --> Utils
-    Core --> Utils
-```
-
-
-
-Adapt these templates based on what you discovered in Steps 2-6.
-
-### Step 8 — Draft the ARCHITECTURE.md Document
-
-Create a comprehensive architecture document using this structure:
-
-```markdown
-# Architecture: [Project Name]
-
-> Last updated: [Date]
-> This document describes the high-level architecture of [Project Name] for developers and AI agents working with this codebase.
-
-## Overview
-
-[1-2 paragraphs describing what this project is, what it does, and its primary purpose]
-
-## Project Type
-
-- **Type**: [Web Application / CLI Tool / Library / API Service / etc.]
-- **Primary Language**: [Language + Version]
-- **Framework**: [Main framework if applicable]
-- **Build System**: [npm, cargo, go build, maven, etc.]
-
-## Entry Points
-
-### Primary Entry Point
-
-**File**: `path/to/main.file`
-
-[1-2 sentences explaining what happens when this entry point is invoked]
-
-### Secondary Entry Points
-
-- **`path/to/cli.file`** — CLI interface for [purpose]
-- **`path/to/worker.file`** — Background worker that [purpose]
-
-### How to Run
-
-```bash
-# Development
-[command to run in dev mode]
-
-# Production
-[command to run in production]
-
-# Tests
-[command to run tests]
-```
-
-## Client Types and Interfaces
-
-### [Interface Type 1: e.g., REST API]
-
-**Base URL**: [if applicable]
-**Authentication**: [method]
-
-Key endpoints:
-
-- `GET /api/resource` — [description]
-- `POST /api/resource` — [description]
-- [more endpoints...]
-
-### [Interface Type 2: e.g., CLI]
-
-Available commands:
-
-- `command-name action` — [description]
-- [more commands...]
-
-### [Interface Type 3: e.g., Web UI]
-
-Entry URL: [URL or file]
-Key pages/routes:
-
-- `/path` — [description]
-- [more routes...]
-
-## Core Modules
-
-### Module: `path/to/module/`
-
-**Responsibility**: [What this module does]
-
-**Key Files**:
-
-- `file.ext` — [purpose]
-- `file2.ext` — [purpose]
-
-**Key Exports/APIs**:
-
-- `functionName()` — [description]
-- `ClassName` — [description]
-
-**Dependencies**: [What this module depends on]
-
-[Repeat for each major module]
-
-## Architecture Diagrams
-
-### High-Level Architecture
-
-```mermaid
-[Your diagram from Step 7]
-```
-
-
-
-### Request Flow
-
-```mermaid
-[Your flow diagram from Step 7]
-```
-
-
-
-### Module Dependencies
-
-```mermaid
-[Your dependency diagram from Step 7]
-```
-
-
-
-## Data Layer
-
-### Database
-
-- **Type**: [PostgreSQL, MongoDB, SQLite, etc.]
-- **Connection**: [How it's configured]
-- **Schema Location**: `path/to/schemas/`
-
-Key tables/collections:
-
-- `table_name` — [purpose]
-- [more tables...]
-
-### Caching
-
-[If applicable: Redis, in-memory, etc.]
-
-### External Storage
-
-[If applicable: S3, file system, etc.]
-
-## External Dependencies
-
-### Third-Party Services
-
-- **[Service Name]** — [Purpose, how integrated]
-- **[Service Name]** — [Purpose, how integrated]
-
-### Key Libraries
-
-[List critical dependencies from package.json / requirements.txt / etc.]
-
-## Configuration
-
-**Location**: `path/to/config/`
-
-**Environment Variables**:
-
-- `VAR_NAME` — [purpose, example value]
-- [more vars...]
-
-**Config Files**:
-
-- `config.yaml` — [purpose]
-
-## Testing
-
-**Test Framework**: [Jest, pytest, etc.]
-**Test Location**: `path/to/tests/`
-
-**Run Tests**: `[command]`
-
-Test coverage areas:
-
-- Unit tests in `tests/unit/`
-- Integration tests in `tests/integration/`
-- [Other test types]
-
-## Build and Deployment
-
-### Build Process
-
-```bash
-[build command]
-```
-
-**Outputs**: [where built artifacts go]
-
-### Deployment
-
-[How this is deployed — Docker, cloud platform, etc.]
-
-## Common Patterns
-
-[Document any architectural patterns used]:
-
-- **Error Handling**: [How errors are handled and propagated]
-- **Logging**: [Logging strategy and tools]
-- **Authentication**: [Auth pattern]
-- **Validation**: [Input validation approach]
-
-## Development Workflow
-
-[Optional: How developers work with this codebase]
-
-1. [Clone and setup steps]
-2. [Development commands]
-3. [Testing workflow]
-4. [Contribution process]
-
-## Glossary
-
-[If there are project-specific terms]
-
-- **Term**: Definition
-- **Term**: Definition
-
-## Additional Resources
-
-- [Link to API documentation]
-- [Link to deployment docs]
-- [Link to design docs]
-
-```
+Replace `PROJECT_NAME`, `DATE`, and every placeholder section with real content from analysis.
+
+**Markdown output:** Only if the user explicitly requests `ARCHITECTURE.md` or Markdown.
+In that case, use a conventional Markdown structure (optional Mermaid) — but the default
+path is always HTML.
 
 ### Step 9 — Present and Save
 
-1. Show the user the complete ARCHITECTURE.md content
-2. Present the Mermaid diagrams (they should render in most Markdown viewers)
-3. Explain the key findings:
-   - "Here's what I found: [brief summary]"
-   - "Entry points: [list]"
-   - "Main interfaces: [list]"
-   - "Core modules: [list]"
+1. Summarize key findings for the user (type, entry points, interfaces, core modules, data layer)
+2. State the **detail level** (default 2) and **theme** you used, and the approximate size
+3. Tell them the artifact is a single file they can open in any browser and share as-is
+4. Ask: **"Should I save this as ARCHITECTURE.html at the repository root, or would you like to:"**
+   - Save to a different path (e.g. `docs/ARCHITECTURE.html`)
+   - Change the detail level (1–5) to make it smaller or more comprehensive
+   - Apply a different color theme / brand palette
+   - Add richer interactivity (tabs, search, theme toggle)
+   - Produce Markdown instead (explicit request only)
 
-4. Ask the user: **"Should I save this as ARCHITECTURE.md at the repository root, or would you like to:"**
-   - Save it to a different location (e.g., `docs/`)
-   - Edit specific sections first
-   - Create additional documentation (more detailed module docs, API reference, etc.)
+4. If confirmed, use `Write`:
+   - `file_path`: `/absolute/path/to/repo/ARCHITECTURE.html`
+   - `content`: [The full HTML document]
 
-5. If confirmed, use `Write` tool:
-   - `file_path`: `/absolute/path/to/repo/ARCHITECTURE.md`
-   - `content`: [The full document]
-
-6. Suggest next steps:
-   - "This ARCHITECTURE.md will help both humans and AI agents understand the codebase structure"
-   - "You can update it as the architecture evolves"
-   - "The Mermaid diagrams will render on GitHub and in most Markdown viewers"
+5. Suggest next steps:
+   - Re-run or update the HTML as the architecture evolves
+   - Open the file locally or attach/share the single file with teammates
+   - Point other agents at `ARCHITECTURE.html` for structural context
 
 ---
 
@@ -594,6 +458,7 @@ Test coverage areas:
 ### Finding Hidden Entry Points
 
 Don't just look for `main()` functions. Check:
+
 - **Scripts in package.json**: `"start"`, `"dev"`, `"worker"`, `"migrate"`
 - **Makefile targets**: `make run`, `make server`
 - **Docker ENTRYPOINT**: What runs when the container starts
@@ -603,18 +468,19 @@ Don't just look for `main()` functions. Check:
 ### Understanding Module Boundaries
 
 Look for these clues:
+
 - **Barrel files**: `index.ts` that re-export from a directory
 - **Dependency graphs**: Use `Grep` for import statements
 - **Package structure**: In monorepos, each package is a module
 - **Naming conventions**: `*Service`, `*Controller`, `*Repository` patterns
 
-### Generating Better Diagrams
+### Generating Better SVG Diagrams
 
-- **Keep it simple**: Start high-level, add detail only if needed
-- **Show relationships**: Use arrows to indicate data/control flow
-- **Group related items**: Use Mermaid subgraphs for layering
-- **Label edges**: Add text to arrows explaining the relationship
-- **Use consistent shapes**: Rectangles for services, cylinders for databases, etc.
+- **Keep it simple**: Start high-level; add nodes only when they clarify
+- **Show relationships**: Label arrows with short verbs (calls, reads, publishes)
+- **Group layers**: Use `<g>` and background `<rect>` for presentation / business / data tiers
+- **Match the codebase**: Rename generic boxes to real module or service names
+- **Test contrast**: Preview in light and dark mode (browser devtools or `prefers-color-scheme`)
 
 ---
 
@@ -623,78 +489,71 @@ Look for these clues:
 - **Over-analyzing**: Don't document every file. Focus on architecture, not implementation details.
 - **Outdated assumptions**: If you find existing docs, verify them against the code.
 - **Missing the obvious**: Check README.md and package.json first — they often explain the structure.
-- **Generic diagrams**: Customize the Mermaid diagrams to match the actual architecture, don't just use templates.
-- **Skipping validation**: Ask the user to confirm your understanding before writing the final document.
-- **Too much detail**: This is architecture documentation, not API documentation. Keep it high-level.
+- **Generic diagrams**: Customize SVG to match the actual architecture; don't ship empty templates.
+- **External dependencies in HTML**: No CDN scripts, fonts, or remote images — breaks offline sharing.
+- **Skipping validation**: Ask the user to confirm understanding before writing the final file.
+- **Too much detail**: Architecture doc, not full API reference. Keep it high-level.
+- **Defaulting to Markdown**: HTML is the default deliverable unless the user asks otherwise.
 
 ---
 
 ## Example
 
-**User request:** "Summarize this codebase and create an ARCHITECTURE.md"
+**User request:** "Summarize this codebase and create an architecture overview"
 
 **Step 1 output:**
-> I found an existing ARCHITECTURE.md from 2023. It looks outdated (doesn't mention the new GraphQL layer added in 2024). Would you like me to update it with fresh analysis?
+> I found an existing ARCHITECTURE.html from 2024. It doesn't mention the new GraphQL layer. Would you like me to update it with fresh analysis?
 
 **User response:** "Yes, update it"
 
-**Steps 2-6 output (internal analysis):**
-> [Agent uses Glob, Grep, and Read to analyze the codebase]
+**Steps 2–6 (internal):** Agent uses Glob, Grep, and Read to analyze the codebase.
 
-**Step 7-8 output:**
-> I've analyzed the codebase. Here's what I found:
+**Steps 7–8 output:**
+> I've analyzed the codebase:
 >
-> - **Type**: Node.js REST API with GraphQL gateway
-> - **Entry Points**: `src/server.ts` (HTTP server), `src/worker.ts` (background jobs)
-> - **Interfaces**: REST API (legacy), GraphQL API (new), Admin CLI
-> - **Core Modules**: auth, users, orders, payments, notifications, jobs
-> - **Data**: PostgreSQL (main), Redis (cache, queues), S3 (file storage)
+> - **Type**: Node.js API with GraphQL gateway
+> - **Entry points**: `src/server.ts`, `src/worker.ts`
+> - **Interfaces**: REST (legacy), GraphQL, Admin CLI
+> - **Modules**: auth, users, orders, payments, notifications, jobs
+> - **Data**: PostgreSQL, Redis, S3
 >
-> I've created an updated ARCHITECTURE.md with three Mermaid diagrams showing:
-> 1. High-level architecture (client → gateway → services → data)
-> 2. Request flow through the system
-> 3. Module dependency graph
+> I built an updated self-contained ARCHITECTURE.html with three inline SVG diagrams (high-level, request flow, module deps), a module table, and collapsible module sections.
 >
-> [Shows the full ARCHITECTURE.md content]
->
-> Should I save this as ARCHITECTURE.md at the repository root?
+> Should I save it at the repository root?
 
 **User response:** "Yes, save it"
 
 **Step 9 output:**
-> Done! I've saved the updated ARCHITECTURE.md. The Mermaid diagrams will render automatically on GitHub and in most Markdown viewers.
->
-> This document will help both humans and AI agents quickly understand the codebase structure when starting new work.
+> Done — saved `ARCHITECTURE.html`. Open it in a browser to review; share the single file as needed.
 
 ---
 
 ## Quick Reference
 
-### Mermaid Diagram Types
+### SVG shapes and elements
 
-| Type | Use Case | Example |
-|------|----------|---------|
-| `graph TB` | Top-to-bottom flow | Layered architecture |
-| `graph LR` | Left-to-right flow | Sequential processes |
-| `flowchart TD` | Detailed flowchart | Request processing |
-| `graph TD` | Dependency graph | Module relationships |
+| Element | Use for |
+| ------- | ------- |
+| `<rect rx="6">` | Service, module, layer box |
+| `<ellipse>` | Database, queue, external store |
+| `<path>` + `<marker>` | Arrows, connectors |
+| `<text class="label">` | Node labels (use CSS `fill: var(--fg)`) |
+| `<g>` | Group layers or subgraphs |
+| `<title>` / `<desc>` | Accessibility inside `<svg>` |
 
-### Mermaid Node Shapes
+### HTML sections (in order)
 
-- `Node[Text]` — Rectangle (service, module)
-- `Node[(Text)]` — Cylinder (database)
-- `Node([Text])` — Rounded rectangle (process)
-- `Node{{Text}}` — Hexagon (decision)
-- `Node((Text))` — Circle (entry point)
+Overview → Project Type → Entry Points → Interfaces → Core Modules (details/table) →
+Diagrams (inline SVG) → Data Layer → External Dependencies → Configuration → Testing →
+Build/Deploy → Common Patterns → Glossary → Resources
 
-### Common Project Patterns
+### Common project patterns
 
 | Pattern | Indicators |
-|---------|-----------|
+| ------- | ----------- |
 | **Layered** | Separate `controllers/`, `services/`, `repositories/` |
 | **Microservices** | Multiple entry points, separate databases per service |
-| **Monolith** | Single entry point, shared database, all code in one repo |
+| **Monolith** | Single entry point, shared database |
 | **Serverless** | Handler functions, no long-running server |
 | **Event-Driven** | Message queues, pub/sub, event handlers |
 | **MVC** | `models/`, `views/`, `controllers/` directories |
-```
