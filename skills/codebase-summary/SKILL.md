@@ -15,10 +15,10 @@ humans and AI agents. The primary deliverable is a **self-contained** `ARCHITECT
 file: inline CSS, hand-authored inline SVG diagrams, and light inline JavaScript (sticky
 TOC, collapsible sections, styled tables). Produce Markdown only when the user explicitly asks.
 
-**Default to a small, focused file.** Detail is controlled by a 1–5 scale; the default is
-**level 2** (concise overview, minimal diagrams). Scale up only when the user asks. Always
-offer to confirm the detail level and the color theme before writing (see
-[Output preferences](#output-preferences-detail-level-and-theme)).
+**Default to a small, focused file.** Detail is controlled by a **small / medium / large**
+setting; the default is **small** (concise overview, minimal diagrams). Scale up only when
+the user asks. Always offer to confirm the detail level and the color theme before writing
+(see [Output preferences](#output-preferences-detail-level-and-theme)).
 
 ## When to use this skill
 
@@ -37,31 +37,50 @@ offer to confirm the detail level and the color theme before writing (see
 Before writing the artifact, confirm two preferences with the user. Default to the
 smallest useful output and only expand on request.
 
-### Detail level (1–5, default 2)
+### Detail level (small / medium / large, default small)
 
 Smaller is better unless the user wants depth. Map the level to scope, sections, and
 diagrams so the file stays proportional:
 
 
-| Level | Size target        | Scope                                                                                              |
-| ----- | ------------------ | -------------------------------------------------------------------------------------------------- |
-| 1     | Tiny (~1 screen)   | Overview + entry points + 1 high-level SVG diagram. No tables.                                      |
-| **2 (default)** | Small  | Overview, project type, entry points, core-module table, 1 diagram (high-level). Concise prose.     |
-| 3     | Medium             | Level 2 + interfaces, data layer, 2 diagrams (high-level + request flow), short per-module notes.   |
-| 4     | Large              | Level 3 + module dependencies diagram, config, testing, common patterns, collapsible module detail. |
-| 5     | Comprehensive      | All sections fully populated, 3+ diagrams, per-module exports/deps, glossary, build/deploy.          |
+| Level | Scope                                                                                                              |
+| ----- | ------------------------------------------------------------------------------------------------------------------ |
+| **small (default)** | Overview, project type, entry points, core-module table, 1 diagram (high-level). Concise prose.      |
+| medium | Small + interfaces, data layer, 2 diagrams (high-level + request flow), short per-module notes.                   |
+| large  | All sections fully populated, 3+ diagrams (incl. module dependencies), per-module exports/deps, config, testing, common patterns, glossary, build/deploy, collapsible module detail. |
 
 
-Ask: **"What detail level do you want (1–5)? Default is 2 — a small, focused file. Higher
-means more sections and diagrams."** Honor an explicit level the user already gave.
+Ask: **"What detail level do you want — small, medium, or large? Default is small (a
+focused file); larger means more sections and diagrams."** Honor an explicit level the
+user already gave.
 
 ### Color theme
 
 Ask: **"Any color theme or branding I should follow (e.g. brand hex colors, a named
-palette, or match an existing site)? Otherwise I'll use a neutral light/dark-adaptive
+palette, or a link to a website to match)? Otherwise I'll use a neutral light/dark-adaptive
 theme."** If the user provides colors, map them onto the CSS variables in Step 8
 (`--accent`, `--bg`, `--fg`, `--border`, `--code`) and keep contrast legible in both
 light and dark. If they decline, keep the default `prefers-color-scheme` palette.
+
+**If the user gives a website URL**, derive the theme from that site:
+
+1. Fetch the page with `WebFetch` (and, if needed, its linked stylesheet URLs via `Shell`
+   `curl` for the raw CSS) to read the actual color declarations.
+2. Extract the recurring colors: brand/accent (links, buttons, headers), page background,
+   primary text, borders/dividers, and code/surface backgrounds. Prefer CSS custom
+   properties and frequently-repeated hex/rgb/hsl values over one-off decorative colors.
+3. Map them to the artifact variables: brand → `--accent`, page bg → `--bg`, body text →
+   `--fg`, dividers → `--border`, surfaces → `--code`, muted text → `--muted`.
+4. **Enforce accessibility before using a color**:
+   - Body text vs background must meet **WCAG AA**: contrast ratio ≥ **4.5:1** (≥ **3:1**
+     for large/heading text). Accent-on-background used for text/links must also meet 4.5:1.
+   - If a sourced color fails, adjust its lightness (darken/lighten) until it passes rather
+     than shipping low-contrast text. Keep the adjusted color close to the brand hue.
+   - Derive a matching dark-mode set (or drop the dark block if the user wants a single
+     fixed theme), re-checking the same ratios.
+5. Tell the user which colors you pulled from the site and any you adjusted for contrast.
+
+Never ship a palette that fails AA contrast, even if it matches the source site exactly.
 
 ---
 
@@ -118,9 +137,9 @@ Ask the user if needed:
 
 1. **"What type of project is this?"** (web app, library, CLI tool, API service, monorepo, etc.)
 2. **"Are there any critical architectural patterns I should highlight?"** (microservices, event-driven, MVC, etc.)
-3. **Detail level (1–5, default 2)** and **color theme** — see
+3. **Detail level (small / medium / large, default small)** and **color theme** — see
    [Output preferences](#output-preferences-detail-level-and-theme). Confirm both before
-   writing; default to the small level-2 file and the neutral theme if the user has no preference.
+   writing; default to the small file and the neutral theme if the user has no preference.
 
 ### Step 3 — Identify Entry Points
 
@@ -242,14 +261,14 @@ Use `Grep` to trace common patterns:
 Create visual representations as **inline SVG** embedded in the HTML artifact. Do not use
 Mermaid, CDN diagram libraries, or external image URLs. The file must work fully offline.
 
-**Number of diagrams scales with the chosen detail level** (default 2 = one diagram):
+**Number of diagrams scales with the chosen detail level** (default small = one diagram):
 
-1. **High-level architecture** — clients, API/gateway, business logic, data, external services (levels 1–5)
-2. **Request / execution flow** — from entry point through middleware, handlers, services, data (levels 3–5)
-3. **Module dependencies** — how major directories/packages depend on each other (levels 4–5)
+1. **High-level architecture** — clients, API/gateway, business logic, data, external services (small, medium, large)
+2. **Request / execution flow** — from entry point through middleware, handlers, services, data (medium, large)
+3. **Module dependencies** — how major directories/packages depend on each other (large)
 
-At level 1–2 ship only the high-level diagram to keep the file small. Customize to what
-Steps 2–6 revealed.
+At the small level ship only the high-level diagram to keep the file small. Customize to
+what Steps 2–6 revealed.
 
 **SVG authoring rules:**
 
@@ -298,7 +317,7 @@ collapsible `<details>` sections, styled tables, smooth scroll). Offer richer op
 
 - **Detail level** decides which `<section>` blocks and how many diagrams to include
   (see the level table in [Output preferences](#output-preferences-detail-level-and-theme)).
-  At level 1–2, drop sections you have nothing substantial to say about rather than
+  At the small level, drop sections you have nothing substantial to say about rather than
   emitting empty placeholders — keep the file small.
 - **Theme**: if the user supplied colors, set the `:root` CSS variables below to their
   palette (and adjust the dark-mode block, or remove it if they want a single fixed theme).
@@ -433,11 +452,11 @@ path is always HTML.
 ### Step 9 — Present and Save
 
 1. Summarize key findings for the user (type, entry points, interfaces, core modules, data layer)
-2. State the **detail level** (default 2) and **theme** you used, and the approximate size
+2. State the **detail level** (default small) and **theme** you used, and the approximate size
 3. Tell them the artifact is a single file they can open in any browser and share as-is
 4. Ask: **"Should I save this as ARCHITECTURE.html at the repository root, or would you like to:"**
    - Save to a different path (e.g. `docs/ARCHITECTURE.html`)
-   - Change the detail level (1–5) to make it smaller or more comprehensive
+   - Change the detail level (small / medium / large) to make it smaller or more comprehensive
    - Apply a different color theme / brand palette
    - Add richer interactivity (tabs, search, theme toggle)
    - Produce Markdown instead (explicit request only)
