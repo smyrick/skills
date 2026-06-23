@@ -1,8 +1,10 @@
 # AI-Writing Patterns: Extended Reference
 
-Companion file to [SKILL.md](./SKILL.md). Read this when the inline table in SKILL.md doesn't give enough guidance for an edge case, or when the input is long enough that you want a deeper checklist.
+Companion file to [SKILL.md](./SKILL.md). Read this when the inline table in SKILL.md doesn't give enough guidance for an edge case, or when the input is long enough that you want a deeper checklist. Ordered by priority: the cited share from a 600-post audited sample is the cleanest signal, with the keyword-pass share as context.
 
-Each section below has: what the pattern looks like, 2-4 before/after examples, and a "when to leave it alone" note.
+Each section below has: what the pattern looks like, 2-4 before/after examples, and a "when to leave it alone" note. Part B covers structural tells a regex cannot see (human pass required). Part C covers words cleared by the data that should not be over-chased.
+
+**Weighting rule:** Two tells are absolute (flagged on a single instance anywhere): the em dash and leftover assistant boilerplate. For everything else, weight by how thickly it clusters. A single "comprehensive" or one "delve" is almost always the writer's own prose. Six of them in a 200-word paragraph is slop; six scattered across a 5,000-word essay is just how the person writes.
 
 ---
 
@@ -277,3 +279,92 @@ Sometimes text is clearly AI-generated but no single category jumps out. Look fo
 - No specific numbers, no proper nouns, no dated references.
 
 In that case, rewrite paragraph by paragraph with a stronger hand: cut the topic/summary bookends, let transitions be implicit, and ask the author for specifics (numbers, names, dates) that can ground the text in reality. If you can't add specifics without inventing them, don't - flag it in findings as "text lacks concrete details; consider adding examples."
+
+---
+
+## Part B: Structural tells (human pass required)
+
+These are cited as often as the top mechanical tells but no pattern can catch them. The scanner will not flag them. Read the piece aloud and check them by ear. The audited pass put several of these above most of Part A.
+
+### Uniform / robotic sentence rhythm
+
+**Cited share:** 4.0% (the second-most-cited tell overall, and entirely keyword-invisible).
+
+**What it sounds like:** Every sentence roughly the same length and shape, evenly paced, with no variation. The evenness is the tell. A human ear catches it before any single word.
+
+**Quote from data:** "ChatGPT has a very recognizable cadence. And as soon as you catch it, it is impossible to focus on what's being written, because it's not even someone's actual thoughts."
+
+**Fix:** Vary sentence length on purpose. Let one run long and the next be three words. Read it aloud; if it lulls, break the meter.
+
+### Sycophancy and the yes-man register
+
+**Cited share:** 2.5% (the fourth-most-cited tell).
+
+**What it sounds like:** Opens with flattery ("Great question!"), agrees reflexively, refuses to take a side. The relentless positivity reads as a customer-service bot, not a person with a view.
+
+**Fix:** Drop the flattery and the reflexive agreement. Disagree when you disagree. Stay neutral when you are neutral. A real writer is willing to say no.
+
+### Saying nothing at length
+
+**Cited share:** 0.7% (flagged by multiple auditors as under-counted; folds in "soulless," "word salad," "no opinion").
+
+**What it sounds like:** Fluent, grammatical prose that makes no actual claim. It restates the prompt, hedges, and moves on. Fluency with nothing behind it is the deepest tell.
+
+**Fix:** Make a real claim and cut the filler. If a paragraph could be deleted with nothing lost, delete it. Say each thing once.
+
+### No contractions / over-formal register
+
+**Cited share:** 0.7%.
+
+**What it sounds like:** "do not," "cannot," "it is" everywhere, in a casual context. Reads as stiff in the specific way the default register is stiff.
+
+**Fix:** Use contractions and write the way the speaker actually talks, unless the register genuinely calls for formality (a brief, a paper, a spec).
+
+### Hedging instead of committing
+
+**Cited share:** 0.3%.
+
+**What it sounds like:** A balanced menu instead of an answer. The model gives "on one hand... on the other" because it is trained to avoid being wrong. The reader wanted a position.
+
+**Fix:** Take a position. List the trade-off if it matters, but say what you would do.
+
+### The rule of three (structural)
+
+**Cited share:** 1.2%.
+
+**What it sounds like:** Every list exactly three items. Every example a triad. Parallel triplets constantly. One is fine; reaching for three every time is the tell.
+
+**Fix:** Vary the count. Two items, or four, or a single clean sentence. Do not let everything arrive in threes.
+
+### The over-corrected "anti-AI" register (the 2026 tell)
+
+This is the mirror of the whole catalog above: prose visibly straining not to read as AI. It is its own tell, named in the data and clocked just as fast.
+
+**What it looks like:**
+- Staccato three-word fragments on every beat (uniform short rhythm)
+- Forced lowercase and dropped capitals in otherwise standard context
+- A "here's the thing," "look," or "real talk" cold open bolted onto formal content
+- Profanity or "lol" dropped in to seem off-the-cuff
+- Deliberately-inserted fake typos to beat detectors
+- Conspicuous em-dash avoidance: replacing every natural dash with an ellipsis or a colon
+
+**Why it reads as AI:** It is still a default, just a newer one. All-short sentences are as mechanical as all-medium ones. Bolted-on slang is a costume rather than a voice, and the contortion to dodge a dash is as legible as the dash would have been.
+
+**Fix:** Do not over-apply the rules. The fix for a dash is a comma or a period in a sentence you would actually write, not an ellipsis and not a contortion. The fix for the smooth voice is a real voice (pick a register), not the absence of voice dressed up as casual. Vary sentence length for real, long ones included.
+
+---
+
+## Part C: Cleared by the data (do not over-chase)
+
+The audited sample showed the keyword pass badly over-counts a set of ordinary words. They match a lot of posts but are almost never what a reader actually cites, because they are the poster's own normal prose, not a giveaway. Over-flagging trains writers to ignore the tool, so weight these low.
+
+| Word/Phrase | Keyword match share | Cited share | Guidance |
+|---|---|---|---|
+| "however," "thus," "hence" | 6.3% | ~0% | Do not flag a lone "however." Only a tell when stacked as repeated sentence openers. |
+| "when it comes to" | 1.9% | ~0% | Ordinary phrasing. Leave alone. |
+| "comprehensive" | ~1.5% | ~0% | Real word people use. Only flag when clustering thickly. |
+| "robust" | ~1.5% | ~0% | Legitimate in security/engineering contexts. Flag only in dense clusters. |
+| "crucial," "navigate," "utilize," "nuanced" | 1-2% each | ~0% | "utilize" is worth swapping for "use" but is not a smoking gun on its own. |
+| "moreover / furthermore / additionally" | 1.7% | ~0% | As a stacked sentence-opener it reads as machine-smoothed, but one of them is just a connective. |
+
+**The rule:** Flag what the data supports, at the weight it supports. A single occurrence of any Part C word is never on its own a tell. The signal is density and concentration, the same tic clustering in a short span.
