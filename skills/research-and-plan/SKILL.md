@@ -1,14 +1,16 @@
 ---
 name: research-and-plan
 description: |
-  Produce a structured implementation plan through deep research and user collaboration. Use subagents to explore the codebase, compact findings, and walk the design tree to shared understanding. Output a handoff artifact for an orchestration agent that delegates to parallel subagents. Use when the user asks to plan, design, architect, break down work, create a handoff doc, or stress-test a plan before implementation.
+  Produce a structured implementation plan through deep research and user collaboration. Size the research effort upfront, then use subagents to explore the codebase and persist findings as docs in an IDE-agnostic .agents/research/ folder so every agent shares baseline knowledge and nothing is lost on spin-down. Output a parallel-subagent handoff. Use when the user asks to plan, design, architect, break down work, create a handoff doc, or stress-test a plan before implementation.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
 compatibility: AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan
   mode owns the plan; otherwise file handoff. Task tool subagents (explore, generalPurpose) for deep
   research. Readonly codebase search/read for factual answers. /multitask (Cursor 3.2+) for async
-  parallel subagents with queue bypass during research and execution phases.
+  parallel subagents with queue bypass during research and execution phases. IDE-agnostic
+  .agents/research/<slug>/ doc handoff (CONTEXT.md + findings/) so agents share context across
+  spin-up/spin-down.
 ---
 
 # Plan Mode: Research-Driven Implementation Planning
@@ -22,6 +24,9 @@ Every plan ends with a concrete handoff artifact on the right surface: the **IDE
 
 ## At a glance
 
+- **Size the effort upfront** — pick a depth tier (single context / light / research project) and confirm it with the user before launching research, so you spin up the right number of agents.
+- **Persist research as docs** — write a shared `CONTEXT.md` brief and per-agent `findings/` docs in an IDE-agnostic `.agents/research/<slug>/` folder so every agent boots with the same baseline knowledge.
+- **Uniform agent lifecycle** — every agent (root or nested) reads `CONTEXT.md`, declares its goal, works, may spawn its own children, and on spin-down records how its findings advance the goal, so nothing is lost when a context window dies.
 - **Research deeply first** — launch subagents to explore the codebase in parallel, then compact findings into actionable context before asking questions or drafting steps.
 - Aim for **shared understanding** with the user before you write steps.
 - Treat open decisions as a **design tree**: resolve **upstream** choices before **downstream** ones.
@@ -44,11 +49,36 @@ Every plan ends with a concrete handoff artifact on the right surface: the **IDE
 
 ## Workflow
 
+### Step 0 — Size the research effort
+
+Before launching any research, decide **how deep to go**. This sets how many agents you
+spin up and whether you need a research folder at all. Pick a tier, then **confirm it with
+the user via one `AskQuestion`** (recommend a tier from the initial signal; let them
+override).
+
+- **Tier 0 — Single context**: small or familiar task. No subagents, no research folder —
+  everything fits in one context window. Skip straight to the design tree (Step 1c).
+- **Tier 1 — Light**: a few parallel subagents. Create `.agents/research/<slug>/` with a
+  `CONTEXT.md` brief + a handful of `findings/` docs. Shallow recursion guard (e.g. nesting
+  depth <= 2, small agent cap).
+- **Tier 2 — Research project**: many areas, unfamiliar codebase, or high stakes. Full
+  research folder + `INDEX.md` manifest; the recursive agent loop (below) runs to whatever
+  depth the goal needs under a generous guard (higher max depth + agent cap).
+
+The chosen tier defines the **termination guard** for the agent loop in Step 1 (max nesting
+depth and/or max total agent count). When unsure between two tiers, recommend the smaller
+one — you can always escalate.
+
 ### Step 1 — Deep research via subagents
 
 Before drafting anything, **invest heavily in understanding the codebase**. Launch
 subagents to explore in parallel, then compact their findings into dense context that
 drives better questions and a more grounded plan.
+
+For Tier 1 and Tier 2, research is persisted as **docs** (not just in-context summaries):
+a shared brief every agent reads on spin-up, and per-agent findings docs written on
+spin-down. This is what lets any number of nested agents share the same baseline knowledge
+and lose nothing when a context window ends.
 
 #### 1a. Launch parallel research subagents
 
@@ -81,15 +111,75 @@ agent for deeper analysis that requires reasoning across multiple files.
 (key files, patterns, constraints, gotchas) — not full file contents. The goal is
 **dense context you can act on**, not a firehose.
 
+#### 1a-2. Persist research as docs (Tier 1+)
+
+For Tier 1 and Tier 2, do not keep research only in your own context window — persist it
+so every agent shares the same baseline and nothing is lost on spin-down.
+
+**Research project folder (IDE-agnostic).** Reuse the gitignore-aware preamble from Step 4:
+if the repo already ignores a recognized agent/plan artifact folder, prefer it; otherwise
+default to `<workspace-root>/.agents/research/<slug>/` (create it if missing). Do **not**
+default research artifacts to `.cursor/` — they must be tool-agnostic.
+
+- `CONTEXT.md` — the shared brief **every agent reads first**: goal, scope, constraints,
+  conventions, and pointers to relevant code. This is what gives every agent (any nesting
+  level) the same baseline knowledge.
+- `findings/NN-<area>.md` — **one file per agent**, written on spin-down, with a fixed shape:
+  - **Goal**: the specific question/goal this agent was handed.
+  - **What I did**: files explored, approach taken.
+  - **Findings**: dense, factual, no firehose.
+  - **How this advances the goal**: explicit tie-back to the parent goal + what it unblocks
+    or recommends.
+  - **Open questions / handoffs**: anything left for the parent or a deeper agent.
+- `INDEX.md` (Tier 2 only) — a manifest listing each agent, its goal, and its findings file.
+
+**Uniform agent model (one role, fractal).** There is no privileged "orchestrator" class vs
+"subagent" class — **everyone is just an agent with a parent**. Every agent, including the
+top-level one, has identical capabilities and follows the identical lifecycle below,
+including the ability to spawn its own children. The only difference between agents is who
+their parent is: the root agent's parent is the human; every other agent's parent is the
+agent that spawned it. "Orchestration agent" just means whichever agent is currently
+spawning/collecting from its children — a relative position in the parent chain, not a
+special kind of agent.
+
+**Agent lifecycle protocol (every agent, every level — same for all):**
+
+1. **Spin-up**: read `CONTEXT.md` (plus any parent goal handed down) for identical baseline
+   knowledge.
+2. **Declare goal**: write its specific goal at the top of its findings doc before working.
+3. **Work**.
+4. **Assess against goal**: is the goal fully answered? If unresolved sub-questions remain
+   **and the tier budget allows**, spawn child agents (each handed `CONTEXT.md` + the
+   specific sub-goal), wait for their findings docs, fold them in, then re-assess. This is a
+   loop — repeat spawn -> collect -> re-assess until the goal is met or the guard trips.
+5. **Spin-down**: finish the findings doc, ending with "How this advances the goal" (rolling
+   up any children) so nothing is lost when the context window dies.
+
+**Recursive loop until the goal is met (N-level).** Nesting is not a fixed one- or two-level
+pass — any agent can itself become a parent. A spawning agent hands children `CONTEXT.md` +
+its own goal; children run the SAME lifecycle (and may spawn their own children), writing
+findings under a sub-namespaced path (e.g. `findings/02-foo/02a-bar.md`); each parent rolls
+up its children's "How this advances the goal" into its own findings doc. Apply this
+recursively to any depth.
+
+**Termination + guard (prevent runaway loops).** The loop stops when an agent's goal has no
+remaining open questions (its findings doc's "Open questions / handoffs" is empty), OR the
+tier budget guard trips (max nesting depth and/or max total agent count, set in Step 0). On
+hitting the guard, the agent stops spawning, records the still-open questions in its findings
+doc, and hands them up rather than looping forever.
+
 #### 1b. Compact and synthesize findings
 
-After subagents return, synthesize their findings into a **research summary** for
-yourself. This becomes the factual foundation for the design tree. Note:
+After agents return, read their `findings/` docs (the durable source of truth, not just any
+in-memory output) and synthesize them into a **research summary** for yourself. This becomes
+the factual foundation for the design tree. Note:
 
 - Key files and their roles
 - Established patterns and conventions the plan must follow
 - Constraints and gotchas discovered
 - Gaps that only the user can answer
+
+For Tier 0, there are no findings docs — synthesize directly from your own exploration.
 
 #### 1c. Walk the design tree with the user
 
@@ -306,7 +396,8 @@ each step within a phase in parallel.
 [Context discovered during deep research. Reference specific files, patterns, and
 conventions. Include anything that isn't obvious from the code alone. This section
 is for the orchestration agent's understanding — individual steps carry their own
-context for subagents.]
+context for subagents. If a research folder was used, point here:
+"Full research lives in `.agents/research/<slug>/` (read `CONTEXT.md` + `findings/`)."]
 
 ## Phase 1: [Phase title — e.g. "Foundation / Setup"]
 Steps in this phase have no dependencies on each other and can run as parallel subagents.
@@ -384,6 +475,15 @@ plan at a time but parallelizes within each plan's phases.
 
 ## Common Pitfalls
 
+- **Skipping the upfront sizing** — Jumping into research without picking a depth tier (Step
+0) means you either over-spawn agents on a trivial task or under-research a hard one. Size
+first, confirm with the user, then launch.
+- **Losing research on spin-down** — For Tier 1+, an agent that finishes without writing its
+`findings/` doc (Goal, Findings, How this advances the goal, Open questions) destroys context
+the moment its window closes. The findings doc is the deliverable, not the in-chat summary.
+- **Defaulting research artifacts to `.cursor/`** — The research folder must be IDE-agnostic
+(`.agents/research/<slug>/` or an already-ignored agent-artifact folder). Do not bury research
+under a tool-specific path.
 - **Skipping deep research** — Launching zero subagents and relying on a few grep calls
 produces shallow plans. Invest in parallel exploration upfront — it pays off in specificity.
 - **Returning raw research** — Subagent findings should be compacted into dense summaries,
