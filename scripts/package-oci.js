@@ -194,7 +194,7 @@ function buildTar() {
 function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
-  const revision = process.env.GITHUB_SHA || runGit(["rev-parse", "HEAD"], "unknown");
+  const revision = runGit(["rev-parse", "HEAD^{commit}"], process.env.GITHUB_SHA || "unknown");
   const shortRevision = revision === "unknown" ? "unknown" : revision.slice(0, 12);
   const created =
     process.env.SOURCE_DATE_EPOCH != null
