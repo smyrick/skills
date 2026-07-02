@@ -8,7 +8,11 @@
     "format": "node scripts/format-skills.mjs",
     "format:check": "node scripts/format-skills.mjs --check",
     "check": "npm run format:check && npm run validate",
-    "validate": "node scripts/validate-skills.mjs"
+    "validate": "node scripts/validate-skills.mjs",
+    "oci:package": "node scripts/package-oci.js",
+    "oci:publish": "node scripts/publish-oci.js",
+    "oci:publish:dry-run": "node scripts/publish-oci.js --dry-run",
+    "oci:release": "npm run check && npm run oci:package && npm run oci:publish"
   },
   "devDependencies": {
     "yaml": "^2.8.3"

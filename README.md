@@ -56,6 +56,26 @@ CI runs `npm run check` on every push and pull request.
 
 ---
 
+## OCI Package
+
+Tagged releases publish the full skills collection as one OCI artifact on GitHub Container Registry:
+
+```text
+ghcr.io/smyrick/skill@sha256:<digest>
+ghcr.io/smyrick/skill:vYYYY.MM.DD
+ghcr.io/smyrick/skill:latest
+```
+
+Prefer digest pins for consumers that need immutable installs:
+
+```text
+ghcr.io/smyrick/skill@sha256:<digest>
+```
+
+Any OCI-aware catalog or control plane can link this package by digest.
+
+---
+
 ## Skill Index
 
 | Skill | Description | Key Tools |

@@ -4,3 +4,5 @@
 node_modules/
 
 skills-lock.json
+
+.dist/
