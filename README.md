@@ -61,15 +61,15 @@ CI runs `npm run check` on every push and pull request.
 Tagged releases publish the full skills collection as one OCI artifact on GitHub Container Registry:
 
 ```text
-ghcr.io/smyrick/skill@sha256:<digest>
-ghcr.io/smyrick/skill:vYYYY.MM.DD
-ghcr.io/smyrick/skill:latest
+ghcr.io/smyrick/skills@sha256:<digest>
+ghcr.io/smyrick/skills:vYYYY.MM.DD
+ghcr.io/smyrick/skills:latest
 ```
 
 Prefer digest pins for consumers that need immutable installs:
 
 ```text
-ghcr.io/smyrick/skill@sha256:<digest>
+ghcr.io/smyrick/skills@sha256:<digest>
 ```
 
 Any OCI-aware catalog or control plane can link this package by digest.

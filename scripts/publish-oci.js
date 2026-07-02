@@ -239,7 +239,7 @@ async function main() {
   }
 
   const registry = normalizeRegistry(process.env.OCI_REGISTRY || "ghcr.io");
-  const repository = process.env.OCI_REPOSITORY || "smyrick/skill";
+  const repository = process.env.OCI_REPOSITORY || "smyrick/skills";
   const image = `${registry}/${repository}`;
   const packageResult = readJson(packageResultPath);
   const manifest = readJson(manifestPath);

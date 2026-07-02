@@ -79,7 +79,7 @@ function parseFrontmatter(filePath) {
 
 function buildSkillsIndex(revision, created) {
   return {
-    name: "smyrick/skill",
+    name: "smyrick/skills",
     revision,
     created,
     skills: listSkillFiles().map((filePath) => {
@@ -242,7 +242,7 @@ function main() {
   fs.writeFileSync(manifestPath, manifestBuffer);
 
   const packageResult = {
-    name: "smyrick/skill",
+    name: "smyrick/skills",
     revision,
     shortRevision,
     created,
