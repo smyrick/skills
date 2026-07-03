@@ -3,12 +3,10 @@
  * Validates each skills/<name>/SKILL.md in this repository.
  * The published skills CLI does not yet ship validate; this script mirrors common metadata rules.
  */
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import YAML from "yaml";
+const fs = require("node:fs");
+const path = require("node:path");
+const YAML = require("yaml");
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const skillsDir = path.join(repoRoot, "skills");
 const readmePath = path.join(repoRoot, "README.md");

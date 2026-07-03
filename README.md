@@ -113,8 +113,8 @@ Any agent with access to this repo can read a `SKILL.md` directly and follow its
 README.md                        ← You are here
 CONTRIBUTING.md                  ← How to add or improve skills
 package.json                     ← npm run add-skill → scaffolds under skills/
-scripts/format-skills.mjs        ← npm run format / format:check
-scripts/validate-skills.mjs      ← npm run validate
+scripts/format-skills.js         ← npm run format / format:check
+scripts/validate-skills.js       ← npm run validate
 skills/
   <skill-name>/
     SKILL.md                     ← The skill itself (agent-readable instructions)

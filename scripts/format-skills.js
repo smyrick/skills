@@ -2,12 +2,10 @@
 /**
  * Normalizes skills/<name>/SKILL.md frontmatter without reflowing Markdown bodies.
  */
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import YAML from "yaml";
+const fs = require("node:fs");
+const path = require("node:path");
+const YAML = require("yaml");
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const skillsDir = path.join(repoRoot, "skills");
 
