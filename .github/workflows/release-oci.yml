@@ -6,7 +6,7 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -33,3 +33,17 @@ jobs:
         run: npm run oci:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release already exists for $GITHUB_REF_NAME"
+            exit 0
+          fi
+
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
