@@ -41,7 +41,7 @@ npm run add-skill -- <your-skill-name>
 
 That runs `npx skills init` inside `skills/` and creates `skills/<your-skill-name>/SKILL.md`. Replace the generated stub with real content.
 
-**Authoring guide:** follow [AGENTS.md](./AGENTS.md) and the checks in `scripts/validate-skills.js` (required frontmatter fields, `description` length 20–500, `name` matching the folder, plain `repository` URL, README Skill Index in sync). For general Cursor skill shape, see the [Agent Skills specification](https://agentskills.io/specification).
+**Authoring guide:** follow [AGENTS.md](./AGENTS.md) and the checks in `scripts/validate-skills.js` (required frontmatter fields, `description` length 20–500, `name` matching the folder, plain `repository` URL, README Skill Index in sync). For general Cursor skill shape, see the [Agent Skills specification](https://agentskills.io/specification). For optional quality review, use Matt Pocock's [writing-great-skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-great-skills) skill.
 
 ### 3. Fill in the frontmatter
 

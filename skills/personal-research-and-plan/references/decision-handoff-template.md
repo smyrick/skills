@@ -59,7 +59,7 @@ Use this for `personal-research-and-plan` final artifacts.
 - [Related decisions intentionally excluded.]
 
 ## Sources
-- [Source name](https://example.com) — [what it supported]
+- [Source name](https://example.com) - [what it supported]
 ```
 
 For simple decisions, collapse sections but keep goal, criteria, options, recommendation, tradeoffs, next steps, and sources.
