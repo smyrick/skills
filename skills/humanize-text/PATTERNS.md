@@ -8,6 +8,54 @@ Each section below has: what the pattern looks like, 2-4 before/after examples, 
 
 ---
 
+## Matching the writer's voice
+
+Read this section when the user says "make it sound like me," points to their own prompts/messages, or gives past writing as the style reference.
+
+**Source ranking:**
+
+- same-genre writing sample from the user
+- published long-form writing such as blog posts or essays
+- full talk/video transcripts or captions
+- current-thread prompts and messages
+- explicit style instructions
+
+If a repo is available as the writing corpus, prefer published content files over page templates, metadata, abstracts, or research notes. For a personal site repo, a handful of real posts is better evidence than global copy or frontmatter.
+
+**Look for stable signals:**
+
+- repeated sentence density and pacing
+- repeated stance toward the reader: blunt, skeptical, warm, detached
+- repeated formatting habits: prose-first, bullets-first, labels, fragments
+- repeated diction choices: plain, technical, colloquial, formal
+
+**Ignore noise:**
+
+- typos and accidental misspellings
+- one-off jokes or sarcasm
+- topic-specific jargon that comes from the subject, not the person
+- quirks that appear once and vanish
+- video titles, talk abstracts, and conference blurbs without transcript text
+- spoken filler from stage delivery unless it also appears in the person's writing
+
+**Rewrites:**
+
+- Before: "Absolutely! Here are three key considerations to keep in mind..."
+  User voice sample: "short talk. high density. no fluff."
+  After: "Three things matter."
+- Before: "It's important to note that this approach may not be ideal in every scenario."
+  User voice sample: "take a side. don't hedge unless it matters."
+  After: "This approach is wrong for edge cases with tight latency budgets."
+
+**Leave it alone when:**
+
+- you do not have a real voice sample and the user did not ask for one
+- the only "sample" is a typo, a meme, or one emotionally loaded sentence
+- the target genre clearly requires more formality than the user's chat voice
+- the only video evidence is metadata rather than transcript or captions
+
+---
+
 ## Em-dashes
 
 **Look for:** `—` (em-dash, U+2014) and `–` (en-dash, U+2013) used mid-sentence to set off a clause. LLMs default to em-dashes almost anywhere a comma, colon, or period would do.

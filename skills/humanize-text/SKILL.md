@@ -1,10 +1,9 @@
 ---
 name: humanize-text
-description: Strips AI-writing tells from prose and forces a deliberate human voice, grounded in
-  data on what readers actually cite as giveaways. Removes mechanical tells (em-dashes,
-  "delve"/"tapestry" diction, antithesis cadence, listicle scaffolding, assistant boilerplate) and
-  warns against the over-corrected "anti-AI" register. Use when the user asks to "humanize",
-  "de-AI", "de-slop", or "make this sound less like ChatGPT."
+description: Strips AI-writing tells from prose and matches the writer's own voice from samples or
+  prompt history. Removes common ChatGPT patterns, avoids over-corrected anti-AI habits, and uses
+  the user's tone when they ask to humanize text, de-AI prose, de-slop writing, sound less like
+  ChatGPT, or sound more like themselves.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
@@ -14,7 +13,7 @@ compatibility: Read (for file input); Write/Edit (to update files in place). No 
 
 # Humanize Text
 
-Strip the cues that make prose read as AI-generated and force a deliberate, human voice. This skill does not write well for you and has no house style. It removes specific tells and, where text reads as AI because nobody chose a voice, forces a deliberate one.
+Strip the cues that make prose read as AI-generated and force a deliberate, human voice. This skill does not write well for you and has no house style. It removes specific tells and, where text reads as AI because nobody chose a voice, forces a deliberate one. If the user already has a recognizable voice, preserve that instead of flattening them into generic "human" prose.
 
 ## The trap to avoid
 
@@ -25,6 +24,29 @@ The failure mode of every anti-AI-writing effort is replacing one default regist
 - **Manufactured casualness:** a "honestly," a lowercase "i," a "lol" bolted onto otherwise formal writing reads as costume, not voice.
 - **Uniform short rhythm:** all-short sentences are as mechanical as all-medium ones. Evenness is the tell, whichever length it settles on.
 
+## If the user wants "sound like me"
+
+Build a compact voice brief before rewriting. Use the highest-signal evidence available, in this order:
+
+- **Their own writing sample or prior draft** in the same genre
+- **Their published long-form corpus** such as blog posts, essays, docs, or a personal site repo
+- **Talk or video transcripts/captions** when actual spoken words are available
+- **Their prompts and messages in the current thread**
+- **Explicit style instructions** ("short talk", "no glazing", "be direct", "sound more like me")
+- **Genre constraints** if no personal sample exists
+
+Extract only stable traits, not gimmicks:
+
+- **Density:** terse vs expansive
+- **Stance:** agreeable, skeptical, blunt, warm, detached
+- **Rhythm:** short punches, mixed cadence, long analytical sentences
+- **Formatting habits:** prose-first, bullets-first, labels, fragments
+- **Diction:** plain, technical, colloquial, formal
+
+Mirror decisions, not noise. Do **not** imitate typos, one-off jokes, accidental grammar mistakes, or stray quirks just because they appear in chat once.
+
+Prefer artifacts with real sentence-level signal. A blog post is strong evidence. A talk transcript is useful. A video title, one-line abstract, or frontmatter description is weak evidence and should not drive the brief by itself.
+
 ## When to use this skill
 
 - User pastes AI-generated or AI-assisted prose and asks to clean it up
@@ -32,6 +54,7 @@ The failure mode of every anti-AI-writing effort is replacing one default regist
 - User wants a pre-publish sanity pass on their own writing (blog post, email, doc)
 - User pastes a block of LLM output and asks for "the human version"
 - User says it "sounds like ChatGPT," "reads like AI," or "is too polished"
+- User says "make it sound like me", "use my tone", "write like I do", or points to their own prompts/messages as the style reference
 
 ## Non-goals
 
@@ -61,12 +84,13 @@ The register guards against over-correcting: a fragment is native in A and a tel
 
 ### Establish before writing
 
+- **A voice brief.** Keep it to 3-5 traits. Example: "direct, high-density, low-praise, prose over bullets, plain technical diction."
 - **A speaker, inside that register.** Who is talking, to whom, and why they care. Not "a helpful assistant." If the user has a sample of their past writing, anchor to it.
 - **A claim.** The one thing the piece asserts, in a sentence. AI prose reads as empty because it is fluent with nothing to say.
 - **A shape that follows the idea.** Structure from the argument, not a template. No intro/three-body/conclusion skeleton unless it earns its place.
 - **Contractions and real rhythm.** Vary sentence length on purpose. Let one run long and the next stop short.
 
-When the user gives no brief and wants you to just write, produce a deliberate draft and say what you chose, or offer two genuinely distinct voices. Do not produce one median draft.
+When the user asks for their own tone and you have any usable sample, infer the brief and proceed. Only ask for more samples when the tone matters and you truly do not have enough evidence. When the user gives no brief and wants you to just write, produce a deliberate draft and say what you chose, or offer two genuinely distinct voices. Do not produce one median draft.
 
 ## Mode 2: Audit (reviewing existing prose)
 
@@ -82,7 +106,22 @@ Determine what text to process:
 
 For inputs over ~2000 words, mention that the rewrite may take a long response and confirm before proceeding.
 
-### 2. Scan for patterns
+### 2. Capture the voice reference
+
+When the user wants "sound like me" or "my tone," build a 1-2 line brief from the strongest evidence available:
+
+- **Primary:** same-genre writing sample, published blog post, or article
+- **Secondary:** personal site repo content and actual talk/video transcripts
+- **Tertiary:** current-thread prompts and explicit style instructions
+- **Fallback:** genre norms plus the register rules above
+
+Weight repeated choices over isolated ones. A pattern across six prompts is voice; a typo in one sentence is noise. If the user's style is notably direct, skeptical, terse, or low-fluff, preserve that. Do not smooth them into assistant warmth.
+
+When a repo is available as a style corpus, sample 2-5 representative pieces before deciding the brief. Prefer published prose over scratch notes, outlines, or AI-assisted research folders unless the user explicitly points to those drafts as the target voice. For a site repo like `smyrick.github.io`, published files under content/blog are stronger evidence than page chrome or metadata.
+
+When using videos, prefer full transcripts or captions. Do not infer voice from the YouTube title, abstract, or conference blurb alone. Spoken filler, stage cadence, and audience acknowledgements are also weaker signals than the recurring sentence habits in writing.
+
+### 3. Scan for patterns
 
 Walk through the input once and tag every instance of the categories in the table below. Keep a count per category.
 
@@ -92,7 +131,7 @@ Treat code blocks, quoted material (lines starting with `>`), text in `backticks
 
 **Respecting intentional choices.** If a user marks a line with `unslop-ignore`, skip it. A tell is an unchosen default, not a banned word.
 
-### 3. Produce the Findings block
+### 4. Produce the Findings block
 
 Before rewriting, list what you found. This builds trust and lets the user veto a category before you commit to changes.
 
@@ -101,6 +140,7 @@ Format:
 ```markdown
 ## Findings
 
+- **Voice brief:** direct, high-density, low-praise, plain diction
 - **Em-dashes:** 7 instances
 - **Telltale vocabulary:** 4 ("delve" x2, "robust", "tapestry")
 - **Colon-led impact statements:** 2
@@ -111,7 +151,9 @@ Format:
 - (categories with 0 hits are omitted)
 ```
 
-### 4. Rewrite
+Omit the `Voice brief` line when there is no meaningful personal style signal and you are just applying register rules.
+
+### 5. Rewrite
 
 Output the full revised text. Apply the rules below. Do not summarize, do not shorten for the sake of it, do not add examples or commentary that weren't in the original.
 
@@ -122,10 +164,13 @@ Output the full revised text. Apply the rules below. Do not summarize, do not sh
 - Don't change meaning to make a sentence shorter.
 - Don't inject new content, examples, caveats, or opinions.
 - Match the author's existing voice - if they write terse, stay terse; if they write long, don't chop it.
+- Preserve the author's stance toward the reader. If they are blunt, skeptical, or low-warmth, do not round that off into friendly assistant speak.
 - Do not fix "delve into" by swapping in "dive into" (just a different tell). Use the plain verb you would actually say.
+- Do not imitate typos, misspellings, or accidental grammar errors unless the user explicitly asks for that effect.
+- Do not add praise, reassurance, or transition glue unless the source voice actually uses it.
 - A fix that introduces the over-corrected register (choppy fragments, fake casualness) is not a fix.
 
-### 5. Offer next actions
+### 6. Offer next actions
 
 After the rewrite, ask:
 
@@ -198,6 +243,7 @@ Return two blocks in this order:
 
 ```markdown
 ## Findings
+[optional 1-line voice brief]
 [bulleted list of categories with counts; skip categories with 0 hits]
 [include structural tells observed in Part B]
 
@@ -231,6 +277,10 @@ Same information, same argument, no AI fingerprint.
 
 ## Common pitfalls
 
+- **Treating prompt history as a better voice sample than the actual artifact genre.** A user's chat style matters, but a Slack DM, a PRD, and a blog post do not sound identical. Match *their* voice inside the correct register.
+- **Copying mistakes instead of voice.** Misspellings, dropped words, random lowercase, or accidental punctuation are not the tone. Mimic the decision-making, not the typo.
+- **Sanding down a blunt writer.** "Humanize" does not mean "nicer." If the user's natural style is direct and low-fluff, keep that edge without making it rude.
+- **Overfitting one stray line.** One joke or one dramatic sentence is not a voice. Use repeated traits.
 - **Over-correcting into the anti-AI register.** The fix for smooth AI prose is a real voice, not choppy fragments and forced slang. If your rewrite reads like it is trying not to sound like AI, it is its own tell. The sentence should sound like a specific person who means it.
 - **Flagging lone hits of Part C words.** A single "however" or "comprehensive" is not a tell. Weight by density. Only flag when they cluster thickly in a short span.
 - **Context-appropriate vocabulary.** "Robust" in a security doc, "nuanced" in a policy piece, and "leverage" in finance are legitimate domain terms. Flag them once in findings, then judge in context before rewriting.
