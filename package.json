@@ -1,6 +1,7 @@
 {
   "name": "smyrick-skills",
   "private": true,
+  "type": "module",
   "license": "MIT",
   "description": "Personal agent skills library for Shane Myrick",
   "scripts": {

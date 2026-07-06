@@ -2,13 +2,15 @@
 /**
  * Publishes the packaged skills collection to an OCI registry.
  */
-const fs = require("node:fs");
-const https = require("node:https");
-const path = require("node:path");
-const crypto = require("node:crypto");
-const { spawnSync } = require("node:child_process");
+import { spawnSync } from "node:child_process";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import https from "node:https";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const repoRoot = path.resolve(__dirname, "..");
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDir, "..");
 const outDir = path.join(repoRoot, ".dist", "oci");
 const packageResultPath = path.join(outDir, "package-result.json");
 const manifestPath = path.join(outDir, "manifest.json");

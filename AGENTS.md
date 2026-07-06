@@ -2,6 +2,8 @@
 
 This repository stores reusable AI agent skills. Treat skill formatting as part of every change.
 
+JavaScript in this repo uses ES modules with standard `.js` files. Keep `"type": "module"` in `package.json`; do not add `.mjs` scripts or convert repo scripts to CommonJS.
+
 After changing any `skills/**/SKILL.md` file:
 
 1. Run `npm run format`.

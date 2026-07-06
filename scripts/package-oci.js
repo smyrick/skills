@@ -2,14 +2,16 @@
 /**
  * Builds a deterministic OCI artifact payload for this skills collection.
  */
-const crypto = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
-const { spawnSync } = require("node:child_process");
-const zlib = require("node:zlib");
-const YAML = require("yaml");
+import { spawnSync } from "node:child_process";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import zlib from "node:zlib";
+import YAML from "yaml";
 
-const repoRoot = path.resolve(__dirname, "..");
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDir, "..");
 const outDir = path.join(repoRoot, ".dist", "oci");
 const skillsDir = path.join(repoRoot, "skills");
 

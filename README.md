@@ -83,9 +83,9 @@ Any OCI-aware catalog or control plane can link this package by digest.
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | Self-contained ARCHITECTURE.html with entry points, APIs, modules, inline SVG diagrams | Read, Glob, Grep |
 | [humanize-text](./skills/humanize-text/SKILL.md) | Strip AI-output tells while preserving meaning ("humanize", de-AI prose) | Read, Write, Edit |
 | [mock-interview](./skills/mock-interview/SKILL.md) | Run source-grounded mock interviews for technical roles with evidence-based scoring and session notes | File read/search, optional web research, optional subagents |
-| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | Research and plan non-code decisions (purchases, trips, evaluations); depth-sized effort, persisted research docs in `.agents/research/`, recursive agent lifecycle | AskQuestion, Task subagents |
+| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | Research and plan non-code decisions with interview, sourced comparison, tradeoff stress-testing, and shared `.agents/research/` protocol | AskQuestion, Task subagents, web research |
 | [product-summary](./skills/product-summary/SKILL.md) | Nestable PRODUCT_TERMS.md glossaries (YAML terms); challenges fuzzy language, scenarios, code drift | Read, Glob, Grep; AskQuestion |
-| [research-and-plan](./skills/research-and-plan/SKILL.md) | Research-driven implementation plans, design tree, parallel subagent handoff; depth-sized effort, persisted research docs in `.agents/research/`, recursive agent lifecycle | AskQuestion, CreatePlan, Task subagents |
+| [research-and-plan](./skills/research-and-plan/SKILL.md) | Research-driven implementation plans with codebase discovery, design-tree decisions, parallel subagent handoff, and shared `.agents/research/` protocol | AskQuestion, CreatePlan, Task subagents |
 | [shorten-response](./skills/shorten-response/SKILL.md) | Dense co-worker mode: high signal, low filler, no glazing | Conversational guidance |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | PRD via interview and exploration, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
 
