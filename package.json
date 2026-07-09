@@ -8,12 +8,15 @@
     "add-skill": "cd skills && npx skills init",
     "format": "node scripts/format-skills.js",
     "format:check": "node scripts/format-skills.js --check",
-    "check": "npm run format:check && npm run validate",
+    "check": "npm run format:check && npm run validate && npm run test:contract",
     "validate": "node scripts/validate-skills.js",
+    "test:contract": "node --test tests/skill-contract.test.js",
     "oci:package": "node scripts/package-oci.js",
+    "oci:verify": "node scripts/verify-oci.js",
+    "oci:smoke": "npm run oci:package && npm run oci:verify",
     "oci:publish": "node scripts/publish-oci.js",
     "oci:publish:dry-run": "node scripts/publish-oci.js --dry-run",
-    "oci:release": "npm run check && npm run oci:package && npm run oci:publish"
+    "oci:release": "npm run check && npm run oci:smoke && npm run oci:publish"
   },
   "devDependencies": {
     "yaml": "^2.8.3"

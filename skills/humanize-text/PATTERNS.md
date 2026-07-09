@@ -4,7 +4,7 @@ Companion file to [SKILL.md](./SKILL.md). Read this when the inline table in SKI
 
 Each section below has: what the pattern looks like, 2-4 before/after examples, and a "when to leave it alone" note. Part B covers structural tells a regex cannot see (human pass required). Part C covers words cleared by the data that should not be over-chased.
 
-**Weighting rule:** Two tells are absolute (flagged on a single instance anywhere): the em dash and leftover assistant boilerplate. For everything else, weight by how thickly it clusters. A single "comprehensive" or one "delve" is almost always the writer's own prose. Six of them in a 200-word paragraph is slop; six scattered across a 5,000-word essay is just how the person writes.
+**Weighting rule:** Leftover assistant boilerplate is an absolute tell. Treat em dashes and every other pattern in context: preserve them inside protected spans and when they are a stable part of the writer's voice. Otherwise, weight patterns by how thickly they cluster. A single "comprehensive" or one "delve" is almost always the writer's own prose. Six of them in a 200-word paragraph is slop; six scattered across a 5,000-word essay is just how the person writes.
 
 ---
 
@@ -71,6 +71,7 @@ If a repo is available as the writing corpus, prefer published content files ove
 
 **Leave it alone when:**
 
+- It appears inside any protected span, including code, a URL, a citation, or user-marked text. Preserve the span's punctuation exactly.
 - Inside a direct quotation.
 - The author's other published writing uses em-dashes consistently (they're a known stylistic choice).
 - The dash separates a dialogue interruption in fiction.

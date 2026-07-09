@@ -1,0 +1,6 @@
+interface:
+  display_name: "Codebase Summary"
+  short_description: "Document codebase architecture and flows"
+  default_prompt: "Use $codebase-summary to document this repository's architecture and key flows."
+policy:
+  allow_implicit_invocation: false
