@@ -8,7 +8,7 @@ Use this reference when preparing a role-specific mock interview. The live inter
 - **Target role:** job description, role summary, recruiter description, or hiring manager notes.
 - **Interview shape:** stage name, duration, modality, and whether the user wants timed evaluation or coaching.
 
-Hard stop: if the candidate profile is empty, placeholder-only, or missing, ask for it before role-specific practice. If the job description is missing, ask for it or state that the session will be a generic drill.
+Partial inputs are valid. If the candidate profile is missing, omit personalized claims and run role- or stage-specific practice. If the job description is missing, use candidate facts and a generic stage rubric. Ask for a missing source only when it is essential to the specific practice the user requested.
 
 ## Optional Inputs
 

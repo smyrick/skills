@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write a PRD"
+  short_description: "Create a bounded, decision-ready PRD"
+  default_prompt: "Use $write-a-prd to draft a decision-ready PRD for this feature."
+policy:
+  allow_implicit_invocation: false

@@ -1,73 +1,145 @@
 ---
-name: write-a-prd
-description: Create a PRD through user interview, codebase exploration, and module design, then
-  submit as a GitHub issue. Use when user wants to write a PRD, create a product requirements
-  document, or plan a new feature.
-author: Shane Myrick
-license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: Read, Glob, Grep; GitHub (issues) or equivalent for submitting the PRD.
+name: "write-a-prd"
+description: "Create a product requirements document through bounded discovery, codebase context when available, and explicit product decisions."
 ---
 
-This skill will be invoked when the user wants to create a PRD. You may skip steps if you don't consider them necessary.
+# Write a PRD
 
-1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
-2. Explore the repo to verify their assertions and understand the current state of the codebase.
-3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
-4. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+Turn a product problem into an outcome-focused, decision-ready product requirements document. Default to drafting in chat. Do not publish, create an issue, or write a file unless the user explicitly requests that action.
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
+## Establish the working mode
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+Confirm only information that changes the PRD:
 
-1. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be submitted as a GitHub issue.
+- audience and decision owner;
+- product or feature scope;
+- desired output: chat draft, local file, or later publication;
+- source material the user wants treated as authoritative;
+- deadline or launch constraint when relevant.
 
+If these are already clear, proceed without asking. Keep discovery bounded: ask at most three focused questions at a time, explain why unresolved choices matter, and stop interviewing once remaining uncertainty can be recorded under Open Questions.
 
+## Gather evidence
 
-## Problem Statement
+Start with the user’s problem statement, research, customer evidence, existing requirements, and explicit constraints. Distinguish evidence from assumptions.
 
-The problem that the user is facing, from the user's perspective.
+Inspect a repository only when it is available and the PRD depends on an existing product, workflow, technical constraint, or integration. Repository inspection should clarify current user-visible behavior, existing capabilities, dependencies, and constraints—not predetermine the product solution.
 
-## Solution
+When inspecting code:
 
-The solution to the problem, from the user's perspective.
+- read repository guidance and current product or architecture documentation first;
+- trace representative user flows and public interfaces;
+- cite repo-relative paths and symbols for material current-state claims;
+- label architectural inference and stale-document risk;
+- avoid turning the PRD into an implementation plan.
 
-## User Stories
+If implementation research is substantial or uncertain, record the dependency and defer detailed planning to [`research-and-plan`](../research-and-plan/SKILL.md) after the PRD is accepted.
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+## Resolve product decisions
 
-1. As an , I want a , so that 
+Work from outcomes toward requirements:
 
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
+1. Define the affected user, their current problem, and evidence that the problem matters.
+2. State the measurable outcome and why it matters now.
+3. Define the smallest coherent in-scope experience and explicit non-goals.
+4. Walk through primary, alternate, empty, error, permission, and recovery flows that materially affect requirements.
+5. Turn decisions into testable requirements and acceptance criteria.
+6. Record unresolved decisions with an owner or validation method instead of guessing.
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Prefer durable product decisions over module names, file paths, or speculative architecture. Include technical constraints only when they bound product behavior, feasibility, privacy, security, accessibility, or rollout.
 
-## Implementation Decisions
+## Draft the PRD
 
-A list of implementation decisions that were made. This can include:
+Use this structure and omit sections only when genuinely inapplicable.
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
+### Title and document status
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+- Working title
+- Status: Draft, In review, or Approved
+- Owner and decision-makers when known
+- Last updated date
 
-## Testing Decisions
+### Executive summary
 
-A list of testing decisions that were made. Include:
+Summarize the user problem, proposed product change, expected outcome, and major constraint in a short paragraph.
 
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+### Problem and evidence
 
-## Out of Scope
+Describe the problem from the affected user’s perspective. Include observed evidence, frequency or severity when known, current workarounds, and assumptions that still need validation.
 
-A description of the things that are out of scope for this PRD.
+### Users and use cases
 
-## Further Notes
+Identify primary and secondary users, jobs to be done, relevant permissions or contexts, and representative use cases. Avoid fictional precision unsupported by research.
 
-Any further notes about the feature.
+### Goals and success measures
+
+State product outcomes, leading and lagging measures, guardrail metrics, measurement windows, and the baseline or instrumentation gap when known.
+
+### Non-goals
+
+List adjacent problems and capabilities intentionally excluded from this version.
+
+### Proposed experience
+
+Describe the end-to-end user experience and important states. Include entry, happy path, alternate paths, empty states, errors, recovery, accessibility, permissions, and communication behavior as applicable.
+
+### Requirements
+
+Give every requirement a stable ID, priority, product rationale, and observable acceptance criteria.
+
+| ID | Priority | Requirement | Acceptance criteria |
+| --- | --- | --- | --- |
+| R1 | Must | Outcome-focused behavior | Observable condition that demonstrates completion |
+
+Use Must/Should/Could or the user’s preferred prioritization system. Do not pad the document with exhaustive low-value user stories. Add user stories only when they clarify audience, motivation, or an interaction.
+
+### Data, trust, and policy
+
+Cover data inputs and outputs, retention, privacy, security, abuse cases, compliance, accessibility, and audit needs when relevant. Mark specialist review requirements rather than inventing policy.
+
+### Dependencies and constraints
+
+List product, organizational, vendor, platform, migration, compatibility, and technical constraints. Cite current-state sources where available.
+
+### Rollout and operations
+
+Define release stages, eligibility, migration or backfill, support readiness, observability, rollback or disablement, and owner handoffs when relevant.
+
+### Risks and mitigations
+
+Connect each meaningful product, adoption, operational, or delivery risk to a mitigation or validation step.
+
+### Open questions and decisions
+
+Separate resolved decisions from open questions. Give each open question an owner or decision method and identify whether it blocks approval, implementation, or launch.
+
+## Review the draft
+
+Before presenting:
+
+1. Check that requirements trace to the stated problem and goals.
+2. Check that acceptance criteria are externally observable and solution-neutral where possible.
+3. Check that scope, non-goals, permissions, failure states, success measures, rollout, and unresolved decisions are explicit.
+4. Verify source-backed claims and label assumptions.
+5. Remove implementation detail that does not constrain product behavior.
+6. Identify decisions that still require user confirmation.
+
+Present the complete draft in chat unless the user requested a file. If a file path was requested, preview the final content and confirm the target before writing or replacing it.
+
+## Optional publication
+
+Treat publication as a separate, consequential action. Never infer permission to publish from “write a PRD.”
+
+When the user asks to create a GitHub issue or publish elsewhere:
+
+1. Resolve the exact destination, repository or project, issue title, labels, assignees, and formatting.
+2. Show the exact title, body, metadata, and destination that will be submitted.
+3. Ask for explicit confirmation of that exact preview.
+4. Publish once using an available authenticated integration.
+5. Return the resulting link and report any metadata the destination changed.
+
+If publication is unavailable, provide a copy-ready draft without claiming it was submitted.
+
+## Implementation-planning handoff
+
+After the PRD is approved, offer an explicit handoff to `$research-and-plan` for a decision-complete implementation plan. Pass the approved PRD, its cited current-state evidence, constraints, resolved decisions, open technical questions, and non-goals. Do not collapse product requirements and implementation planning into one artifact unless the user explicitly asks.

@@ -11,6 +11,8 @@
 - Interviewer persona:
 - Live coaching allowed:
 - Sources used:
+- Source provenance and dates:
+- Assumptions / fictional premises:
 - Question IDs or themes:
 - Output path:
 
@@ -35,7 +37,7 @@
 
 ## Scorecard
 
-| Dimension | Score 1-5 | Evidence from candidate answer | Revision guidance |
+| Dimension | Score 1-5 or N/A | Evidence from candidate answer | Revision guidance |
 | --- | --- | --- | --- |
 | Structure |  |  |  |
 | Specificity / evidence |  |  |  |

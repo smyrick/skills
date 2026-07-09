@@ -1,70 +1,105 @@
 # Research Protocol
 
-Use this file as the authoritative source for effort sizing and durable research artifact structure.
+Use this as the authoritative protocol for sizing, safe persistence, run identity, budgets, and evidence.
 
-## Research Tiers
+## Contents
 
-Pick a tier before launching research.
+- Research modes and budgets
+- Safe storage and run identity
+- Shared files and parent ownership
+- Evidence and findings format
+- Stop conditions
 
-- **Tier 0 - Single context**: small or familiar task. Research and synthesize in the current context without subagents or a research folder.
-- **Tier 1 - Light**: several focused research areas. Create `.agents/research/<slug>/` with `CONTEXT.md` and `findings/`. Use a shallow guard such as nesting depth <= 2 and a small total-agent cap.
-- **Tier 2 - Research project**: many areas, unfamiliar domain/codebase, expensive decision, or high-stakes change. Add `INDEX.md`; use a larger but explicit max depth and total-agent cap.
+## Research Modes and Budgets
 
-When unsure, recommend the smaller tier. Escalate only when research reveals missing surface area.
+Choose the smallest mode that can answer the caller's material questions:
 
-Tiering is complete when the research run names the tier, why it fits, whether artifacts will be created, and the guard on agent count/depth.
+- **Tier 0 — current context**: one bounded pass, no research folder, and no delegation. Return control to the calling workflow.
+- **Tier 1 — light durable research**: several independent questions. Default to at most three research passes, one wave, and nesting depth one.
+- **Tier 2 — research project**: broad, unfamiliar, expensive, or consequential work. Default to at most six total passes, two waves, and nesting depth two.
 
-## Research Folder
+Respect any lower host or user limit. Before Tier 1 or Tier 2 work, record:
 
-For Tier 1+, store research in an IDE-agnostic folder. Prefer an existing ignored agent-artifact folder if the repo clearly has one; otherwise use:
+- Maximum agents or research passes, nesting depth, and waves.
+- A concrete timebox or deadline.
+- A token ceiling when usage is observable. Otherwise mark it `unavailable` and enforce a fixed question, wave, and source-check cap instead.
+- The materiality test: what new evidence could still change the downstream plan or decision.
+
+Do not expand a budget merely because more discoverable questions exist. Ask before materially exceeding a user-approved budget.
+
+## Safe Storage and Consent
+
+Persistent research is a write operation. Use this path order:
+
+1. A location the user explicitly supplied or approved.
+2. An existing agent-artifact directory that is verified as ignored by version control.
+3. A temporary directory outside the repository, with its retention limits disclosed in the handoff.
+
+Never create an unignored repository folder without explicit consent. If ignore status cannot be verified, use a temporary location or return findings in chat. Do not persist credentials, secrets, private keys, sensitive personal information, or unnecessary identifying details. Sanitize the shared brief before delegation.
+
+## Stable Slugs, Collisions, and Resume
+
+Derive a short lowercase ASCII base slug from the goal. Before writing, inspect any matching run:
+
+- Resume only when the goal and scope match, the prior run is incomplete or explicitly selected, and its evidence is still usable.
+- Record the resume time, prior status, and changed scope in `RUN.md`.
+- Otherwise create a versioned run such as `{slug}-YYYYMMDD-2`.
+- Never silently overwrite a completed run or mix evidence from different goals.
+
+`RUN.md` records run ID, base slug, goal digest or summary, tier, created and updated times, research-as-of date, status, storage decision, budget, stop rule, and resume or version history.
+
+## Shared Files and Parent Ownership
+
+For Tier 1 and Tier 2, use:
 
 ```text
-.agents/research/<slug>/
+{research-root}/{run-slug}/
+  RUN.md
   CONTEXT.md
+  INDEX.md
   findings/
-  INDEX.md            # Tier 2 only
+    01-area.md
 ```
 
-`CONTEXT.md` is the shared brief every agent reads first:
+The parent alone writes `RUN.md`, `CONTEXT.md`, and `INDEX.md`. `CONTEXT.md` contains the sanitized goal, scope, constraints, assumptions, caller priorities, starting sources, research questions, evidence standard, and budget. `INDEX.md` maps each allocated ID to its question, owner, unique findings path, and status: `pending`, `running`, `complete`, `partial`, `failed`, or `recovered`.
 
-- Goal.
-- Scope and out-of-scope boundaries.
-- Constraints and known assumptions.
-- User priorities or product intent.
-- Relevant files, sources, or starting points.
-- Tier guard.
+Children write only their assigned findings file. If a child cannot write it, the child returns exact markdown and the parent persists it.
 
-Each findings file uses this shape:
+## Evidence and Findings Format
+
+Cited sources are authoritative; findings files are working notes. Every material finding must include:
+
+- **Claim**: concise fact or inference, labeled correctly.
+- **Evidence**: exact `path:line` and symbol plus revision or working-tree state for code; title, publisher, URL, publication or update date when available, and access date for web sources.
+- **Context**: relevant locale, market, currency, version, or time range.
+- **Confidence**: high, medium, or low with a short reason.
+- **Contradictions / gaps**: conflicting evidence, staleness, missing coverage, or `None found`.
+
+Use this findings shape:
 
 ```markdown
 # Findings: [Area]
 
-## Goal
-[Specific research question]
-
-## What I Did
-[Files/sources explored and approach]
+## Goal and Method
+[Bounded question, sources inspected, and limitations.]
 
 ## Findings
-[Dense factual summary; no raw dumps]
+### [Finding]
+- **Claim**: [...]
+- **Evidence**: [...]
+- **Context**: [...]
+- **Confidence**: [...]
+- **Contradictions / gaps**: [...]
 
 ## How This Advances the Goal
-[What this unlocks, recommends, or rules out]
+[What this supports, rules out, or leaves for the caller to decide.]
 
 ## Open Questions / Handoffs
-[Only unresolved items]
+[Only material unresolved items.]
 ```
 
-`INDEX.md` lists each agent, its goal, and its findings file.
+Summarize evidence; do not paste raw dumps or sensitive source content.
 
-## Slugs and Paths
+## Stop Conditions
 
-Use a short lowercase ASCII slug from the research goal. Prefer stable paths over clever names.
-
-Examples:
-
-- `.agents/research/auth-session-timeout/`
-- `.agents/research/camera-purchase-portrait-work/`
-- `.agents/research/skills-research-orchestration/`
-
-Store research artifacts under `.agents/research/<slug>/`; reserve `.cursor/` for plan files or IDE-specific state.
+Stop when the material questions have sufficient evidence, further research is unlikely to change the downstream choice, a recorded budget is exhausted, or safety or access blocks progress. Mark residual uncertainty and failed coverage explicitly. Do not require every discoverable question to be resolved.

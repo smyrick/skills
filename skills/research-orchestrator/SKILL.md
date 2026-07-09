@@ -1,53 +1,54 @@
 ---
-name: research-orchestrator
-description: |
-  Orchestrate durable research before planning or decisions. Use for research handoffs, subagent research coordination, planning-skill research dependencies, or when the user asks for deep research that should persist context and findings under .agents/research/<slug>/.
-author: Shane Myrick
-license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: Task subagents (explore, generalPurpose), readonly file/search tools, web research
-  tools when current external facts are needed, and markdown files under .agents/research/<slug>/
-  for durable handoff.
+name: "research-orchestrator"
+description: "Coordinate durable research for another skill or user request. Use when planning or decision work needs multiple focused research passes, persistent findings, or a reusable research handoff."
 ---
 
 # Research Orchestrator
 
-Produce durable research context that another agent, planning skill, or future session can consume. This skill owns research setup, subagent handoff, findings files, synthesis, and the final research handoff.
+Coordinate bounded, durable research and return a reusable evidence handoff. This skill owns research setup, delegation, recovery, evidence synthesis, and provenance. It does not own the downstream implementation plan or final personal or product decision.
 
-References:
+Read the references as each stage requires:
 
-- [`references/research-protocol.md`](references/research-protocol.md): sizing, folder layout, `CONTEXT.md`, `findings/`, and `INDEX.md`.
-- [`references/agent-lifecycle.md`](references/agent-lifecycle.md): parent/child agent loop, recursive guard, spin-up, and spin-down.
-- [`references/handoff.md`](references/handoff.md): synthesis gate, research summary, and downstream consumption.
+- [`references/research-protocol.md`](references/research-protocol.md): tiers, budgets, safe storage, run identity, and evidence format.
+- [`references/agent-lifecycle.md`](references/agent-lifecycle.md): parent-owned coordination, delegation, status, and failure recovery.
+- [`references/handoff.md`](references/handoff.md): source verification, synthesis, and the research-only handoff.
 
 ## Workflow
 
-### 1. Size the Research
+### 1. Scope and Bound the Run
 
-Read [`references/research-protocol.md`](references/research-protocol.md), then pick the smallest tier that can answer the goal.
+Read the research protocol. Confirm that the request benefits from multiple passes or persistent findings; return Tier 0 work to the calling workflow instead of creating artifacts.
 
-Completion gate: tier is named, the reason is explicit, and Tier 1+ research has a fixed slug, folder path, max depth, and max agent count.
+For durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value.
 
-### 2. Create Shared Context
+Completion gate: persistence is authorized, storage is safe, and the run has a concrete budget and stop rule.
 
-For Tier 1+, follow [`references/research-protocol.md`](references/research-protocol.md) to create the research folder and `CONTEXT.md` before launching agents.
+### 2. Initialize Shared Context
 
-Completion gate: `CONTEXT.md` exists and includes goal, scope, constraints, assumptions, starting points, and tier guard. Tier 2 also has `INDEX.md`.
+Follow the protocol to choose an existing ignored artifact location or a temporary location outside the repository. Never place unignored files in a repository without explicit consent, and never persist secrets or sensitive personal information.
+
+The parent creates and owns `RUN.md`, `CONTEXT.md`, and `INDEX.md`. Inspect any existing slug before choosing whether to resume or create a versioned run; never overwrite or mix unrelated evidence.
+
+Completion gate: run metadata records identity, status, freshness, budget, storage decision, and resume or version history.
 
 ### 3. Launch Focused Research
 
-Read [`references/agent-lifecycle.md`](references/agent-lifecycle.md), then split research by independent questions. Use codebase search/read tools for repo facts. Use web research only when current external facts matter.
+Read the agent lifecycle reference. Split only independent research questions. The parent allocates each child a unique ID and findings path, updates status, and preserves exclusive ownership of shared metadata.
 
-Completion gate: every research question has one owner, one unique findings path, and a clear expected output. Every launched agent has either written its findings file or returned exact findings markdown for the parent to persist.
+Require exact file-and-line evidence for codebase claims and URLs plus relevant publication and access dates for web claims. Findings are working notes; cited files and sources remain authoritative.
 
-### 4. Collect and Synthesize
+Completion gate: every launched pass has an owner, bounded question, unique output, evidence requirements, and tracked status.
 
-Read [`references/handoff.md`](references/handoff.md), then read findings files as the durable source of truth. Synthesize what was learned, what was ruled out, what remains unknown, and what downstream agent or user decision this unlocks.
+### 4. Recover and Synthesize
 
-Completion gate: synthesis covers every findings file, calls out blocked or user-owned questions, and distinguishes facts from recommendations.
+The parent collects results, marks completion or failure, and handles material gaps through a bounded retry, reassignment, or sequential research pass. Preserve unresolved failures instead of silently dropping them.
 
-### 5. Deliver the Research Handoff
+Before synthesis, reopen material cited sources, resolve or expose contradictions, and calibrate confidence. Stop when added research is unlikely to change a downstream decision or when a recorded budget limit is reached.
 
-Use the final handoff shape from [`references/handoff.md`](references/handoff.md).
+Completion gate: every material question is completed, explicitly partial, blocked, or out of scope.
 
-Completion gate: final handoff includes research folder path, summary, key findings, files or sources, open questions, and recommended next step. If this research feeds a planning skill, tell it to reference `.agents/research/<slug>/CONTEXT.md` plus the relevant `findings/` files.
+### 5. Deliver a Research-Only Handoff
+
+Read the handoff reference and return its compact shape. Include the run location, status, research date, evidence, confidence, contradictions, unresolved questions, and recommended downstream workflow.
+
+Do not turn the handoff into an implementation plan or make the final decision. Keep facts, inferences, and possible implications distinct so the calling skill or user can decide.

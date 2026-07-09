@@ -62,6 +62,7 @@ Optional when the user requests candidate-question practice:
 
 | Score | Meaning |
 | --- | --- |
+| N/A | Dimension was not tested or evidence is insufficient for a numeric score |
 | 1 | Weak, missing evidence, off-topic, or unable to evaluate |
 | 2 | Underdeveloped; vague ownership, weak proof, or incomplete reasoning |
 | 3 | Acceptable but generic; coherent answer with limited differentiation |
@@ -71,6 +72,7 @@ Optional when the user requests candidate-question practice:
 Rules:
 
 - No 4 or 5 without a quote or tight evidence paraphrase.
+- Use `N/A` instead of guessing when the stage did not test a dimension or the answer provides too little evidence.
 - Default to 3 when the answer is coherent but generic.
 - Use 2 when the answer relies on "we" without personal ownership or lacks proof.
 - Do not penalize a candidate for refusing to disclose confidential details; change the prompt.

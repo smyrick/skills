@@ -26,8 +26,8 @@ jobs:
       - name: Check skill formatting and metadata
         run: npm run check
 
-      - name: Package OCI artifact
-        run: npm run oci:package
+      - name: Package and verify OCI artifact
+        run: npm run oci:smoke
 
       - name: Publish OCI artifact
         run: npm run oci:publish
