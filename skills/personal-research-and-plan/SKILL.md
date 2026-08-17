@@ -1,20 +1,22 @@
 ---
 name: personal-research-and-plan
 description: |
-  Research and plan non-code decisions before acting. Use for purchases, trips, product comparisons, evaluations, or personal decisions where the user needs options, tradeoffs, sources, and a concrete action plan. Use research-orchestrator for durable topic research, then stress-test tradeoffs and deliver a decision plan.
+  Research and plan non-code decisions before acting. Use for purchases, trips, comparisons, evaluations, or personal decisions needing options, tradeoffs, sources, and an action plan. Select direct research, focused read-only leaf scouts, or an internal research-orchestrator subworkflow, then stress-test tradeoffs and deliver a decision plan.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
 compatibility: AskQuestion (Cursor) or user prompting (Claude Code). Task subagents (generalPurpose)
-  and web research tools for factual research. Use research-orchestrator for durable
-  .agents/research/<slug>/ context and findings.
+  and web research tools for factual research. Route durable .agents/research/<slug>/ context and
+  findings through research-orchestrator.
 ---
 
 # Personal Research and Plan
 
 Create action plans for non-code decisions through interview, research, tradeoff analysis, and user review. The output is a markdown decision plan the user can act on or share.
 
-For durable research, invoke `research-orchestrator` after the pre-research interview and reference its `.agents/research/<slug>/` output from the final plan. This skill owns the decision-making layer, not the reusable research protocol.
+Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, research synthesis, tradeoff decisions, and the final plan. Choose the smallest research mode after the pre-research interview; the user does not need to invoke another skill.
+
+For durable research, route internally through `research-orchestrator` as one subworkflow. It owns its research assignments, metadata, retries, persisted findings, and research synthesis. Consume its research-only handoff, verify material sources, then resume this workflow. Do not independently manage its children.
 
 Use [`references/decision-handoff-template.md`](references/decision-handoff-template.md) for the final artifact.
 
@@ -40,12 +42,15 @@ Synthesize back the goal, constraints, and priorities. Resolve contradictions be
 
 Completion criterion: the user's goal, hard limits, priority order, and decision deadline are explicit.
 
-### 2. Size and Run Research
+### 2. Select and Run the Research Mode
 
-Decide whether the decision needs durable research:
+Use the smallest useful mode:
 
-- **Small / familiar**: research in the current context and continue.
-- **Tier 1+ research needed**: use `research-orchestrator` to create the research folder, run subagent research, and synthesize findings before drafting.
+- **Direct**: research bounded or familiar decisions in the current context without subagents or a research folder.
+- **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts and keep their findings in the current context.
+- **Durable**: when findings need persistence, recovery, provenance, or reuse, route through `research-orchestrator`. Let it enforce artifact authorization and return a research-only handoff before decision work resumes.
+
+Parallelize only independent questions. Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Keep scouts as leaves: they cannot spawn children or write durable artifacts. For durable research, treat `research-orchestrator` as one worker and do not separately assign its research questions.
 
 Personal research dimensions:
 
@@ -56,7 +61,7 @@ Personal research dimensions:
 - Alternatives and opportunity costs.
 - Fit against the user's stated constraints and priorities.
 
-Completion criterion: findings identify credible options, key tradeoffs, current prices or availability when relevant, source quality, and any user-owned decision that remains.
+Completion criterion: the mode and reason are explicit, and findings identify credible options, key tradeoffs, current prices or availability when relevant, source quality, and any user-owned decision that remains.
 
 ### 3. Stress-Test the Tradeoffs
 

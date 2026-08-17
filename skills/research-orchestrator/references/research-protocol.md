@@ -6,17 +6,29 @@ Use this file as the authoritative source for effort sizing and durable research
 
 Pick a tier before launching research.
 
-- **Tier 0 - Single context**: small or familiar task. Research and synthesize in the current context without subagents or a research folder.
-- **Tier 1 - Light**: several focused research areas. Create `.agents/research/<slug>/` with `CONTEXT.md` and `findings/`. Use a shallow guard such as nesting depth <= 2 and a small total-agent cap.
-- **Tier 2 - Research project**: many areas, unfamiliar domain/codebase, expensive decision, or high-stakes change. Add `INDEX.md`; use a larger but explicit max depth and total-agent cap.
+- **Tier 0 - Single context**: small or familiar task. Research and synthesize in the current context without `research-orchestrator`-managed delegation or a research folder. A calling planner may still use its own ephemeral leaf scouts before routing here.
+- **Tier 1 - Light**: several focused research areas whose persistence is authorized. Create `.agents/research/<slug>/` with `CONTEXT.md` and `findings/`. Use a shallow guard such as nesting depth <= 2 and a small total pass budget.
+- **Tier 2 - Research project**: many areas, unfamiliar domain/codebase, expensive decision, or high-stakes change whose persistence is authorized. Add `INDEX.md`; use a larger but explicit max depth and total pass budget.
 
 When unsure, recommend the smaller tier. Escalate only when research reveals missing surface area.
 
-Tiering is complete when the research run names the tier, why it fits, whether artifacts will be created, and the guard on agent count/depth.
+Tiering is complete when the research run names the tier, why it fits, whether artifact writes are authorized, and the guard on total passes and depth.
+
+## Artifact Authorization
+
+Selecting or invoking this skill does not authorize persistent writes. Before starting Tier 1+ research, confirm that the user, request, or governing workflow explicitly authorizes research artifacts in the target repository.
+
+Without that authorization, do not create or edit `.agents/research/`. Keep the work read-only, return findings in the current context, and do not claim a durable handoff exists.
+
+## Pass Budget
+
+One pass is one launched research-agent attempt. The initial assignment, every retry, and every reassignment each consume one pass, including failed or partial attempts.
+
+Do not reset or evade the budget by renaming a question or replacing its owner. When the budget is exhausted, stop launching agents and hand unresolved questions back to the caller.
 
 ## Research Folder
 
-For Tier 1+, store research in an IDE-agnostic folder. Prefer an existing ignored agent-artifact folder if the repo clearly has one; otherwise use:
+For an authorized Tier 1+ run, store research in an IDE-agnostic folder. Prefer an existing ignored agent-artifact folder if the repo clearly has one; otherwise use:
 
 ```text
 .agents/research/<slug>/
@@ -32,7 +44,7 @@ For Tier 1+, store research in an IDE-agnostic folder. Prefer an existing ignore
 - Constraints and known assumptions.
 - User priorities or product intent.
 - Relevant files, sources, or starting points.
-- Tier guard.
+- Tier guard, including max nesting depth, total pass budget, and passes consumed.
 
 Each findings file uses this shape:
 
@@ -55,7 +67,7 @@ Each findings file uses this shape:
 [Only unresolved items]
 ```
 
-`INDEX.md` lists each agent, its goal, and its findings file.
+`INDEX.md` lists each agent attempt, its goal, findings file, status, and consumed pass.
 
 ## Slugs and Paths
 

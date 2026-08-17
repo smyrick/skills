@@ -1,20 +1,22 @@
 ---
 name: research-and-plan
 description: |
-  Plan implementation work before coding. Use when the user asks to plan, design, architect, break down, stress-test, or create a handoff for a code change. Use research-orchestrator for durable Tier 1+ research, then resolve user-owned design decisions and deliver a phased implementation plan.
+  Plan implementation work before coding. Use when the user asks to plan, design, architect, break down, stress-test, or create a handoff for a code change. Select direct research, focused read-only leaf scouts, or an internal research-orchestrator subworkflow, then resolve design decisions and deliver a phased implementation plan.
 author: Shane Myrick
 license: MIT
 repository: https://github.com/smyrick/skills
 compatibility: AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan
-  mode owns the plan; otherwise markdown file handoff. Task subagents for readonly codebase
-  exploration and phased execution handoffs. Use research-orchestrator for durable research.
+  mode owns the plan; otherwise markdown file handoff. Task subagents for read-only leaf scouting
+  and phased execution handoffs. Route durable research through research-orchestrator.
 ---
 
 # Research and Plan
 
 Create implementation plans through codebase research and user collaboration. The output is a concrete handoff an orchestration agent can execute phase-by-phase with parallel subagents.
 
-For durable research, invoke `research-orchestrator` first and reference its `.agents/research/<slug>/` output from the final plan. This skill owns the implementation planning layer, not the reusable research protocol.
+Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, research synthesis, design decisions, and the final plan. Choose the smallest research mode that can support that plan; the user does not need to invoke another skill.
+
+For durable research, route internally through `research-orchestrator` as one subworkflow. It owns its research assignments, metadata, retries, persisted findings, and research synthesis. Consume its research-only handoff, verify material sources, then resume this workflow. Do not independently manage its children.
 
 Use [`references/implementation-handoff-template.md`](references/implementation-handoff-template.md) for the final artifact.
 
@@ -22,14 +24,15 @@ Credits: The interview and design-tree pattern is adapted from [grill-me](https:
 
 ## Workflow
 
-### 1. Size the Work
+### 1. Select the Research Mode
 
-Decide whether the task needs durable research:
+Use the smallest useful mode:
 
-- **Small / familiar**: inspect in the current context and continue.
-- **Tier 1+ research needed**: use `research-orchestrator` to create the research folder, run subagent research, and synthesize findings before drafting.
+- **Direct**: inspect bounded or familiar work in the current context without subagents or a research folder.
+- **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts and keep their findings in the current context.
+- **Durable**: when findings need persistence, recovery, provenance, or reuse, route through `research-orchestrator`. Let it enforce artifact authorization and return a research-only handoff before planning resumes.
 
-Completion criterion: the research depth is explicit, and any `.agents/research/<slug>/` path is known.
+Completion criterion: the mode and reason are explicit, and any authorized `.agents/research/<slug>/` path is known.
 
 ### 2. Research the Codebase
 
@@ -43,7 +46,9 @@ Implementation research dimensions:
 - Config, environment variables, feature flags, build settings.
 - API surface: exported types, interfaces, endpoints, schemas, events.
 
-Use readonly search/read tools and focused subagents. For Tier 1+ research, delegate the durable folder and findings protocol to `research-orchestrator`.
+Use read-only search and inspection tools. Parallelize only independent questions. Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Keep scouts as leaves: they cannot spawn children or write durable artifacts.
+
+For durable research, treat `research-orchestrator` as one worker and do not separately assign its research questions. The planner remains responsible for verifying material findings and deciding what enters the implementation plan.
 
 Completion criterion: findings identify real files, functions, contracts, tests, constraints, and any user-owned decisions that remain.
 
