@@ -1,170 +1,175 @@
 # Contributing a Skill
 
-This guide is written for **both humans and AI agents**. If you're an agent reading this to add a new skill on the repository owner's behalf, follow these steps exactly.
+This repository treats a skill's instructions, invocation behavior, adapter metadata, and tests as one contract. Follow [AGENTS.md](./AGENTS.md) when changing that contract.
 
----
+## When a Skill Is Worth Adding
 
-## When to Add a Skill
+Add a skill when the workflow is repeatable, has meaningful decisions or tool use, and becomes materially more reliable with written guidance. Keep one-off tasks, simple preferences, and facts that belong in normal project documentation out of the portfolio.
 
-Add a skill when a workflow meets these criteria:
+Before adding a skill, decide whether an existing skill should absorb the behavior. Prefer a small coherent portfolio over overlapping trigger descriptions.
 
-1. **Repeatable** — You or your team does it more than once a month
-2. **Multi-step** — it involves at least 2–3 tool calls or decision points
-3. **Lossy without guidance** — a generic agent would forget important context (cloud IDs, project keys, personas, conventions)
-4. **Valuable to encode** — having written instructions makes the output meaningfully better
+## Invocation Mode
 
-If a task is truly one-off or trivial, don't add a skill — just do the task.
+Choose invocation mode before writing the description. Record it in `agents/openai.yaml`, add it to the README Skill Index, and justify the choice in the change description.
 
----
+### Default: user invocation
 
-## Step-by-Step: Adding a New Skill
+Use explicit user invocation when the workflow:
 
-### 1. Choose a name
+- starts a deliberate mode, session, transformation, or expensive investigation;
+- writes or publishes an artifact;
+- changes how an otherwise ordinary request should be answered; or
+- would be surprising or harmful if selected from ambient conversation.
 
-Use lowercase, hyphenated naming: `customer-qbr-prep`, `sa-handoff-writer`, `deal-risk-digest`.
+User-invoked descriptions should be clear human-facing summaries of the capability. They do not need a long list of trigger phrases because the user names the skill. Set:
 
-The name becomes the folder name and the skill's ID. Keep it short and descriptive.
-
-### 2. Create the folder and SKILL.md
-
-```
-skills/
-  <your-skill-name>/
-    SKILL.md
+```yaml
+policy:
+  allow_implicit_invocation: false
 ```
 
-**Scaffold:** from the repository root, run:
+### Exception: model invocation
 
-```bash
-npm run add-skill -- <your-skill-name>
+Allow implicit model invocation only when autonomous discovery materially matters or another skill must be able to reach the capability. Its description is routing metadata: state positive triggers, important boundaries, and near misses precisely enough for a model to choose it without guessing.
+
+Set:
+
+```yaml
+policy:
+  allow_implicit_invocation: true
 ```
 
-That runs `npx skills init` inside `skills/` and creates `skills/<your-skill-name>/SKILL.md`. Replace the generated stub with real content.
+Also add the skill to `MODEL_INVOKED_SKILLS` in `scripts/lib/skill-contract.js`; validation treats that set as the portfolio's reviewed invocation record.
 
-**Authoring guide:** follow [AGENTS.md](./AGENTS.md) and the checks in `scripts/validate-skills.js` (required frontmatter fields, `description` length 20–500, `name` matching the folder, plain `repository` URL, README Skill Index in sync). For general Cursor skill shape, see the [Agent Skills specification](https://agentskills.io/specification). For optional quality review, use Matt Pocock's [writing-great-skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-great-skills) skill.
+Consider the context cost of exposing model-invoked descriptions against the burden of asking users to remember names. If several narrow skills compete for the same ambient prompts, prefer one focused router over many broadly triggered descriptions. A router should route only; downstream skills retain their own workflows and safety rules.
 
-### 3. Fill in the frontmatter
+Skill-to-skill reach does not make every dependency model-invoked. Enable it only for a reusable capability that a parent cannot reliably request through an explicit supported handoff. Document precedence when two skills overlap and provide a graceful fallback when the dependency is unavailable.
 
-Every `SKILL.md` must begin with YAML frontmatter:
+Do not add client-specific fields such as `disable-model-invocation` to portable `SKILL.md` frontmatter. Map the reviewed decision in each client adapter:
+
+- OpenAI: `policy.allow_implicit_invocation`
+- Other clients: their adapter-equivalent field, kept outside the portable core
+
+This policy follows the user-invocation default described in Matt Pocock's [writing-great-skills guidance](https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-great-skills/SKILL.md).
+
+## Package Shape
+
+Create this minimum structure:
+
+```text
+skills/<skill-name>/
+  SKILL.md
+  agents/
+    openai.yaml
+```
+
+Names use lowercase kebab-case, contain at most 64 characters, and match the folder exactly.
+
+### Portable `SKILL.md`
+
+Frontmatter contains exactly two fields:
 
 ```yaml
 ---
-name: your-skill-name
-description: >
-  One to three sentences that tell an AI agent WHEN to use this skill.
-  Be specific about trigger phrases, request types, and the intended user.
-  This text is what the agent reads to decide whether to load the skill.
-compatibility: "List required MCPs or integrations, e.g. Atlassian MCP, Slack MCP"
-author: Your Name
-license: MIT
-repository: https://github.com/smyrick/skills
+name: "your-skill-name"
+description: "A precise capability summary, with routing boundaries when model-invoked."
 ---
 ```
 
-The `description` field is the most important part. It determines when the skill gets triggered. Write it as if you're telling the agent: "Load this skill if the user says X, or wants to do Y, or provides Z."
+The description must be non-empty and no longer than 1,024 characters. Keep runtime names, tool allowlists, authorship, repository URLs, and invocation flags out of this layer.
 
-Keep `description` between **20 and 500 characters** (after trimming) so `npm run validate` passes.
+Write instructions in imperative language and give the agent the reason behind important constraints. Match the degree of freedom to the risk:
 
-### 4. Write the workflow
+- use flexible principles when multiple approaches are safe;
+- use a preferred pattern with parameters when consistency matters; and
+- use exact steps when sequencing, mutation, or evidence integrity is fragile.
 
-After the frontmatter, write the skill body in Markdown. A good skill includes:
+Keep `SKILL.md` focused and normally below about 500 lines. Put detailed schemas, examples, or domain references in `references/` and link them directly from the skill. Put reusable output material in `assets/`; put deterministic automation in `scripts/`. Avoid duplicate guidance and deep reference chains.
 
-**Required sections:**
+### OpenAI adapter
 
-- `## When to use this skill` — 2–4 bullet points, more specific than the frontmatter description
-- `## Workflow` — numbered steps, with sub-steps where needed. Each step should specify:
-  - What action to take
-  - Which tool/MCP to call and with what parameters
-  - What to do with the result
-  - What to ask the user, if anything
-- `## Organization-specific context` (if relevant) — tenant-specific constants, conventions, or framing the agent needs (Jira project keys, Atlassian cloud ID, and so on)
+Every skill must have `agents/openai.yaml` with exactly this shape:
 
-**Optional but encouraged:**
-
-- `## Example` — a before/after or sample input/output
-- `## Common Pitfalls` — things that go wrong and how to avoid them
-- `## Quick Reference` — constants, IDs, or lookup tables the agent will need mid-workflow
-
-**Length (guideline):** Keep the main `SKILL.md` dense—about **~500 lines or fewer** when practical (a **suggestion**, not a limit). Longer is acceptable when the workflow needs it. Prefer tight, high-signal prose and move long reference or examples to linked files (`REFERENCE.md`, `EXAMPLES.md`, `scripts/`) one level deep from `SKILL.md`.
-
-### 5. Be precise about tool calls
-
-Don't say "look up the Jira issue." Say:
-
-```
-Use Atlassian:getJiraIssue with:
-- cloudId: <your-atlassian-cloud-id>
-- issueIdOrKey: <the issue key from the URL, e.g. PROJ-123>
-- responseContentFormat: markdown
+```yaml
+interface:
+  display_name: "Your Skill Name"
+  short_description: "A concise interface summary between 25 and 64 chars"
+  default_prompt: "Use $your-skill-name to perform the intended workflow."
+policy:
+  allow_implicit_invocation: false
 ```
 
-The goal is that an agent with no prior context can execute the workflow correctly on the first try.
+The default prompt must contain the exact `$skill-name`. Keep it representative of the portable description and chosen invocation mode. The formatter owns key order and quoting.
 
-### 6. Update README.md
+## Workflow Design
 
-Add a row to the **Skill Index** table in `README.md`:
+A strong skill normally explains:
 
-```markdown
-| [your-skill-name](./skills/your-skill-name/SKILL.md) | One-sentence description | Key Tools |
-```
+1. entry conditions and exclusions;
+2. the smallest useful workflow and its stopping condition;
+3. which facts require evidence and how to preserve provenance;
+4. mutation, publication, or user-confirmation boundaries;
+5. recovery behavior when tools, files, or dependent skills are unavailable; and
+6. the expected response or artifact contract.
 
-Also remove it from the **Planned Skills** list if it was listed there.
+Ask only for information that can change the result. When safe, proceed with explicit assumptions instead of creating an unbounded interview. Default to chat output unless the user requested a durable file or the named skill explicitly exists to create one.
 
-### 7. Validate
+Keep capability instructions portable. Describe what access is needed, then use the host's available tools. Put runtime-specific invocation and interface metadata in adapters.
 
-From the repository root:
+## Invocation Tests
+
+Test routing separately from output quality. Run each case three times in fresh contexts because routing is nondeterministic.
+
+For every user-invoked skill, verify:
+
+1. an explicit `$skill-name` request loads it;
+2. an ambient domain match does not load it; and
+3. a neighboring or ambiguous request does not load it.
+
+For every model-invoked skill, verify:
+
+1. realistic positive prompts trigger it reliably;
+2. a dependent skill can reach it; and
+3. near-miss prompts do not trigger it.
+
+Trace the selected skill when the host exposes routing traces. Otherwise use an observable behavior unique to the skill and state that the result is an inference.
+
+## Behavioral Tests
+
+Forward-test consequential workflows in fresh contexts. Give the test agent the revised skill and a realistic prompt, but do not disclose the bug or expected fix. Compare against both the previous skill and a no-skill baseline using observable assertions, filesystem diffs, evidence traces, and blind review where practical.
+
+Cover success, partial input, near-miss, unavailable dependency, unsafe mutation, and stale or conflicting evidence cases. Follow the [Agent Skills evaluation guidance](https://agentskills.io/skill-creation/evaluating-skills) for larger evaluations.
+
+## README and Links
+
+Add or update the README Skill Index whenever a skill is added, renamed, removed, materially re-described, or changes invocation mode. Use `User` or `Model` exactly in the Invocation column.
+
+All relative Markdown links inside a skill package must resolve. Prefer links one level deep from `SKILL.md` so agents can load supporting context progressively.
+
+## Validate
+
+Run from the repository root:
 
 ```bash
 npm install
 npm run format
 npm run check
+npm run oci:smoke
 ```
 
-Fix any reported errors before committing. CI runs `npm run check` on push and pull requests.
+The formatter normalizes portable frontmatter and OpenAI adapter YAML. It deliberately fails on malformed delimiters or invalid structures instead of guessing. `npm run check` then validates the full contract, adapter policy, README entry, links, and contract tests. The OCI smoke test verifies that the distributable contains every skill and adapter with a safe, consistent index.
 
-### 8. Review checklist before committing
+## Review Checklist
 
-- [ ] Frontmatter is valid YAML with `name`, `description`, and `compatibility`
-- [ ] `description` is 20–500 characters and states when to use the skill (specific trigger phrases or request types)
-- [ ] Workflow steps are numbered and tool calls include full parameters
-- [ ] Tenant- or org-specific constants (cloud IDs, project keys) are spelled out in the skill where needed — don't rely on chat context
-- [ ] `author`, `license`, and `repository` are set
-- [ ] README.md skill index is updated
-- [ ] Folder name matches `name` in frontmatter
-- [ ] No placeholder text left from the scaffold or draft
-- [ ] `npm run format` has been applied
-- [ ] `npm run check` passes
-- [ ] Main `SKILL.md` aims for brevity (guideline: ~500 lines or less when practical; longer OK if justified); depth is in linked files where appropriate
-
----
-
-## Modifying an Existing Skill
-
-If you're improving a skill (fixing a broken step, adding a new section, updating a constant):
-
-1. Edit `skills/<skill-name>/SKILL.md` directly
-2. Note what changed in your commit message
-3. If the trigger description changed meaningfully, update the frontmatter `description` too
-
-If you're making a breaking change (completely different workflow), consider creating a new skill with a versioned name (e.g., `my-skill-v2`) rather than overwriting the existing one.
-
----
-
-## Skill Quality Bar
-
-A skill is ready to ship when an AI agent with no prior context about you, your employer, or the task can read the `SKILL.md` and complete the workflow correctly — without asking clarifying questions that the skill should have already answered.
-
-If you find yourself thinking "the agent would need to know X to do this step," write X into the skill.
-
----
-
-## Optional shared tooling
-
-Generic values sometimes referenced from skills are listed in [README.md — Optional shared tooling](./README.md) (for example, Atlassian MCP URL and a suggested Claude model). **Do not** commit real tenant IDs or internal project keys to a public fork; keep those in private skills or in local-only notes.
-
----
-
-## Questions?
-
-If you're an agent and something in a workflow is ambiguous, ask the repository owner before proceeding with a guess.
-If you're a human contributor, open an issue or just edit the file directly — this is a personal repo.
+- [ ] The folder and `name` match and use lowercase kebab-case.
+- [ ] Portable frontmatter contains only `name` and `description`.
+- [ ] The invocation mode is justified in the change description.
+- [ ] `agents/openai.yaml` contains the exact interface and explicit policy fields.
+- [ ] The default prompt contains the exact `$skill-name`.
+- [ ] The README description and Invocation column are synchronized.
+- [ ] The workflow has clear boundaries, evidence rules, stopping conditions, and fallbacks.
+- [ ] Mutation and publication require the authority implied by the user's request.
+- [ ] Detailed material uses progressive disclosure without broken links.
+- [ ] Invocation tests cover positive, ambient, and near-miss cases three times.
+- [ ] Forward tests compare the revision with the previous skill or a no-skill baseline.
+- [ ] `npm run format`, `npm run check`, and `npm run oci:smoke` pass.

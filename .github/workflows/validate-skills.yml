@@ -20,3 +20,6 @@ jobs:
 
       - name: Check skill formatting and metadata
         run: npm run check
+
+      - name: Smoke-test OCI packaging
+        run: npm run oci:smoke

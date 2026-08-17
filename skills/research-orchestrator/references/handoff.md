@@ -1,54 +1,54 @@
 # Research Handoff
 
-Use this file for synthesis and downstream consumption.
+Use this protocol to verify evidence and return research without taking over the downstream plan or decision.
 
 ## Synthesis Gate
 
-After research, synthesize findings before drafting a plan or asking the user questions.
+Before drafting the handoff, the parent:
 
-Capture:
+- Confirms every indexed assignment has a terminal status.
+- Reopens the authoritative sources for material claims instead of trusting working notes alone.
+- Separates source facts, inferences, contradictions, and possible implications.
+- Checks dates, versions, locale, and other freshness context.
+- Calibrates confidence and preserves blocked or failed coverage.
+- Stops at the recorded materiality rule or budget rather than chasing completeness.
 
-- Key options, files, APIs, sources, or patterns.
-- Constraints and gotchas.
-- Tradeoffs discovered.
-- Gaps only the user can answer.
-- What was ruled out and why.
-
-For Tier 1+, read the findings docs as the durable source of truth.
-
-Synthesis is complete when every remaining question is user-owned rather than discoverable through more research.
+Research is ready for handoff when the evidence is sufficient for the caller's next decision or the remaining uncertainty is explicit.
 
 ## Final Research Handoff
-
-Return a compact handoff. This shape is the completion target for every Tier 1+ research run:
 
 ```markdown
 ## Research Handoff
 
-Research folder: `.agents/research/<slug>/`
+- **Run location**: `[path, or "Current context only"]`
+- **Run status**: [complete, partial, or blocked]
+- **Researched as of**: [date and relevant timezone]
+- **Scope and budget used**: [questions, passes, limits reached, and temporary-path retention warning]
 
 ### Summary
-[Dense synthesis.]
+[Dense research-only synthesis. Do not make the downstream plan or final decision.]
 
 ### Key Findings
-- [Finding]
-- [Finding]
+- **Finding**: [fact or labeled inference]
+  - **Evidence**: [exact file:line or source URL and date]
+  - **Confidence**: [level and reason]
+  - **Implication**: [possible relevance for the caller to evaluate]
 
-### Files / Sources
-- [Path or source] - [why it matters]
+### Contradictions and Uncertainty
+- [Conflict, stale evidence, missing source, or unresolved interpretation]
 
-### Open Questions
-- [Only user-owned or blocked questions]
+### Authoritative Sources
+- [File and line or publisher/title/URL] — [claim supported; version or dates]
 
-### Recommended Next Step
-[Planning skill, decision point, implementation area, or further research.]
+### Open Questions and Failed Coverage
+- [User-owned question, blocked research, failed assignment, or "None"]
+
+### Recommended Downstream Workflow
+[Planning skill, decision workflow, user choice, or a specifically bounded next research pass.]
 ```
 
-## Downstream Skill Use
+## Downstream Use
 
-When another skill consumes the research:
+The caller should treat cited files and external sources as authoritative and the research folder as a navigational record. Before relying on unstable evidence, check whether its date, version, market, or locale is still valid.
 
-- Link the research folder in its final artifact.
-- Treat `CONTEXT.md` and `findings/` as source material, not as the final plan.
-- Preserve unresolved user-owned questions instead of inventing decisions.
-- Keep the reusable research protocol in `research-orchestrator`; downstream skills should link to the research folder and add only their domain-specific planning or decision layer.
+Link the run and relevant findings from any later artifact, preserve unresolved questions, and make final recommendations only in the workflow that owns the plan or decision.

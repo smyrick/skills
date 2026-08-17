@@ -10,6 +10,8 @@ import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
 import YAML from "yaml";
 
+import { MODEL_INVOKED_SKILLS } from "./lib/skill-contract.js";
+
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const outDir = path.join(repoRoot, ".dist", "oci");
@@ -90,6 +92,8 @@ function buildSkillsIndex(revision, created) {
         name: metadata.name,
         path: path.relative(repoRoot, filePath).split(path.sep).join("/"),
         description: metadata.description,
+        invocation: MODEL_INVOKED_SKILLS.has(metadata.name) ? "model" : "user",
+        openai_adapter: `skills/${metadata.name}/agents/openai.yaml`,
       };
     }),
   };

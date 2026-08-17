@@ -1,64 +1,73 @@
 # Shane Myrick's Skills Library
 
-> A personal library of reusable AI agent skills for **Shane Myrick**.
-> Skills encode repeatable workflows — each one tells an AI agent exactly how to handle a specific task, using the right tools, in the right order, with the right context.
+A personal library of reusable AI-agent workflows. Each skill has a portable `SKILL.md` core and an OpenAI adapter that defines its display metadata, starter prompt, and invocation policy.
 
----
+## Install
 
-## What Is a Skill?
-
-A skill is a Markdown file (`SKILL.md`) that lives in a named folder under `skills/`. When loaded by an AI agent (e.g., Claude in Cowork), it provides:
-
-- **A trigger description** — when should the agent use this skill?
-- **Step-by-step workflow** — exactly what to do, in what order
-- **Tool references** — which MCPs, APIs, or integrations are required
-- **Optional org- or project-specific context** — when a workflow needs them: conventions, cloud IDs, project keys, personas
-
-Skills are agent-readable instructions, not code. They make common work reproducible without starting from scratch every time.
-
----
-
-## Install (CLI)
-
-Install every skill from this repo into your coding agents (Cursor, Claude Code, Codex, OpenCode, and [others supported by the skills CLI](https://github.com/vercel-labs/skills)):
+Install every skill with the [skills CLI](https://github.com/vercel-labs/skills):
 
 ```bash
 npx skills add smyrick/skills
 ```
 
-Or with the full URL:
+Use `npx skills add smyrick/skills --list` to inspect the collection first. Agents that do not support the OpenAI adapter can still follow each portable `SKILL.md` directly.
 
-```bash
-npx skills add https://github.com/smyrick/skills
+## Skill Index
+
+Invocation is intentional. **User** skills run only when explicitly named, normally as `$skill-name`. **Model** skills may also be selected automatically or reached by another skill.
+
+| Skill | Invocation | Description | Key capabilities |
+|-------|------------|-------------|------------------|
+| [codebase-summary](./skills/codebase-summary/SKILL.md) | User | Document codebase architecture and key flows, with an optional self-contained HTML artifact | Repository exploration, diagrams, HTML validation |
+| [humanize-text](./skills/humanize-text/SKILL.md) | User | Rewrite prose while preserving facts, protected text, and the writer's voice | Text transformation, fidelity checks |
+| [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create or update scoped `PRODUCT_TERMS.md` glossaries linked to product rules and code | Repository search, terminology management |
+| [mock-interview](./skills/mock-interview/SKILL.md) | User | Run source-grounded interview practice with stage-specific feedback | Interactive interviewing, evidence-based scoring |
+| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | User | Plan a non-code decision through direct research, read-only leaf scouts, or an internal durable research subworkflow | Current research, decision analysis |
+| [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Plan a code change through direct research, read-only leaf scouts, or an internal durable research subworkflow | Codebase research, implementation planning |
+| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate authorization-gated durable research with owned assignments, bounded passes, recovery, and a research-only handoff | Evidence handoffs, bounded delegation |
+| [shorten-response](./skills/shorten-response/SKILL.md) | User | Apply concise coworker-style response mode without losing technical depth or caveats | Response shaping |
+| [write-a-prd](./skills/write-a-prd/SKILL.md) | User | Create a bounded, decision-ready product requirements document | Product discovery, optional codebase context |
+
+The portfolio deliberately has no router today: the explicit skills are distinct, few enough to scan here, and their names map cleanly to deliberate workflows. Add a router only if observed invocation tests show that remembering the names is a recurring burden.
+
+## Use
+
+Explicitly invoke a user skill by name:
+
+```text
+Use $research-and-plan to research this change and produce an implementation plan.
 ```
 
-List skills without installing: `npx skills add smyrick/skills --list`. The deprecated `npx add-skill` forwards to `npx skills add`.
+`research-orchestrator` is the only model-invoked skill. Planning skills can reach it when durable, multi-pass research materially improves the result; a simple question should not trigger it.
 
----
+## Repository Contract
+
+```text
+skills/
+  <skill-name>/
+    SKILL.md                 # Portable capability and workflow
+    agents/
+      openai.yaml            # OpenAI interface and invocation policy
+    references/              # Optional details loaded only when needed
+    assets/                  # Optional output templates or static assets
+```
+
+Portable frontmatter contains only `name` and `description`. Runtime-specific behavior belongs in an adapter, not in `SKILL.md` frontmatter.
 
 ## Validate
-
-From the repository root, format and check every `skills/*/SKILL.md`:
 
 ```bash
 npm install
 npm run format
 npm run check
+npm run oci:smoke
 ```
 
-To check without writing changes:
-
-```bash
-npm run format:check
-```
-
-CI runs `npm run check` on every push and pull request.
-
----
+`npm run check` verifies canonical formatting, portable metadata, OpenAI adapter contracts, invocation policy, local links, README synchronization, and contract tests. `npm run oci:smoke` packages the collection and verifies descriptors, archive safety, index contents, and the presence of every adapter. CI runs both commands.
 
 ## OCI Package
 
-Tagged releases publish the full skills collection as one OCI artifact on GitHub Container Registry:
+Tagged releases publish the collection to GitHub Container Registry:
 
 ```text
 ghcr.io/smyrick/skills@sha256:<digest>
@@ -66,91 +75,11 @@ ghcr.io/smyrick/skills:vYYYY.MM.DD
 ghcr.io/smyrick/skills:latest
 ```
 
-Prefer digest pins for consumers that need immutable installs:
+Use digest pins when a consumer needs immutable installs.
 
-```text
-ghcr.io/smyrick/skills@sha256:<digest>
-```
+## Contributing
 
-Any OCI-aware catalog or control plane can link this package by digest.
-
----
-
-## Skill Index
-
-| Skill | Description | Key Tools |
-|-------|-------------|-----------|
-| [codebase-summary](./skills/codebase-summary/SKILL.md) | Self-contained ARCHITECTURE.html with entry points, APIs, modules, inline SVG diagrams | Read, Glob, Grep |
-| [humanize-text](./skills/humanize-text/SKILL.md) | Strip AI-output tells and match the writer's own tone from samples or prompt history ("humanize", de-AI prose, "sound like me") | Read, Write, Edit |
-| [mock-interview](./skills/mock-interview/SKILL.md) | Run source-grounded mock interviews for technical roles with evidence-based scoring and session notes | File read/search, optional web research, optional subagents |
-| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | Single-entrypoint non-code decision planning with direct research, read-only leaf scouts, or an internal durable research subworkflow | AskQuestion, Task subagents, web research |
-| [product-summary](./skills/product-summary/SKILL.md) | Nestable PRODUCT_TERMS.md glossaries (YAML terms); challenges fuzzy language, scenarios, code drift | Read, Glob, Grep; AskQuestion |
-| [research-and-plan](./skills/research-and-plan/SKILL.md) | Single-entrypoint implementation planning with direct research, read-only leaf scouts, or an internal durable research subworkflow | AskQuestion, CreatePlan, Task subagents |
-| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Authorization-gated durable research with owned assignments, bounded passes, persisted findings, recovery, and research-only handoff | Task subagents, file read/search, optional web research |
-| [shorten-response](./skills/shorten-response/SKILL.md) | Dense co-worker mode: high signal, low filler, no glazing | Conversational guidance |
-| [write-a-prd](./skills/write-a-prd/SKILL.md) | PRD via interview and exploration, then submit as a GitHub issue | Read, Glob, Grep; GitHub |
-
----
-
-## How to Use a Skill
-
-### In Cowork (Claude Desktop)
-
-Skills in this repo are installed at `~/.skills/skills/` on your machine. Once installed, Claude will automatically load the right skill based on your request — no manual steps needed.
-
-If you want to point Claude to a skill by name:
-
-> "Use the research-and-plan skill to plan this feature before we implement it"
-
-### As a Reference
-
-Any agent with access to this repo can read a `SKILL.md` directly and follow its instructions. The files are written to be self-contained — a capable agent should be able to execute the full workflow after reading one.
-
----
-
-## Repo Structure
-
-```
-README.md                        ← You are here
-CONTRIBUTING.md                  ← How to add or improve skills
-package.json                     ← npm run add-skill → scaffolds under skills/
-scripts/format-skills.js         ← npm run format / format:check
-scripts/validate-skills.js       ← npm run validate
-skills/
-  <skill-name>/
-    SKILL.md                     ← The skill itself (agent-readable instructions)
-  codebase-summary/
-    SKILL.md                     ← Example: architecture documentation skill
-```
-
-Skills are organized as one folder per skill. The folder name is the skill's ID — use lowercase, hyphenated names (e.g., `customer-qbr-prep`, `slack-deal-summary`).
-
----
-
-## Planned Skills
-
-Skills I intend to build next (roughly in priority order):
-
-- **customer-qbr-prep** — Pull deal context from Salesforce + Jira + Slack, generate a QBR briefing doc
-- **account-health-digest** — Weekly digest of at-risk accounts with Slack + Jira signals
-- **sa-handoff-writer** — Turn a Slack thread into a structured SA handoff note in Confluence
-- **meeting-brief-generator** — Pre-meeting brief from calendar invite + Salesforce + recent Slack
-- **solutions-weekly-standup** — Aggregate team Jira updates into a manager-ready standup summary
-
-Want to contribute one? See [CONTRIBUTING.md](./CONTRIBUTING.md).
-
----
-
-## Optional shared tooling
-
-Generic pointers sometimes referenced from skills (no tenant or employer-specific IDs):
-
-| Constant | Value |
-|----------|-------|
-| Preferred Claude model | `claude-sonnet-4-20250514` |
-| Atlassian MCP URL | `https://mcp.atlassian.com/v1/mcp` |
-
----
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for invocation-mode decisions, authoring rules, tests, and the review checklist.
 
 ## License
 

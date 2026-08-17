@@ -1,59 +1,58 @@
 ---
-name: research-orchestrator
-description: |
-  Orchestrate durable research before planning or decisions. Use as a standalone or internal subworkflow for research handoffs, coordinated multi-pass research, or work needing persisted context, provenance, recovery, or reuse under .agents/research/<slug>/. Persistent artifact writes require explicit authorization.
-author: Shane Myrick
-license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: Task subagents (explore, generalPurpose), readonly file/search tools, web research
-  tools when current external facts are needed, and markdown files under .agents/research/<slug>/
-  for durable handoff.
+name: "research-orchestrator"
+description: "Coordinate authorization-gated durable research for another skill or user request. Use when planning or decision work needs multiple focused passes, persistent findings, recovery, or a reusable evidence handoff."
 ---
 
 # Research Orchestrator
 
-Produce durable research context that another agent, planning skill, or future session can consume. This skill owns research setup, subagent handoff, findings files, synthesis, and the final research handoff.
+Coordinate bounded, durable research and return a reusable evidence handoff. This skill owns research setup, delegation, recovery, evidence synthesis, and provenance. It does not own the downstream implementation plan or final personal or product decision.
 
-When a planner or other parent routes through this skill, act as one worker. Exclusively own the research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. The parent retains user communication, approvals, downstream decisions, and final output; it must not separately manage this workflow's children.
+When a planner or other parent routes through this skill, act as one worker. Exclusively own the research assignments, shared metadata, retries and reassignments, persisted findings, and research synthesis. The caller retains user communication, approvals, downstream decisions, and final output; it must not separately manage this workflow's children.
 
-Invocation alone does not authorize persistent writes. If the request does not explicitly authorize research artifacts, do not create or edit `.agents/research/`; return findings in the current context instead of starting a durable Tier 1+ run.
+Read the references as each stage requires:
 
-References:
-
-- [`references/research-protocol.md`](references/research-protocol.md): sizing, folder layout, `CONTEXT.md`, `findings/`, and `INDEX.md`.
-- [`references/agent-lifecycle.md`](references/agent-lifecycle.md): parent/child agent loop, recursive guard, spin-up, and spin-down.
-- [`references/handoff.md`](references/handoff.md): synthesis gate, research summary, and downstream consumption.
+- [`references/research-protocol.md`](references/research-protocol.md): tiers, budgets, safe storage, run identity, and evidence format.
+- [`references/agent-lifecycle.md`](references/agent-lifecycle.md): parent-owned coordination, delegation, status, and failure recovery.
+- [`references/handoff.md`](references/handoff.md): source verification, synthesis, and the research-only handoff.
 
 ## Workflow
 
-### 1. Size the Research
+### 1. Scope and Bound the Run
 
-Read [`references/research-protocol.md`](references/research-protocol.md), then pick the smallest tier that can answer the goal.
+Read the research protocol. Confirm that the request benefits from multiple passes or persistent findings; return Tier 0 work to the calling workflow instead of creating artifacts.
 
-Completion gate: tier and reason are explicit, artifact authorization is known, and authorized Tier 1+ research has a fixed slug, folder path, max depth, and total pass budget.
+Routing to or invoking this skill does not authorize persistent writes. Without explicit authorization, do not create a research folder or temporary run; return findings in the current context and stop before the durable workflow.
 
-If artifact writes are not authorized, remain in Tier 0: research directly in the current context, return the findings there, and stop. Do not continue into the durable workflow.
+For authorized durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value. Define one total pass budget: every initial assignment, retry, and reassignment consumes a pass, including failed or partial attempts.
 
-### 2. Create Shared Context
+Completion gate: persistence is authorized, storage is safe, and the run has a concrete budget and stop rule.
 
-For an authorized Tier 1+ run, follow [`references/research-protocol.md`](references/research-protocol.md) to create the research folder and `CONTEXT.md` before launching agents.
+### 2. Initialize Shared Context
 
-Completion gate: `CONTEXT.md` includes goal, scope, constraints, assumptions, starting points, and tier guard. Tier 2 also has `INDEX.md`.
+Follow the protocol to choose an existing ignored artifact location or a temporary location outside the repository. Never place unignored files in a repository without explicit consent, and never persist secrets or sensitive personal information.
+
+The parent creates and owns `RUN.md`, `CONTEXT.md`, and `INDEX.md`. Inspect any existing slug before choosing whether to resume or create a versioned run; never overwrite or mix unrelated evidence.
+
+Completion gate: run metadata records identity, status, freshness, budget, storage decision, and resume or version history.
 
 ### 3. Launch Focused Research
 
-Read [`references/agent-lifecycle.md`](references/agent-lifecycle.md), then split research by independent questions. Use codebase search/read tools for repo facts. Use web research only when current external facts matter.
+Read the agent lifecycle reference. Split only independent research questions. The parent allocates each child a unique ID and findings path, updates status, and preserves exclusive ownership of shared metadata.
 
-Completion gate: every research question has one owner and a clear expected output. In an authorized run, it also has one unique findings path, and every launched agent has either written its findings file or returned exact findings markdown for this orchestrator to persist.
+Require exact file-and-line evidence for codebase claims and URLs plus relevant publication and access dates for web claims. Findings are working notes; cited files and sources remain authoritative.
 
-### 4. Collect and Synthesize
+Completion gate: every launched pass has an owner, bounded question, unique output, evidence requirements, and tracked status.
 
-Read [`references/handoff.md`](references/handoff.md), then read findings files as the durable source of truth. Synthesize what was learned, what was ruled out, what remains unknown, and what downstream agent or user decision this unlocks.
+### 4. Recover and Synthesize
 
-Completion gate: synthesis covers every findings file, calls out blocked or user-owned questions, and distinguishes facts from recommendations.
+The parent collects results, marks completion or failure, and handles material gaps through a bounded retry, reassignment, or sequential research pass. Every retry or reassignment consumes another pass from the original budget. Preserve unresolved failures instead of silently dropping them.
 
-### 5. Deliver the Research Handoff
+Before synthesis, reopen material cited sources, resolve or expose contradictions, and calibrate confidence. Stop when added research is unlikely to change a downstream decision or when a recorded budget limit is reached.
 
-Use the final handoff shape from [`references/handoff.md`](references/handoff.md).
+Completion gate: every material question is completed, explicitly partial, blocked, or out of scope.
 
-Completion gate: final handoff includes research folder path, summary, key findings, files or sources, open questions, and recommended next step. If this research feeds a planning skill, tell it to reference `.agents/research/<slug>/CONTEXT.md` plus the relevant `findings/` files.
+### 5. Deliver a Research-Only Handoff
+
+Read the handoff reference and return its compact shape. Include the run location, status, research date, evidence, confidence, contradictions, unresolved questions, and recommended downstream workflow.
+
+Do not turn the handoff into an implementation plan or make the final decision. Keep facts, inferences, and possible implications distinct so the calling skill or user can decide.

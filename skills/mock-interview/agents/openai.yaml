@@ -1,0 +1,6 @@
+interface:
+  display_name: "Mock Interview"
+  short_description: "Run realistic interviews with evidence-based feedback"
+  default_prompt: "Use $mock-interview to run a realistic mock interview for this role and give evidence-based feedback."
+policy:
+  allow_implicit_invocation: false

@@ -1,89 +1,71 @@
 ---
-name: research-and-plan
-description: |
-  Plan implementation work before coding. Use when the user asks to plan, design, architect, break down, stress-test, or create a handoff for a code change. Select direct research, focused read-only leaf scouts, or an internal research-orchestrator subworkflow, then resolve design decisions and deliver a phased implementation plan.
-author: Shane Myrick
-license: MIT
-repository: https://github.com/smyrick/skills
-compatibility: AskQuestion (Cursor) or user prompting (Claude Code). CreatePlan when Cursor Plan
-  mode owns the plan; otherwise markdown file handoff. Task subagents for read-only leaf scouting
-  and phased execution handoffs. Route durable research through research-orchestrator.
+name: "research-and-plan"
+description: "Research a code change and produce a decision-complete implementation plan. Select direct inspection, focused read-only leaf scouts, or an internal durable research subworkflow without modifying code."
 ---
 
 # Research and Plan
 
-Create implementation plans through codebase research and user collaboration. The output is a concrete handoff an orchestration agent can execute phase-by-phase with parallel subagents.
+Research a code change with read-only inspection, resolve the decisions that evidence cannot answer, and deliver an implementation plan. Do not implement the change while using this skill.
 
-Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, research synthesis, design decisions, and the final plan. Choose the smallest research mode that can support that plan; the user does not need to invoke another skill.
+Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, material-source verification, design decisions, and the final plan; the user does not need to invoke another skill.
 
-For durable research, route internally through `research-orchestrator` as one subworkflow. It owns its research assignments, metadata, retries, persisted findings, and research synthesis. Consume its research-only handoff, verify material sources, then resume this workflow. Do not independently manage its children.
-
-Use [`references/implementation-handoff-template.md`](references/implementation-handoff-template.md) for the final artifact.
-
-Credits: The interview and design-tree pattern is adapted from [grill-me](https://github.com/mattpocock/skills/blob/main/grill-me/SKILL.md) (Matt Pocock).
+Use [`references/implementation-handoff-template.md`](references/implementation-handoff-template.md) as a flexible output shape.
 
 ## Workflow
 
-### 1. Select the Research Mode
+### 1. Frame and Size the Change
 
-Use the smallest useful mode:
+Extract the objective, scope, constraints, success criteria, and known risks from the request. Ask only for missing information that would materially change the research direction.
 
-- **Direct**: inspect bounded or familiar work in the current context without subagents or a research folder.
+Choose the lightest useful research mode:
+
+- **Direct**: for a small or familiar change, inspect the codebase in the current context without subagents or a research folder.
 - **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts and keep their findings in the current context.
-- **Durable**: when findings need persistence, recovery, provenance, or reuse, route through `research-orchestrator`. Let it enforce artifact authorization and return a research-only handoff before planning resumes.
+- **Durable**: when findings need persistence, provenance, recovery, or reuse, route internally through `$research-orchestrator` as one subworkflow. Consume its research-only handoff before planning resumes.
 
-Completion criterion: the mode and reason are explicit, and any authorized `.agents/research/<slug>/` path is known.
+Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Scouts do not launch children or write durable artifacts. If `$research-orchestrator` is unavailable or persistence is not authorized, keep the work in direct or ephemeral mode and create no research folder.
 
-### 2. Research the Codebase
+For durable research, treat `$research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
 
-Research before drafting and before asking questions that the repo can answer.
+Completion criterion: the research mode and boundaries are clear, with no assumption that another skill or subagent capability is installed.
 
-Implementation research dimensions:
+### 2. Research Before Asking Design Questions
 
-- Similar features and prior art.
-- Dependency map: files, modules, services, upstream/downstream contracts.
-- Test patterns, fixtures, and verification commands.
-- Config, environment variables, feature flags, build settings.
-- API surface: exported types, interfaces, endpoints, schemas, events.
+Use read-only search and inspection to establish:
 
-Use read-only search and inspection tools. Parallelize only independent questions. Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Keep scouts as leaves: they cannot spawn children or write durable artifacts.
+- Similar features, conventions, and prior art.
+- Files, symbols, modules, services, and upstream or downstream contracts.
+- Public interfaces such as types, endpoints, schemas, events, commands, and configuration.
+- Test patterns, fixtures, verification commands, rollout controls, and operational constraints.
+- The current baseline, including relevant checks that already fail before the proposed change.
 
-For durable research, treat `research-orchestrator` as one worker and do not separately assign its research questions. The planner remains responsible for verifying material findings and deciding what enters the implementation plan.
+Cite exact paths and symbols. If non-mutating diagnostic commands are run, record their results as baseline evidence. Never present a pre-existing failure as a regression the implementation must fix unless the user puts it in scope.
 
-Completion criterion: findings identify real files, functions, contracts, tests, constraints, and any user-owned decisions that remain.
+Completion criterion: discoverable questions are answered, evidence is traceable, and remaining questions require user intent or a tradeoff decision.
 
 ### 3. Resolve the Design Tree
 
-Ask only questions the codebase cannot answer: product intent, scope boundaries, tradeoffs, rollout risk, compatibility, policy, or team constraints.
-
-Question discipline:
+Ask the user only about product intent, scope boundaries, compatibility, policy, rollout risk, or team constraints that the codebase cannot settle.
 
 - Ask upstream decisions before downstream ones.
-- Ask one focused question at a time unless questions are independent.
-- Give a recommended option and the reason.
-- Record accepted assumptions in the final plan.
+- Batch independent questions; ask sequentially only when one answer changes the next question.
+- Recommend a default and explain the evidence or tradeoff behind it.
+- Proceed with clearly labeled assumptions when the decision is reversible and the user has not specified a preference.
 
-Completion criterion: goal, scope, constraints, success criteria, dependencies, and meaningful tradeoffs are settled enough that an implementer should not need to make product or architecture decisions.
+Completion criterion: an implementer should not need to invent product or architecture decisions.
 
-### 4. Draft the Handoff
+### 4. Draft an Executable Plan
 
-Use the implementation handoff template. Structure the plan for an orchestration agent:
+Use the handoff template and make each step independently understandable. Name the exact files, symbols, contracts, intended behavior, acceptance criteria, verification, dependencies, and recovery guidance.
 
-- Phases run sequentially.
-- Steps within a phase are independent and may run in parallel.
-- No two parallel steps edit the same file.
-- Each step names exact files, functions, types, config keys, and relevant research findings.
-- Each step has acceptance criteria and concrete failure guidance.
+Order steps by real dependencies. Mark steps as parallel only when they are independent, do not write the same files or shared mutable state, the available environment supports parallel work, and parallelism materially helps. Otherwise keep the execution order sequential.
 
-Completion criterion: every step is independently executable, verifiable, and small enough for one subagent session.
+Carry known baseline failures into the verification section so the implementer can distinguish unchanged failures from new regressions.
 
-### 5. Review, Revise, Deliver
+Completion criterion: each step is bounded, decision-complete, verifiable, and explicit about its prerequisites.
 
-Review the draft with the user:
+### 5. Deliver Without Surprise Writes
 
-- What is in scope and out of scope.
-- Whether phase order and parallel boundaries make sense.
-- Known risks and edge cases.
-- Assumptions that need approval.
+Review the plan for scope, dependency order, edge cases, assumptions, and baseline handling. Resolve material gaps; do not force an additional review round when the request is already decision-complete.
 
-Deliver one authoritative artifact. If Cursor Plan mode owns the work, use the IDE plan. If the user named a file, update that file. Otherwise save a markdown plan file and report the path.
+Return the plan in chat by default. Create or update an artifact only when the user explicitly requests a file, supplies a target file, or has already chosen a durable handoff workflow. Report the path whenever an artifact is written.
