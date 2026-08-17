@@ -1,11 +1,13 @@
 ---
 name: "personal-research-and-plan"
-description: "Research a non-code decision, compare evidence and tradeoffs, and produce a concrete recommendation and action plan."
+description: "Research a non-code decision and produce a concrete recommendation and action plan. Select direct research, focused read-only leaf scouts, or an internal durable research subworkflow based on the evidence needed."
 ---
 
 # Personal Research and Plan
 
 Help the user make a non-code decision through bounded clarification, current research, explicit tradeoffs, and a practical next step.
+
+Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, material-source verification, tradeoff decisions, and the final plan; the user does not need to invoke another skill.
 
 Use [`references/decision-handoff-template.md`](references/decision-handoff-template.md) as a flexible output shape.
 
@@ -36,9 +38,13 @@ Do not persist secrets, sensitive personal information, or unnecessary identifyi
 
 Use the lightest useful mode:
 
-- For a narrow comparison, research and synthesize in the current context.
-- For multiple focused research passes or reusable findings, explicitly invoke `$research-orchestrator` with a sanitized brief.
-- If `$research-orchestrator` is unavailable or persistence is inappropriate, research the same questions sequentially without creating a durable folder.
+- **Direct**: for a narrow comparison, research and synthesize in the current context without subagents or a research folder.
+- **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts with sanitized briefs and keep their findings in the current context.
+- **Durable**: when findings need persistence, provenance, recovery, or reuse, route internally through `$research-orchestrator` as one subworkflow. Consume its research-only handoff before decision work resumes.
+
+Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Scouts do not launch children or write durable artifacts. If `$research-orchestrator` is unavailable or persistence is inappropriate or unauthorized, keep the work in direct or ephemeral mode and create no research folder.
+
+For durable research, treat `$research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
 
 Compare credible leading options, the status quo, and meaningful alternatives. Evaluate total cost, availability, fit, expert evidence, recurring complaints, switching or learning costs, opportunity cost, and failure modes. Note stale, missing, sponsored, or conflicting evidence.
 

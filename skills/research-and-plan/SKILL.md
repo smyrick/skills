@@ -1,11 +1,13 @@
 ---
 name: "research-and-plan"
-description: "Research a code change and produce a decision-complete implementation plan without modifying the codebase."
+description: "Research a code change and produce a decision-complete implementation plan. Select direct inspection, focused read-only leaf scouts, or an internal durable research subworkflow without modifying code."
 ---
 
 # Research and Plan
 
 Research a code change with read-only inspection, resolve the decisions that evidence cannot answer, and deliver an implementation plan. Do not implement the change while using this skill.
+
+Treat this skill as the user's only planning entrypoint. It owns user communication, approvals, material-source verification, design decisions, and the final plan; the user does not need to invoke another skill.
 
 Use [`references/implementation-handoff-template.md`](references/implementation-handoff-template.md) as a flexible output shape.
 
@@ -17,9 +19,13 @@ Extract the objective, scope, constraints, success criteria, and known risks fro
 
 Choose the lightest useful research mode:
 
-- For a small or familiar change, inspect the codebase in the current context.
-- When the work needs multiple focused passes or reusable findings, explicitly invoke `$research-orchestrator` before planning.
-- If `$research-orchestrator` is unavailable or durable storage is not authorized, run the same research questions sequentially and keep a compact evidence ledger in the current context.
+- **Direct**: for a small or familiar change, inspect the codebase in the current context without subagents or a research folder.
+- **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts and keep their findings in the current context.
+- **Durable**: when findings need persistence, provenance, recovery, or reuse, route internally through `$research-orchestrator` as one subworkflow. Consume its research-only handoff before planning resumes.
+
+Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Scouts do not launch children or write durable artifacts. If `$research-orchestrator` is unavailable or persistence is not authorized, keep the work in direct or ephemeral mode and create no research folder.
+
+For durable research, treat `$research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
 
 Completion criterion: the research mode and boundaries are clear, with no assumption that another skill or subagent capability is installed.
 

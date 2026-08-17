@@ -1,11 +1,13 @@
 ---
 name: "research-orchestrator"
-description: "Coordinate durable research for another skill or user request. Use when planning or decision work needs multiple focused research passes, persistent findings, or a reusable research handoff."
+description: "Coordinate authorization-gated durable research for another skill or user request. Use when planning or decision work needs multiple focused passes, persistent findings, recovery, or a reusable evidence handoff."
 ---
 
 # Research Orchestrator
 
 Coordinate bounded, durable research and return a reusable evidence handoff. This skill owns research setup, delegation, recovery, evidence synthesis, and provenance. It does not own the downstream implementation plan or final personal or product decision.
+
+When a planner or other parent routes through this skill, act as one worker. Exclusively own the research assignments, shared metadata, retries and reassignments, persisted findings, and research synthesis. The caller retains user communication, approvals, downstream decisions, and final output; it must not separately manage this workflow's children.
 
 Read the references as each stage requires:
 
@@ -19,7 +21,9 @@ Read the references as each stage requires:
 
 Read the research protocol. Confirm that the request benefits from multiple passes or persistent findings; return Tier 0 work to the calling workflow instead of creating artifacts.
 
-For durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value.
+Routing to or invoking this skill does not authorize persistent writes. Without explicit authorization, do not create a research folder or temporary run; return findings in the current context and stop before the durable workflow.
+
+For authorized durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value. Define one total pass budget: every initial assignment, retry, and reassignment consumes a pass, including failed or partial attempts.
 
 Completion gate: persistence is authorized, storage is safe, and the run has a concrete budget and stop rule.
 
@@ -41,7 +45,7 @@ Completion gate: every launched pass has an owner, bounded question, unique outp
 
 ### 4. Recover and Synthesize
 
-The parent collects results, marks completion or failure, and handles material gaps through a bounded retry, reassignment, or sequential research pass. Preserve unresolved failures instead of silently dropping them.
+The parent collects results, marks completion or failure, and handles material gaps through a bounded retry, reassignment, or sequential research pass. Every retry or reassignment consumes another pass from the original budget. Preserve unresolved failures instead of silently dropping them.
 
 Before synthesis, reopen material cited sources, resolve or expose contradictions, and calibrate confidence. Stop when added research is unlikely to change a downstream decision or when a recorded budget limit is reached.
 
