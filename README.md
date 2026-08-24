@@ -19,6 +19,7 @@ Invocation is intentional. **User** skills run only when explicitly named, norma
 | Skill | Invocation | Description | Key capabilities |
 |-------|------------|-------------|------------------|
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | User | Document codebase architecture and key flows, with an optional self-contained HTML artifact | Repository exploration, diagrams, HTML validation |
+| [human-review-pr](./skills/human-review-pr/SKILL.md) | User | Help a human review PRs and local diffs with a compact brief and guided discussion | Code and product decisions, light architecture review, evidence-backed findings |
 | [humanize-text](./skills/humanize-text/SKILL.md) | User | Rewrite prose while preserving facts, protected text, and the writer's voice | Text transformation, fidelity checks |
 | [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create or update scoped `PRODUCT_TERMS.md` glossaries linked to product rules and code | Repository search, terminology management |
 | [mock-interview](./skills/mock-interview/SKILL.md) | User | Run source-grounded interview practice with stage-specific feedback | Interactive interviewing, evidence-based scoring |
