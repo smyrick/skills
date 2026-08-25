@@ -7,6 +7,17 @@ description: "Help a human review a PR or local diff with a compact brief, conse
 
 Help the human understand and challenge a change, not just receive a bug list. Start with a compact review brief, then discuss the areas they choose. Keep the review in chat and leave the final decision to the human.
 
+## Write for a busy programmer and architect
+
+Assume the human is a technical generalist who is a software programmer and architect, not a nontechnical reader. They understand code, system design, and engineering tradeoffs, but are not specialists in every subsystem and do not have time for a deep dive into each one.
+
+- Use normal engineering language and preserve the useful architecture and implementation detail: what work is shared, where permissions are enforced, which component owns a responsibility, and how failures propagate. Do not teach programming basics or replace precise mechanisms with vague analogies.
+- Connect each important mechanism to concrete behavior and practical consequences: what happens, under what conditions, who or what is affected, and why it matters. Explain unfamiliar specialist concepts briefly in context when needed to follow that connection; do not assume deep knowledge of database indexing, concurrency guarantees, or memory optimization.
+- Make choices understandable before asking for a decision: explain the practical tradeoff and what the human needs to weigh. The initial brief should stand on its own without becoming a tutorial; let the human choose where to go deeper.
+- Apply this approach throughout the brief and follow-up discussion. Keep the analysis rigorous and preserve evidence, severity, and uncertainty.
+
+For example: "Matching searches share one in-flight calculation of candidate IDs and ranking, while authorization and viewer-specific state are still applied separately. This is not a persistent results cache." Keep the technical distinction and explain what it means; no caching primer is needed.
+
 ## Establish the scope
 
 Accept a GitHub PR URL or number, a branch comparison, or selected uncommitted changes. Use available repository and hosting tools; do not require a particular connector.
@@ -41,18 +52,18 @@ Focus on consequential technical, product, and business choices rather than narr
 
 ## Give a brief, then guide the discussion
 
-Surface any critical concern immediately. Group the brief by logical changes rather than producing a file-by-file inventory. Use these four compact sections, without padding empty categories:
+Open with a short, evidence-backed assessment and the reviewed revision; surface any critical concern immediately. Group the brief by logical changes rather than producing a file-by-file inventory. Cover these areas compactly, adapting headings and combining sections when that reads more naturally, without padding empty categories:
 
-1. **What changed:** Intended outcome, actual changes to user journeys, business processes, or technical behavior, and the architecture delta.
-2. **Decisions worth your attention:** A short table: `Condition / choice | Behavior and consequence | Source`. Include consequential technical, product, and business choices, identifying affected users or process steps where relevant; omit routine branches and constants.
+1. **What changed:** The problem being solved, intended outcome, actual changes to user journeys, business processes, or technical behavior, and the architecture delta. State the core rule the change must preserve when relevant, such as returning the same authorized results in the same order.
+2. **Decisions worth your attention:** Consequential technical, product, and business choices, identifying affected users or process steps where relevant; omit routine branches and constants. Use a short table for parallel choices, such as `Change / choice | Behavior and consequence | Source`; keep triggering conditions explicit where they matter.
 3. **Findings and questions:** Every qualifying defect in the reviewed scope, ordered by severity. Shorten explanations rather than hiding findings behind an arbitrary count limit or saving them for follow-up. Keep tradeoffs and unresolved questions visibly separate; state uncertainty. If no concrete defect was found, say so without implying correctness or recommending approval by default.
 4. **Evidence and next focus:** Tests/CI inspected, checks actually run under separate authorization, missing evidence or coverage, and the area most worth discussing next.
 
-Format each defect as `[P1] Actionable title — source:line`, followed by a short explanation of the triggering condition and impact. Use P0 for universal release blockers or critical failures, P1 for urgent defects to fix next, P2 for ordinary defects, and P3 for low-impact issues still worth fixing. Do not assign defect priorities to product tradeoffs or open questions.
+Format each defect as `[P1] Actionable title — source:line`, followed by a short explanation of the triggering condition and impact. For a non-obvious defect, use a concrete scenario to connect the code path to the wrong outcome, including why an existing safeguard does not prevent it when relevant. Use P0 for universal release blockers or critical failures, P1 for urgent defects to fix next, P2 for ordinary defects, and P3 for low-impact issues still worth fixing. Do not assign defect priorities to product tradeoffs or open questions.
 
 Cite material claims with links to the reviewed source and precise lines or symbols. Anchor each defect to the smallest relevant changed lines that cause it; cite callers or tests separately as supporting evidence. Use revision-specific links for remote code and local file/line links only when they match the reviewed content. Do not invent line numbers or reproduce large diff blocks.
 
-End by inviting the human to choose a focus, with one recommended starting point. Continue one logical area at a time: explain the relevant path using small source excerpts, discuss the consequence or tradeoff, and pause for their input. Carry forward unresolved questions without repeating the whole brief. Expand or deliver the full review together if the user requests it.
+End by inviting the human to choose a focus, with one recommended starting point. Continue one logical area at a time: explain the relevant path in plain language, use small source excerpts only when they help, discuss the consequence or tradeoff, and pause for their input. Carry forward unresolved questions without repeating the whole brief. Expand or deliver the full review together if the user requests it.
 
 ## Keep review authority bounded
 
