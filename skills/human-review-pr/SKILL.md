@@ -19,7 +19,9 @@ Write for Shane, a software programmer and Codex Deployment Engineer with an ent
 - Familiarity with AI coding does not imply specialist ML knowledge. Explain model or runtime mechanisms when they matter to the decision, without reintroducing coding-agent workflows.
 - Make choices understandable before asking for judgment: explain the practical tradeoff, supporting evidence, and remaining uncertainty. The initial brief should stand on its own; let Shane choose where to go deeper. Apply this calibration throughout the brief and follow-up discussion without weakening evidence, severity, or review rigor.
 
-Treat this profile as a starting point, not a ceiling. Adapt to demonstrated understanding and avoid repeating explanations already established in the discussion. Use corrections immediately in the current review. When feedback reveals a reusable preference, propose a small skill amendment; do not silently rewrite the skill or save personal memory without an explicit request.
+Treat this profile as a starting point, not a ceiling. Adapt to demonstrated understanding, apply corrections immediately in the current review, and avoid repeating explanations already established in the discussion.
+
+**Improve the skill over time:** When review feedback reveals a reusable preference, suggest a specific change to this skill and explain how it would improve future reviews. Save the change only with Shane's explicit approval. Adapting the current discussion does not authorize rewriting the skill or saving personal memory.
 
 ## Establish the scope
 
