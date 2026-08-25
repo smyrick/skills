@@ -1,22 +1,27 @@
 ---
 name: "human-review-pr"
-description: "Help a human review a PR or local diff with a compact brief, consequential code and product decisions, a light architecture review, and guided discussion."
+description: "Help Shane review a PR or local diff with a compact brief, consequential code and product decisions, a light architecture review, and guided discussion calibrated to his background."
 ---
 
 # Human Review PR
 
 Help the human understand and challenge a change, not just receive a bug list. Start with a compact review brief, then discuss the areas they choose. Keep the review in chat and leave the final decision to the human.
 
-## Write for a busy programmer and architect
+## Write for Shane's background
 
-Assume the human is a technical generalist who is a software programmer and architect, not a nontechnical reader. They understand code, system design, and engineering tradeoffs, but are not specialists in every subsystem and do not have time for a deep dive into each one.
+Write for Shane, a software programmer and Codex Deployment Engineer with an enterprise Solutions Architect background. He is a technical generalist who understands code, system design, and engineering tradeoffs, but is not a specialist in every subsystem. Help him understand and challenge consequential changes without requiring a deep dive into each one.
 
-- Use normal engineering language and preserve the useful architecture and implementation detail: what work is shared, where permissions are enforced, which component owns a responsibility, and how failures propagate. Do not teach programming basics or replace precise mechanisms with vague analogies.
-- Connect each important mechanism to concrete behavior and practical consequences: what happens, under what conditions, who or what is affected, and why it matters. Explain unfamiliar specialist concepts briefly in context when needed to follow that connection; do not assume deep knowledge of database indexing, concurrency guarantees, or memory optimization.
-- Make choices understandable before asking for a decision: explain the practical tradeoff and what the human needs to weigh. The initial brief should stand on its own without becoming a tutorial; let the human choose where to go deeper.
-- Apply this approach throughout the brief and follow-up discussion. Keep the analysis rigorous and preserve evidence, severity, and uncertainty.
+- Build on familiar ground: JavaScript, Java, Kotlin, APIs, GraphQL, microservices, Docker, and AI coding workflows. Skip introductory explanations and use interface contracts, service boundaries, request/data flow, and effects on callers to orient the review. Use familiar comparisons only when they clarify the actual mechanism; do not force API or GraphQL analogies onto unrelated systems.
+- Preserve normal engineering language and useful implementation detail: what work is shared, where permissions are enforced, which component owns a responsibility, and how failures propagate. Connect relevant choices to enterprise integration, compatibility, identity boundaries, deployment, operations, and user outcomes without assuming expertise in every underlying technology.
+- For databases and distributed systems, assume high-level patterns are familiar, but explain consequential mechanisms more fully. For indexing, transactions, locks, retries, ordering, or consistency guarantees, describe how the mechanism works in this change and use a concrete scenario to show what happens, under which conditions, and who or what is affected. Naming the pattern is not sufficient; trace the relevant sequence and guarantee or failure without turning the brief into a general tutorial.
+- For Kubernetes, assume substantial Docker experience but provide contextual refreshers for Kubernetes terms and resource relationships. When commands help explain or verify a change, identify their purpose, target cluster/context and namespace where applicable, and whether they inspect or mutate state. Explaining a command does not authorize executing it; preserve the review's execution boundaries.
+- For other languages and frontend/native stacks, ask a focused familiarity question when the answer would materially change the explanation. Do not assume either expertise or inexperience, and continue independent parts of the review while that question is open. Explain unfamiliar semantics or lifecycle behavior in relation to the change once the needed depth is clear.
+- Familiarity with AI coding does not imply specialist ML knowledge. Explain model or runtime mechanisms when they matter to the decision, without reintroducing coding-agent workflows.
+- Make choices understandable before asking for judgment: explain the practical tradeoff, supporting evidence, and remaining uncertainty. The initial brief should stand on its own; let Shane choose where to go deeper. Apply this calibration throughout the brief and follow-up discussion without weakening evidence, severity, or review rigor.
 
-For example: "Matching searches share one in-flight calculation of candidate IDs and ranking, while authorization and viewer-specific state are still applied separately. This is not a persistent results cache." Keep the technical distinction and explain what it means; no caching primer is needed.
+Treat this profile as a starting point, not a ceiling. Adapt to demonstrated understanding, apply corrections immediately in the current review, and avoid repeating explanations already established in the discussion.
+
+**Improve the skill over time:** When review feedback reveals a reusable preference, suggest a specific change to this skill and explain how it would improve future reviews. Save the change only with Shane's explicit approval. Adapting the current discussion does not authorize rewriting the skill or saving personal memory.
 
 ## Establish the scope
 
