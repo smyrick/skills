@@ -10,7 +10,9 @@ import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
 import YAML from "yaml";
 
-import { MODEL_INVOKED_SKILLS } from "./lib/skill-contract.js";
+import { MODEL_INVOKED_SKILLS } from "./lib/repository-policy.js";
+import { buildTargets } from "./lib/target-packages.js";
+import { collectPackageFiles } from "./lib/package-integrity.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -94,6 +96,10 @@ function buildSkillsIndex(revision, created) {
         description: metadata.description,
         invocation: MODEL_INVOKED_SKILLS.has(metadata.name) ? "model" : "user",
         openai_adapter: `skills/${metadata.name}/agents/openai.yaml`,
+        targets: {
+          openai: `targets/openai/skills/${metadata.name}/SKILL.md`,
+          claude: `targets/claude/skills/${metadata.name}/SKILL.md`,
+        },
       };
     }),
   };
@@ -111,25 +117,29 @@ function shouldSkip(relPath) {
 }
 
 function collectEntries() {
-  const roots = ["README.md", "LICENSE", "CONTRIBUTING.md", "skills"];
+  const roots = ["README.md", "LICENSE", "CONTRIBUTING.md", "AGENTS.md", "docs", "skills"].map((name) => ({
+    abs: path.join(repoRoot, name),
+    rel: name,
+  }));
+  roots.push({ abs: path.join(repoRoot, ".dist", "targets"), rel: "targets" });
   const entries = [];
 
-  function visit(absPath) {
-    const relPath = path.relative(repoRoot, absPath).split(path.sep).join("/");
+  function visit(absPath, relPath) {
     if (!relPath || shouldSkip(relPath)) return;
 
-    const stat = fs.lstatSync(absPath);
+    const stat = fs.statSync(absPath);
     entries.push({ absPath, relPath, stat });
     if (!stat.isDirectory()) return;
 
     for (const child of fs.readdirSync(absPath).sort(comparePath)) {
-      visit(path.join(absPath, child));
+      visit(path.join(absPath, child), `${relPath}/${child}`);
     }
   }
 
   for (const root of roots) {
-    const absPath = path.join(repoRoot, root);
-    if (fs.existsSync(absPath)) visit(absPath);
+    if (!fs.existsSync(root.abs)) continue;
+    if (fs.statSync(root.abs).isDirectory()) collectPackageFiles(root.abs);
+    visit(root.abs, root.rel);
   }
 
   return entries.sort((a, b) => comparePath(a.relPath, b.relPath));
@@ -151,7 +161,7 @@ function tarHeader(entry, size, typeflag, linkname = "") {
     throw new Error(`Tar path is too long for ustar header: ${name}`);
   }
 
-  const mode = entry.stat.isDirectory() ? 0o755 : 0o644;
+  const mode = entry.stat.isDirectory() ? 0o755 : entry.stat.mode & 0o777;
   writeString(header, 0, 100, name);
   writeOctal(header, 100, 8, mode);
   writeOctal(header, 108, 8, 0);
@@ -198,6 +208,9 @@ function buildTar() {
 }
 
 function main() {
+  // Preflight source symlinks, then build fresh target collections before archiving.
+  collectPackageFiles(skillsDir);
+  buildTargets(repoRoot);
   fs.mkdirSync(outDir, { recursive: true });
 
   const revision = runGit(["rev-parse", "HEAD^{commit}"], process.env.GITHUB_SHA || "unknown");

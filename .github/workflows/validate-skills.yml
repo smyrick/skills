@@ -15,11 +15,42 @@ jobs:
           node-version: lts/*
           cache: npm
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.20"
+          enable-cache: true
+          cache-dependency-glob: tools/skills-ref/uv.lock
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Check skill formatting and metadata
-        run: npm run check
+      - name: Install pinned upstream skill validator
+        run: npm run setup:spec
+
+      - name: Check formatting without rewriting metadata
+        run: npm run format:check
+
+      - name: Validate shared skill specification and package references
+        run: npm run check:skills && npm run check:package
+
+      - name: Validate OpenAI profile
+        run: npm run check:openai
+
+      - name: Validate Claude Code profile
+        run: npm run check:claude
+
+      - name: Validate repository policy and target parity
+        run: npm run check:policy && npm run check:parity
+
+      - name: Validate native plugin manifests when present
+        run: npm run check:plugins
+
+      - name: Run contract and packaging regression tests
+        run: npm run test:contract
 
       - name: Smoke-test OCI packaging
         run: npm run oci:smoke
