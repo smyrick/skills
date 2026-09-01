@@ -2,6 +2,8 @@
 
 This repository stores reusable AI agent skills. Treat skill formatting as part of every change.
 
+Keep skill workflows agent- and model-neutral. Describe required capabilities and outcomes, not vendor tool names, model identifiers, reasoning-setting names, or a particular client's invocation syntax. Treat optional runtime features as capabilities to check, with a direct-work or handoff fallback when unavailable. Brief, source-backed notes about public client differences are welcome when relevant; do not assume that hooks, permissions, or other features behave identically across clients.
+
 JavaScript in this repo uses ES modules with standard `.js` files. Keep `"type": "module"` in `package.json`; do not add `.mjs` scripts or convert repo scripts to CommonJS.
 
 After changing any `skills/**/SKILL.md` or `skills/**/agents/openai.yaml` file:

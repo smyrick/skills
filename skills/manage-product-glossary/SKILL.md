@@ -101,4 +101,4 @@ Never resolve a collision by silently renaming or deleting a term. Present the c
 - Record edge cases, non-goals, and prohibited meanings in `intended_rules` or `notes`.
 - Cite implementation claims with a repo-relative path plus a symbol, key, test, or line when practical.
 - Do not expose secrets or sensitive data found while inspecting the repository.
-- Do not modify `ARCHITECTURE.html`; suggest an explicit `$codebase-summary` update when structural documentation is stale.
+- Do not modify `ARCHITECTURE.html`; suggest an explicitly requested `codebase-summary` update when structural documentation is stale.

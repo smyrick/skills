@@ -40,11 +40,11 @@ Use the lightest useful mode:
 
 - **Direct**: for a narrow comparison, research and synthesize in the current context without subagents or a research folder.
 - **Ephemeral parallel**: when several independent questions materially benefit from parallelism, launch focused, fresh-context, read-only leaf scouts with sanitized briefs and keep their findings in the current context.
-- **Durable**: when findings need persistence, provenance, recovery, or reuse, route internally through `$research-orchestrator` as one subworkflow. Consume its research-only handoff before decision work resumes.
+- **Durable**: when findings need persistence, provenance, recovery, or reuse, use the `research-orchestrator` skill as one subworkflow. Consume its research-only handoff before decision work resumes.
 
-Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Scouts do not launch children or write durable artifacts. If `$research-orchestrator` is unavailable or persistence is inappropriate or unauthorized, keep the work in direct or ephemeral mode and create no research folder.
+Give each ephemeral scout one bounded question, scope, expected result, evidence requirements, and validation criteria. Scouts do not launch children or write durable artifacts. If delegation is unavailable, research directly. If the `research-orchestrator` skill is unavailable or persistence is inappropriate or unauthorized, keep the work in direct or ephemeral mode and create no research folder.
 
-For durable research, treat `$research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
+For durable research, treat `research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
 
 Compare credible leading options, the status quo, and meaningful alternatives. Evaluate total cost, availability, fit, expert evidence, recurring complaints, switching or learning costs, opportunity cost, and failure modes. Note stale, missing, sponsored, or conflicting evidence.
 

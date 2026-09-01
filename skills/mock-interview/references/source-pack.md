@@ -69,7 +69,7 @@ Do not ask the candidate to disclose proprietary employer details, customer name
 
 ## Prep-Time Subagents
 
-Use these when available:
+Use these roles when delegation is available and useful; otherwise perform the needed preparation directly without assuming separate agents:
 
 - **Source normalizer:** produce compact summaries and mark missing facts.
 - **Public researcher:** collect dated public company/process context.

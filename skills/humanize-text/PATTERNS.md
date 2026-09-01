@@ -341,8 +341,6 @@ These are cited as often as the top mechanical tells but no pattern can catch th
 
 **What it sounds like:** Every sentence roughly the same length and shape, evenly paced, with no variation. The evenness is the tell. A human ear catches it before any single word.
 
-**Quote from data:** "ChatGPT has a very recognizable cadence. And as soon as you catch it, it is impossible to focus on what's being written, because it's not even someone's actual thoughts."
-
 **Fix:** Vary sentence length on purpose. Let one run long and the next be three words. Read it aloud; if it lulls, break the meter.
 
 ### Sycophancy and the yes-man register
