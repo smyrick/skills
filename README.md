@@ -24,8 +24,8 @@ Invocation is intentional. **User** skills run only when explicitly named, norma
 | [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create or update scoped `PRODUCT_TERMS.md` glossaries linked to product rules and code | Repository search, terminology management |
 | [mock-interview](./skills/mock-interview/SKILL.md) | User | Run source-grounded interview practice with stage-specific feedback | Interactive interviewing, evidence-based scoring |
 | [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | User | Plan a non-code decision through direct research, read-only leaf scouts, or an internal durable research subworkflow | Current research, decision analysis |
-| [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Plan a code change through direct research, read-only leaf scouts, or an internal durable research subworkflow | Codebase research, implementation planning |
-| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate authorization-gated durable research with owned assignments, bounded passes, recovery, and a research-only handoff | Evidence handoffs, bounded delegation |
+| [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Plan a code change through direct research, focused read-only delegation, or an internal durable research subworkflow, with selective independent review | Codebase research, implementation planning |
+| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate authorization-gated durable research with clear assignment limits, flexible exploration, bounded passes, recovery, and a research-only handoff | Evidence handoffs, bounded delegation |
 | [shorten-response](./skills/shorten-response/SKILL.md) | User | Apply concise coworker-style response mode without losing technical depth or caveats | Response shaping |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | User | Create a bounded, decision-ready product requirements document | Product discovery, optional codebase context |
 

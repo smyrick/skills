@@ -23,7 +23,7 @@ Read the research protocol. Confirm that the request benefits from multiple pass
 
 Routing to or invoking this skill does not authorize persistent writes. Without explicit authorization, do not create a research folder or temporary run; return findings in the current context and stop before the durable workflow.
 
-For authorized durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value. Define one total pass budget: every initial assignment, retry, and reassignment consumes a pass, including failed or partial attempts.
+For authorized durable work, define the goal, scope, sanitized constraints, research questions, stable slug, storage choice, and explicit limits on agents, nesting, waves, time or tokens where observable, and marginal research value. Define one total pass budget: every initial assignment, independent review, retry, and reassignment consumes a pass, including failed or partial attempts.
 
 Completion gate: persistence is authorized, storage is safe, and the run has a concrete budget and stop rule.
 
@@ -37,7 +37,7 @@ Completion gate: run metadata records identity, status, freshness, budget, stora
 
 ### 3. Launch Focused Research
 
-Read the agent lifecycle reference. Split only independent research questions. The parent allocates each child a unique ID and findings path, updates status, and preserves exclusive ownership of shared metadata.
+Read the agent lifecycle reference. Sequence dependent questions and parallelize only independent work. Give each assignment a clear objective, firm limits, and suggested starting boundaries that leave room for relevant exploration. The parent allocates each child a unique ID and findings path, updates status, and preserves exclusive ownership of shared metadata.
 
 Require exact file-and-line evidence for codebase claims and URLs plus relevant publication and access dates for web claims. Findings are working notes; cited files and sources remain authoritative.
 

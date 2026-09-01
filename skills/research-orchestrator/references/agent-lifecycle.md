@@ -6,15 +6,27 @@ Use this protocol for bounded parent and child coordination.
 
 The research orchestrator is the sole owner of its assignments, child lifecycle, run budget, and shared state. A calling planner or other workflow treats it as one worker and does not launch duplicate agents for the same questions or intervene in its children.
 
+Choose delegation for a material benefit in coverage, independent challenge, context isolation, or elapsed time. Keep work local when specification and integration cost outweigh that benefit. Identify dependencies and integration needs before launching; use concurrent scouts or a later focused review only when the questions warrant them, not a fixed roster. Reserve capacity for coordination and likely recovery rather than filling every available slot.
+
 Before every launch, reserve one pass from the run's total budget. The parent then:
 
 1. Allocates a unique attempt ID, bounded question, owner, and findings path.
 2. Adds the assignment to `INDEX.md` as `pending`, then marks it `running` when launched.
-3. Gives the child the sanitized context, evidence standard, and applicable budget.
+3. Gives the child a compact sanitized brief, relevant source pointers, evidence standard, and applicable budget. Pass only the context needed; use conversation inheritance only when the assignment depends on it and the runtime supports it.
 4. Collects the result, inspects the assigned file or returned markdown, and updates status.
 5. Reopens material cited sources before using a finding in synthesis.
 
 Launch work in parallel only when the questions and output paths are independent. Default to parent-only delegation. Permit nested delegation only when the parent explicitly allocates child IDs, namespaces, paths, and budget so the global cap remains enforceable.
+
+For consequential or disputed findings, consider an independent evidence review with named assumptions, risks, and acceptance criteria to challenge. Schedule it after its prerequisite findings, count it against the original pass and wave limits, and retain unresolved disagreements in synthesis. It does not make downstream design decisions or replace the parent's source verification.
+
+Prefer the inherited model and effort. Override either only when authorized, supported by the current runtime, and justified by the assignment's quality, latency, or cost needs. Assess model capability and reasoning effort separately; do not hard-code model names or use maximum effort uniformly.
+
+## Assignment Boundaries
+
+Define the question and success criteria clearly without prescribing every step or the expected conclusion. Separate **firm limits** (objective, explicit exclusions, permitted access and writes, privacy, approvals, budget, and stop conditions) from **suggested boundaries** (starting files, sources, hypotheses, and methods).
+
+Suggested boundaries focus effort without becoming an exhaustive allowlist. A child may follow an unexpected dependency, test an alternative explanation, or choose another method when it advances the same question within firm limits. It need not ask permission for each such adjustment; report meaningful departures and what they revealed. If a lead would change the objective, cross an explicit exclusion, require new authority, or exceed the budget, return its relevance and proposed follow-up to the parent instead of pursuing it. The parent retains any user approval requirement. Delegation never expands authority.
 
 ## Delegation Prompt Shape
 
@@ -23,8 +35,17 @@ Read {run-dir}/CONTEXT.md first.
 
 Assignment ID: [ID]
 Question: [one bounded research question]
+Purpose: [which uncertainty or downstream decision this informs]
+Inputs: [required artifacts and references; explicitly name any skill to load]
+Suggested starting scope: [likely files, sources, hypotheses, or methods; not exhaustive]
+Firm limits: [objective boundaries, explicit exclusions, permitted sources/systems,
+              inherited approval/privacy/credential/external-write restrictions]
 Write only: {run-dir}/findings/NN-area.md
 Budget: [sources, passes, time or token bound, and stop condition]
+Acceptance: [what sufficient evidence or a useful partial answer must establish]
+
+Choose your approach and follow relevant leads within firm limits.
+Report material departures from the starting scope and useful out-of-scope leads.
 
 For each material finding include:
 - claim labeled as fact or inference
@@ -36,6 +57,7 @@ For each material finding include:
 
 Do not edit RUN.md, CONTEXT.md, INDEX.md, application code, or unrelated files.
 If writing is unavailable, return the exact findings markdown.
+If blocked, report the missing evidence or access and the resulting limitation.
 Return a compact completion summary after the findings are ready.
 ```
 
