@@ -1,109 +1,103 @@
 #!/usr/bin/env node
-/** Validate portable skill contracts, OpenAI adapters, links, and README synchronization. */
+/** Separate static gates. No static gate claims live harness behavior was tested. */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { listSkillPackages } from "./lib/skill-contract.js";
+import { validateSkillDirectories } from "./lib/skills-ref.js";
+import { validateOpenAIDocument } from "./lib/openai-contract.js";
+import { validateClaudeDocument } from "./lib/claude-contract.js";
+import { validateReadme, validateRepositorySkill } from "./lib/repository-policy.js";
+import { collectPackageFiles, validatePackageReferences } from "./lib/package-integrity.js";
+import { buildTargetFiles, validateTargetFiles, TARGETS } from "./lib/target-packages.js";
+import { findPluginManifests, checkPlugin } from "./lib/plugin-contract.js";
 
-import {
-  MODEL_INVOKED_SKILLS,
-  listSkillPackages,
-  validateMarkdownLinks,
-  validateOpenAIDocument,
-  validateSkillDocument,
-} from "./lib/skill-contract.js";
-
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(scriptDir, "..");
-const skillsDir = path.join(repoRoot, "skills");
-const readmePath = path.join(repoRoot, "README.md");
-
-function validatePackage(skill) {
-  const errors = [];
-  if (!fs.existsSync(skill.skillPath)) errors.push("SKILL.md is missing");
-  else {
-    errors.push(
-      ...validateSkillDocument({
-        content: fs.readFileSync(skill.skillPath, "utf8"),
-        folderName: skill.name,
-      }),
-    );
-    errors.push(...validateMarkdownLinks(skill.directory));
-  }
-
-  if (!fs.existsSync(skill.openaiPath)) errors.push("agents/openai.yaml is missing");
-  else {
-    errors.push(
-      ...validateOpenAIDocument({
-        content: fs.readFileSync(skill.openaiPath, "utf8"),
-        skillName: skill.name,
-      }),
-    );
-  }
-  return errors;
-}
-
-function parseReadmeRows(readme) {
-  const rows = new Map();
-  const rowPattern = /^\| \[([^\]]+)\]\(\.\/skills\/([^/)]+)\/SKILL\.md\) \| ([^|]+) \|/gm;
-  for (const match of readme.matchAll(rowPattern)) {
-    rows.set(match[2], { label: match[1], invocation: match[3].trim() });
-  }
-  return rows;
-}
-
-function validateReadme(skills) {
-  if (!fs.existsSync(readmePath)) return ["README.md is missing"];
-  const readme = fs.readFileSync(readmePath, "utf8");
-  const rows = parseReadmeRows(readme);
-  const errors = [];
-  for (const skill of skills) {
-    const row = rows.get(skill.name);
-    if (!row) {
-      errors.push(`Skill Index is missing ./skills/${skill.name}/SKILL.md`);
-      continue;
-    }
-    if (row.label !== skill.name) errors.push(`Skill Index label for ${skill.name} must match its folder name`);
-    const expected = MODEL_INVOKED_SKILLS.has(skill.name) ? "Model" : "User";
-    if (row.invocation !== expected) {
-      errors.push(`Skill Index invocation for ${skill.name} must be ${expected} (got ${row.invocation})`);
-    }
-  }
-  for (const name of rows.keys()) {
-    if (!skills.some((skill) => skill.name === name)) {
-      errors.push(`Skill Index references missing skill ./skills/${name}/SKILL.md`);
-    }
-  }
-  return errors;
-}
-
-const skills = listSkillPackages(skillsDir);
-if (!skills.length) {
-  console.error("No skills/*/SKILL.md files found.");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const skills = listSkillPackages(path.join(root, "skills"));
+const groups = ["skills", "openai", "claude", "policy", "package", "parity", "plugins"];
+const requested = process.argv.slice(2);
+if (requested.some((group) => !groups.includes(group))) {
+  console.error(`Unknown check. Choose: ${groups.join(", ")}`);
   process.exit(1);
 }
-
-let errorCount = 0;
-for (const skill of skills) {
-  const errors = validatePackage(skill);
-  if (!errors.length) console.log(`skills/${skill.name}  OK`);
-  else {
-    console.log(`skills/${skill.name}`);
-    for (const error of errors) console.log(`  error: ${error}`);
-    errorCount += errors.length;
+let failures = 0;
+const read = (file) => fs.readFileSync(file, "utf8");
+for (const group of requested.length ? requested : groups) {
+  const errors = [];
+  let skipped = false;
+  try {
+    if (!skills.length) throw new Error("No skill packages found");
+    if (group === "skills") {
+      const results = validateSkillDirectories(skills.map((skill) => skill.directory));
+      for (const [index, result] of results.entries()) {
+        errors.push(...result.map((error) => `${skills[index].name}: ${error}`));
+      }
+    }
+    if (["openai", "policy"].includes(group)) {
+      for (const skill of skills) {
+        try {
+          let result;
+          if (group === "openai")
+            result = fs.existsSync(skill.openaiPath)
+              ? validateOpenAIDocument({ content: read(skill.openaiPath) })
+              : [];
+          if (group === "policy")
+            result = validateRepositorySkill({
+              content: read(skill.skillPath),
+              adapterContent: read(skill.openaiPath),
+              skillName: skill.name,
+            });
+          errors.push(...result.map((error) => `${skill.name}: ${error}`));
+        } catch (error) {
+          errors.push(`${skill.name}: ${error.message}`);
+        }
+      }
+      if (group === "policy")
+        errors.push(
+          ...validateReadme(
+            read(path.join(root, "README.md")),
+            skills.map((skill) => skill.name),
+          ),
+        );
+    }
+    if (["claude", "package", "parity"].includes(group)) {
+      const source = collectPackageFiles(path.join(root, "skills"));
+      if (group === "claude") {
+        for (const [name, bytes] of buildTargetFiles(source, "claude")) {
+          if (/^[^/]+\/SKILL\.md$/.test(name))
+            errors.push(
+              ...validateClaudeDocument({
+                content: bytes.toString("utf8"),
+                folderName: name.split("/")[0],
+              }).map((error) => `${name}: ${error}`),
+            );
+        }
+      }
+      if (group === "package") errors.push(...validatePackageReferences(source));
+      if (group === "parity")
+        for (const target of TARGETS)
+          errors.push(
+            ...validateTargetFiles(source, buildTargetFiles(source, target), target).map(
+              (error) => `${target}: ${error}`,
+            ),
+          );
+    }
+    if (group === "plugins") {
+      const manifests = findPluginManifests(root);
+      skipped = !manifests.length;
+      for (const entry of manifests)
+        errors.push(...checkPlugin(entry).map((error) => `${path.relative(root, entry.path)}: ${error}`));
+    }
+  } catch (error) {
+    errors.push(error.message);
   }
+  console.log(
+    `[${group}] ${errors.length ? "FAIL" : skipped ? "SKIP — no native plugin manifests" : "PASS"}`,
+  );
+  for (const error of errors) console.error(`  ${error}`);
+  failures += errors.length;
 }
-
-const readmeErrors = validateReadme(skills);
-if (!readmeErrors.length) console.log("README.md  OK");
-else {
-  console.log("README.md");
-  for (const error of readmeErrors) console.log(`  error: ${error}`);
-  errorCount += readmeErrors.length;
-}
-
-console.log("");
-if (errorCount) {
-  console.log(`Failed: ${errorCount} error(s).`);
-  process.exit(1);
-}
-console.log(`All ${skills.length} skill(s), adapters, links, and README entries passed.`);
+console.log(
+  "[runtime] NOT RUN — live discovery, invocation, and execution require client/version-specific tests",
+);
+if (failures) process.exitCode = 1;

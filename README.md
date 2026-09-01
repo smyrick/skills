@@ -1,20 +1,31 @@
 # Shane Myrick's Skills Library
 
-A personal library of reusable AI-agent workflows. Each skill has a portable `SKILL.md` core and an OpenAI adapter that defines its display metadata, starter prompt, and invocation policy.
+A personal library of reusable AI-agent workflows. Each skill has a portable `SKILL.md` core. OpenAI adapters supply interface metadata; the repository invocation policy also generates a Claude Code collection.
 
 ## Install
 
-Install every skill with the [skills CLI](https://github.com/vercel-labs/skills):
+For Codex CLI, install every skill with the [skills CLI](https://github.com/vercel-labs/skills):
 
 ```bash
-npx skills add smyrick/skills
+npx skills add smyrick/skills --agent codex
 ```
 
-Use `npx skills add smyrick/skills --list` to inspect the collection first. Agents that do not support the OpenAI adapter can still follow each portable `SKILL.md` directly.
+Use `npx skills add smyrick/skills --list` to inspect the collection first. This installs the source collection, whose invocation controls are OpenAI-specific.
+
+For Claude Code, clone this repository, build the target collection, then install that local collection:
+
+```bash
+npm ci
+npm run setup:spec
+npm run build:targets
+npx skills add ./.dist/targets/claude --agent claude-code --copy
+```
+
+The generated `SKILL.md` files include Claude Code invocation controls. Use `--copy` to keep this variant in Claude's directory instead of overwriting the shared canonical skills directory used by other agents. Keep OpenAI and Claude target directories physically separate. Do not install the portable source directly into Claude Code if explicit-only invocation matters. These are Claude Code packages, not claude.ai upload packages. Other harnesses can read the portable instructions, but their invocation behavior is unverified.
 
 ## Skill Index
 
-Invocation is intentional. **User** skills run only when explicitly named, normally as `$skill-name`. **Model** skills may also be selected automatically or reached by another skill.
+Invocation is intentional. **User** skills are configured for explicit invocation in the OpenAI and generated Claude Code collections. **Model** skills may also be selected automatically or reached by another skill. Use the host's invocation syntax (`$skill-name` in Codex CLI, `/skill-name` in Claude Code); live routing tests are separate from static validation.
 
 | Skill | Invocation | Description | Key capabilities |
 |-------|------------|-------------|------------------|
@@ -54,18 +65,37 @@ skills/
     assets/                  # Optional output templates or static assets
 ```
 
-Portable frontmatter contains only `name` and `description`. Runtime-specific behavior belongs in an adapter, not in `SKILL.md` frontmatter.
+Portable frontmatter follows the Agent Skills specification, including its supported optional metadata. Runtime-specific fields belong in an adapter or generated target package. The repository currently excludes experimental tool approval declarations from the portable core.
 
 ## Validate
 
+Validation requires Node.js, Python 3.11+, and [uv](https://docs.astral.sh/uv/). Install the pinned upstream reference validator once before running checks:
+
 ```bash
-npm install
+npm ci
+npm run setup:spec
 npm run format
 npm run check
 npm run oci:smoke
 ```
 
-`npm run check` verifies canonical formatting, portable metadata, OpenAI adapter contracts, invocation policy, local links, README synchronization, and contract tests. `npm run oci:smoke` packages the collection and verifies descriptors, archive safety, index contents, and the presence of every adapter. CI runs both commands.
+`npm run check` runs formatting checks, independently reported validation groups, and regression tests. Each group can also run directly:
+
+| Command | Scope |
+| --- | --- |
+| `npm run check:skills` | Official `skills-ref` validator at a pinned upstream commit |
+| `npm run check:openai` | OpenAI adapter schema profile; adapters are optional at this layer |
+| `npm run check:claude` | Claude Code extensions in generated skill output |
+| `npm run check:policy` | Our adapter requirements, invocation choices, neutral instructions, and README index |
+| `npm run check:package` | Local links and icons resolve inside package contents |
+| `npm run check:parity` | Target generation preserves instructions/resources and maps invocation policy |
+| `npm run check:plugins` | Conditional skill-only native plugin manifest profiles |
+
+The core check calls the upstream `skills_ref.validate` API; it does not maintain a second implementation of the spec. `tools/skills-ref/pyproject.toml` pins the source commit and `uv.lock` pins its dependencies. Checks run offline after setup and fail explicitly if the reference validator cannot run.
+
+Formatting preserves YAML values and comments, including unknown fields; validation reports unsupported fields without deleting them. A malformed batch is rejected before any formatting writes.
+
+`npm run oci:smoke` builds both target collections and verifies their actual archived contents, descriptors, paths, references, and index entries. Native plugin checks report `SKIP` when no manifests exist. Live client discovery, invocation, and execution report `NOT RUN`; schema and artifact parity checks do not prove runtime behavior. See [validation coverage and source baselines](docs/validation.md).
 
 ## OCI Package
 
@@ -77,7 +107,7 @@ ghcr.io/smyrick/skills:vYYYY.MM.DD
 ghcr.io/smyrick/skills:latest
 ```
 
-Use digest pins when a consumer needs immutable installs.
+Use digest pins when a consumer needs immutable installs. The archive retains the original `skills/` collection and additionally includes `targets/openai/skills/` and `targets/claude/skills/`. The index retains existing fields and adds per-target paths. These collections do not include native plugin manifests.
 
 ## Contributing
 

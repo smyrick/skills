@@ -72,6 +72,6 @@ Inspect the resulting diff against the agreed scope before claiming the chunk co
 
 Write for a software programmer and architect: retain engineering detail and explain unfamiliar mechanisms in context, connecting conditions to behavior and consequences. Distinguish planned, implemented, and verified work, and reviewability from correctness or human approval. Disclose unavailable access or evidence and do not call an incomplete chunk finished.
 
-When explicitly combined with a planning workflow, contribute boundaries, acceptance criteria, and handoffs to one unified plan rather than starting a competing workflow. No companion skill is required. Suggest `$human-review-pr` for subsequent human-guided review when useful; do not invoke it automatically.
+When explicitly combined with a planning workflow, contribute boundaries, acceptance criteria, and handoffs to one unified plan rather than starting a competing workflow. No companion skill is required. Suggest the `human-review-pr` skill for subsequent human-guided review when useful; do not invoke it automatically.
 
 Follow the enclosing task's permissions and mode. Invocation alone authorizes neither coding nor test execution. Use already-authorized implementation and verification without asking again for routine in-scope steps. Do not automatically install dependencies or this skill, create durable artifacts or agent tasks, publish comments, push, or merge. Follow existing local commit instructions without treating them as permission to rewrite history or publish.

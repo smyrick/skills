@@ -6,3 +6,6 @@ node_modules/
 skills-lock.json
 
 .dist/
+
+tools/skills-ref/.venv/
+__pycache__/

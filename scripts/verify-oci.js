@@ -6,7 +6,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
 
-import { MODEL_INVOKED_SKILLS, listSkillPackages } from "./lib/skill-contract.js";
+import { listSkillPackages } from "./lib/skill-contract.js";
+import { MODEL_INVOKED_SKILLS } from "./lib/repository-policy.js";
+import { collectPackageFiles, validatePackageReferences } from "./lib/package-integrity.js";
+import { TARGETS, validateTargetFiles } from "./lib/target-packages.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -32,7 +35,11 @@ function assertDescriptor(descriptor, filePath, label) {
 }
 
 function parseOctal(buffer, start, length) {
-  const raw = buffer.subarray(start, start + length).toString("ascii").replace(/\0.*$/s, "").trim();
+  const raw = buffer
+    .subarray(start, start + length)
+    .toString("ascii")
+    .replace(/\0.*$/s, "")
+    .trim();
   return raw ? Number.parseInt(raw, 8) : 0;
 }
 
@@ -45,7 +52,10 @@ function parseTar(buffer) {
     const size = parseOctal(header, 124, 12);
     const type = header.subarray(156, 157).toString("ascii") || "0";
     const linkname = header.subarray(157, 257).toString("utf8").replace(/\0.*$/s, "");
-    entries.push({ name, type, linkname });
+    if (!Number.isSafeInteger(size) || size < 0 || offset + 512 + size > buffer.length)
+      throw new Error(`Invalid tar size for ${name}`);
+    if (!["0", "5"].includes(type)) throw new Error(`Unsupported archive entry type for ${name}`);
+    entries.push({ name, type, linkname, content: buffer.subarray(offset + 512, offset + 512 + size) });
     offset += 512 + Math.ceil(size / 512) * 512;
   }
   return entries;
@@ -90,9 +100,35 @@ function main() {
   const archivedPaths = new Set();
   for (const entry of tarEntries) {
     assertSafeTarPath(entry.name, "path");
-    archivedPaths.add(entry.name.replace(/\/$/, ""));
-    if (entry.type === "2") assertSafeTarPath(entry.linkname, "symlink target");
+    const normalizedName = entry.name.replace(/\/$/, "");
+    if (archivedPaths.has(normalizedName)) throw new Error(`Duplicate archive path: ${normalizedName}`);
+    archivedPaths.add(normalizedName);
   }
+
+  const archivedFiles = new Map(
+    tarEntries.filter((entry) => entry.type === "0").map((entry) => [entry.name, entry.content]),
+  );
+  const subtree = (prefix) =>
+    new Map(
+      [...archivedFiles]
+        .filter(([name]) => name.startsWith(prefix))
+        .map(([name, bytes]) => [name.slice(prefix.length), bytes]),
+    );
+  const source = subtree("skills/");
+  const currentSource = collectPackageFiles(path.join(repoRoot, "skills"));
+  if (source.size !== currentSource.size)
+    throw new Error("Archived source inventory differs from repository");
+  for (const [name, bytes] of currentSource) {
+    if (!source.get(name)?.equals(bytes)) throw new Error(`Archived source differs: ${name}`);
+  }
+  const errors = validatePackageReferences(archivedFiles);
+  for (const target of TARGETS)
+    errors.push(
+      ...validateTargetFiles(source, subtree(`targets/${target}/skills/`), target).map(
+        (error) => `${target}: ${error}`,
+      ),
+    );
+  if (errors.length) throw new Error(errors.join("\n"));
 
   const skills = listSkillPackages(path.join(repoRoot, "skills"));
   const indexed = new Map(index.skills?.map((skill) => [skill.name, skill]) ?? []);
@@ -110,12 +146,18 @@ function main() {
     if (record.path !== skillPath || record.openai_adapter !== adapterPath) {
       throw new Error(`Index paths are incorrect for ${skill.name}`);
     }
+    for (const target of TARGETS) {
+      if (record.targets?.[target] !== `targets/${target}/skills/${skill.name}/SKILL.md`)
+        throw new Error(`Missing or incorrect ${target} index path for ${skill.name}`);
+    }
     if (record.invocation !== expectedInvocation) {
       throw new Error(`Index invocation is incorrect for ${skill.name}`);
     }
   }
 
-  console.log(`OCI smoke test passed for ${skills.length} skills and ${tarEntries.length} archive entries.`);
+  console.log(
+    `OCI smoke test passed for ${skills.length} skills, both target collections, and ${tarEntries.length} archive entries.`,
+  );
 }
 
 main();

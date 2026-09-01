@@ -4,11 +4,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  formatOpenAIContent,
-  formatSkillContent,
-  listSkillPackages,
-} from "./lib/skill-contract.js";
+import { formatSkillContent, listSkillPackages } from "./lib/skill-contract.js";
+import { formatOpenAIContent } from "./lib/openai-contract.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -16,6 +13,7 @@ const skillsDir = path.join(repoRoot, "skills");
 const check = process.argv.includes("--check");
 const changed = [];
 const errors = [];
+const updates = [];
 
 function formatFile(filePath, formatter) {
   const relative = path.relative(repoRoot, filePath);
@@ -33,12 +31,12 @@ function formatFile(filePath, formatter) {
   }
   if (formatted === current) return;
   changed.push(relative);
-  if (!check) fs.writeFileSync(filePath, formatted);
+  updates.push({ filePath, formatted });
 }
 
 for (const skill of listSkillPackages(skillsDir)) {
   formatFile(skill.skillPath, formatSkillContent);
-  formatFile(skill.openaiPath, formatOpenAIContent);
+  if (fs.existsSync(skill.openaiPath)) formatFile(skill.openaiPath, formatOpenAIContent);
 }
 
 if (errors.length) {
@@ -46,6 +44,8 @@ if (errors.length) {
   for (const error of errors) console.error(`  ${error}`);
   process.exit(1);
 }
+
+if (!check) for (const { filePath, formatted } of updates) fs.writeFileSync(filePath, formatted);
 
 if (changed.length) {
   console.log(`${check ? "Needs formatting" : "Formatted"}:`);
