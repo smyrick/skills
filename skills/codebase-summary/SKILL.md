@@ -125,7 +125,7 @@ Present the key findings in chat, identify the selected depth and theme, link th
 ## Boundaries
 
 - Describe observed architecture; do not redesign it unless asked.
-- Keep product vocabulary in `PRODUCT_TERMS.md`; architecture may link to those terms but does not redefine them. Suggest an explicit [`$manage-product-glossary`](../manage-product-glossary/SKILL.md) request when glossary changes are needed.
+- Keep product vocabulary in `PRODUCT_TERMS.md`; architecture may link to those terms but does not redefine them. Suggest an explicit [`manage-product-glossary`](../manage-product-glossary/SKILL.md) request when glossary changes are needed.
 - Do not expose secrets, credentials, personal data, or sensitive configuration values.
 - Do not invent commands, modules, interfaces, or behavior.
 - Prefer a small accurate artifact over a comprehensive speculative one.

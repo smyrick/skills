@@ -21,7 +21,7 @@ Choose the lightest useful research mode:
 
 - **Direct**: for a small or familiar change, inspect the codebase in the current context without subagents or a research folder.
 - **Ephemeral delegation**: use focused, fresh-context, read-only leaf scouts when specialist coverage, independent critique, context isolation, or parallel work materially helps. Keep findings in the current context.
-- **Durable**: when findings need persistence, provenance, recovery, or reuse, route internally through `$research-orchestrator` as one subworkflow. Consume its research-only handoff before planning resumes.
+- **Durable**: when findings need persistence, provenance, recovery, or reuse, use the `research-orchestrator` skill as one subworkflow. Consume its research-only handoff before planning resumes.
 
 Keep work local when specifying and integrating an assignment would cost more than doing it directly. Before delegating, identify dependencies, integration ownership, and available capacity. Set a total pass and time budget that includes reviews and retries. Sequence dependent questions and parallelize only independent work; reserve capacity for review or recovery when needed. Do not select a fixed agent roster by habit.
 
@@ -30,9 +30,9 @@ Give each ephemeral scout one question and its purpose, the smallest sufficient 
 - **Firm limits**: the assigned objective, explicit exclusions, read-only access, privacy and approval boundaries, and budget. Scouts do not launch children or write durable artifacts; delegation grants no additional authority.
 - **Suggested boundaries**: promising starting files, sources, hypotheses, and methods. These guide attention rather than exhaust the search space. Scouts may follow unexpected leads, challenge assumptions, or try another method without asking when it serves the same question within firm limits. Report useful out-of-scope leads and their relevance for the parent to consider; do not silently expand the assignment.
 
-Prefer the inherited model and effort unless an authorized, runtime-supported override has a concrete benefit; assess capability and effort separately. If delegation is unavailable, inspect directly. If `$research-orchestrator` is unavailable or persistence is not authorized, keep the work in direct or ephemeral mode and create no research folder.
+Use only delegation capabilities that are available and authorized; do not assume the host exposes model selection or reasoning controls. If delegation is unavailable, inspect directly. If the `research-orchestrator` skill is unavailable or persistence is not authorized, keep the work in direct or ephemeral mode and create no research folder.
 
-For durable research, treat `$research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
+For durable research, treat `research-orchestrator` as one worker. It exclusively owns its research assignments, metadata, retries and reassignments, persisted findings, and research synthesis. Do not separately manage its children or duplicate its questions.
 
 Completion criterion: the research mode and boundaries are clear, with no assumption that another skill or subagent capability is installed.
 

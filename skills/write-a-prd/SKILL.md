@@ -142,4 +142,4 @@ If publication is unavailable, provide a copy-ready draft without claiming it wa
 
 ## Implementation-planning handoff
 
-After the PRD is approved, offer an explicit handoff to `$research-and-plan` for a decision-complete implementation plan. Pass the approved PRD, its cited current-state evidence, constraints, resolved decisions, open technical questions, and non-goals. Do not collapse product requirements and implementation planning into one artifact unless the user explicitly asks.
+After the PRD is approved, offer an explicit handoff to the `research-and-plan` skill for a decision-complete implementation plan. Pass the approved PRD, its cited current-state evidence, constraints, resolved decisions, open technical questions, and non-goals. Do not collapse product requirements and implementation planning into one artifact unless the user explicitly asks.

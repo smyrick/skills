@@ -20,7 +20,7 @@ Launch work in parallel only when the questions and output paths are independent
 
 For consequential or disputed findings, consider an independent evidence review with named assumptions, risks, and acceptance criteria to challenge. Schedule it after its prerequisite findings, count it against the original pass and wave limits, and retain unresolved disagreements in synthesis. It does not make downstream design decisions or replace the parent's source verification.
 
-Prefer the inherited model and effort. Override either only when authorized, supported by the current runtime, and justified by the assignment's quality, latency, or cost needs. Assess model capability and reasoning effort separately; do not hard-code model names or use maximum effort uniformly.
+Match each assignment to the available, authorized capabilities and its quality, latency, and cost needs. Do not require a particular model, configurable reasoning setting, or agent-management API. If delegation is unavailable, carry out bounded research passes sequentially in the current session, preserving the same evidence, ownership, and budget rules; do not describe those passes as independent-agent validation.
 
 ## Assignment Boundaries
 
