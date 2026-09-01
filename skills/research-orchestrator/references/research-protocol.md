@@ -15,10 +15,12 @@ Use this as the authoritative protocol for sizing, safe persistence, run identit
 Choose the smallest mode that can answer the caller's material questions:
 
 - **Tier 0 — current context**: one bounded pass, no research folder, and no `research-orchestrator`-managed delegation. Return control to the calling workflow; it may still use its own ephemeral leaf scouts.
-- **Tier 1 — light durable research**: several independent questions. Default to at most three research passes, one wave, and nesting depth one.
+- **Tier 1 — light durable research**: a small set of focused questions. Default to at most three research passes, one wave, and nesting depth one.
 - **Tier 2 — research project**: broad, unfamiliar, expensive, or consequential work. Default to at most six total passes, two waves, and nesting depth two.
 
-One research pass is one launched agent attempt. Every initial assignment, retry, and reassignment consumes a pass, including failed or partial attempts. Do not reset or evade the budget by renaming a question or replacing its owner.
+One research pass is one launched agent attempt. Every initial assignment, independent review, retry, and reassignment consumes a pass, including failed or partial attempts. Do not reset or evade the budget by renaming a question or replacing its owner.
+
+Pass count and concurrent capacity are separate limits. Sequence work that consumes earlier findings; a dependent follow-up or review needs a later wave within the recorded budget. Allocate review and recovery room when their expected value warrants it, but do not require either for every run. Budget ceilings are firm; suggested starting sources and methods may change as evidence develops within those ceilings.
 
 Respect any lower host or user limit. Before Tier 1 or Tier 2 work, record:
 
@@ -66,6 +68,8 @@ For Tier 1 and Tier 2, use:
 ```
 
 The parent alone writes `RUN.md`, `CONTEXT.md`, and `INDEX.md`. `CONTEXT.md` contains the sanitized goal, scope, constraints, assumptions, caller priorities, starting sources, research questions, evidence standard, and budget. `INDEX.md` maps each allocated attempt ID and consumed pass to its question, owner, unique findings path, and status: `pending`, `running`, `complete`, `partial`, `failed`, or `recovered`.
+
+Keep `CONTEXT.md` compact and distinguish firm limits from suggested starting points. Link relevant evidence rather than copying conversation history or raw source dumps into every assignment.
 
 Children write only their assigned findings file. If a child cannot write it, the child returns exact markdown and the parent persists it.
 
