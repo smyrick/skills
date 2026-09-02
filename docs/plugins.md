@@ -65,7 +65,7 @@ The plugin build reuses the target converter and writes self-contained native di
 
 `check:plugins` validates the pinned upstream portable schema, the repository's skill-only profiles, native manifests, complete file inventories, invocation policy, catalog metadata, and generated parity. It does not rewrite files. Archive creation fails on stale committed output and writes only `.dist/plugins/`. Archive verification checks actual extracted bytes, modes, paths, and checksums against the source contract; it does not trust checksums alone. Timestamps, ownership, and entry ordering are deterministic.
 
-Change the single version in `plugin.json` for every distributed content change, then regenerate and commit the output with the source. Use stable `major.minor.patch` versions; start with `1.0.0`. Do not reuse a version for changed contents. The existing `vYYYY.MM.DD` / `vYYYY.MM.DD.N` release tags remain unchanged.
+Keep the initial, unreleased plugin at `1.0.0` throughout development. After the initial release, change the single version in `plugin.json` for distributed content changes, then regenerate and commit the output with the source. Use stable `major.minor.patch` versions, and do not reuse a released version for changed contents. The existing `vYYYY.MM.DD` / `vYYYY.MM.DD.N` release tags remain unchanged.
 
 When an authorized tag is pushed, the existing release workflow verifies and publishes OCI, creates the GitHub Release when missing, and uploads the three archives plus checksums. Reruns replace those deterministic assets even when the release already exists. OCI retains its original skill and target paths, index fields, and media types, and additionally carries the portable manifest, both native packages, and catalogs. No npm publication or public-directory submission is performed.
 
@@ -73,7 +73,7 @@ When an authorized tag is pushed, the existing release workflow verifies and pub
 
 Static validation and live client behavior are separate. The regression suite covers missing/extra files, stale packages, invalid manifests, incorrect catalog sources, invocation drift, missing resources, archive tampering, path containment, deterministic output, and executable modes. The system tar implementation also reads the generated archives independently of the JavaScript reader.
 
-Local verification on 2026-09-02 used temporary profiles without importing personal credentials. These installation results cover version 1.0.0 with the earlier `smyrick` marketplace ID, before the catalog rename in 1.0.1:
+Local verification on 2026-09-02 used temporary profiles without importing personal credentials. These installation results cover version 1.0.0 with the earlier `smyrick` marketplace ID, before the catalog rename during initial development:
 
 | Client | Result |
 | --- | --- |

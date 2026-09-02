@@ -182,6 +182,6 @@ The formatter preserves YAML values and comments, including unsupported fields. 
 
 ## Plugin distribution changes
 
-Before committing a skill or distributed metadata change, bump the stable `major.minor.patch` version in the root `plugin.json`, run `npm run format` and `npm run build:plugins`, then include both source and generated changes. Initial plugin support starts at `1.0.0`; later compatible fixes normally increment the patch version. Calendar release tags remain independent of the plugin version. A changed package must not reuse a previously distributed version.
+Keep the initial plugin at `1.0.0` until its first release. After that release, bump the stable `major.minor.patch` version in the root `plugin.json` for skill or distributed metadata changes. Run `npm run format` and `npm run build:plugins`, then include both source and generated changes. Compatible fixes normally increment the patch version. Calendar release tags remain independent of the plugin version. A changed package must not reuse a previously released version.
 
 Run `npm run check`, `npm run plugin:package`, `npm run plugin:verify`, `npm run oci:smoke`, and `git diff --check`. Checks never repair committed output. The three download archives are generated into `.dist/plugins/` and stay untracked. Schema tooling and dependencies are development-only. See [plugin distribution](docs/plugins.md) for installation, publishing, and runtime coverage.
