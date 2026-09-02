@@ -12,14 +12,14 @@ Add this repository as a marketplace, then install the bundle:
 
 ```bash
 codex plugin marketplace add smyrick/skills
-codex plugin add smyrick-skills@smyrick
+codex plugin add smyrick-skills@shane-personal-plugins
 ```
 
 **Claude Code**:
 
 ```bash
 claude plugin marketplace add smyrick/skills
-claude plugin install smyrick-skills@smyrick
+claude plugin install smyrick-skills@shane-personal-plugins
 ```
 
 Each client reads its own catalog and receives the package with its invocation controls. The plugin includes all 11 skills and their resources. Choose the bundle or standalone copies for a given client to avoid duplicate skills. Existing installations are never automatically removed.

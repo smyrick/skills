@@ -1,7 +1,7 @@
 {
-  "name": "smyrick",
+  "name": "shane-personal-plugins",
   "interface": {
-    "displayName": "Shane Myrick's Skills"
+    "displayName": "Shane's Personal Plugins"
   },
   "plugins": [
     {

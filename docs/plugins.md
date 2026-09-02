@@ -8,7 +8,7 @@ For Codex CLI versions with `plugin add`:
 
 ```bash
 codex plugin marketplace add smyrick/skills
-codex plugin add smyrick-skills@smyrick
+codex plugin add smyrick-skills@shane-personal-plugins
 ```
 
 The repository catalog is also usable from the desktop plugin directory. If your CLI has marketplace commands but no `plugin add`, add the marketplace with the CLI and install from the desktop directory.
@@ -17,12 +17,12 @@ For Claude Code:
 
 ```bash
 claude plugin marketplace add smyrick/skills
-claude plugin install smyrick-skills@smyrick
+claude plugin install smyrick-skills@shane-personal-plugins
 ```
 
 In Claude Code, invoke a bundled skill as `/smyrick-skills:humanize-text`. Codex discovers the same `smyrick-skills:skill-name` namespace; select the bundled skill from its skill picker, or explicitly identify the plugin and skill in your request. Existing standalone skill commands remain available when installed separately. Prefer one installation method per client to avoid duplicate skill entries.
 
-Both catalogs are named `smyrick`; each lists only `smyrick-skills`. Codex uses `.agents/plugins/marketplace.json` and the OpenAI projection. Claude uses `.claude-plugin/marketplace.json` and its own projection. Catalog paths are relative to the repository root. Add the repository, not a raw marketplace JSON URL.
+Both catalogs use the marketplace ID `shane-personal-plugins`; each lists only the `smyrick-skills` plugin. Codex displays the catalog as **Shane's Personal Plugins**. The marketplace ID names the catalog, not its author or an individual plugin. Codex uses `.agents/plugins/marketplace.json` and the OpenAI projection. Claude uses `.claude-plugin/marketplace.json` and its own projection. Catalog paths are relative to the repository root. Add the repository, not a raw marketplace JSON URL.
 
 ### Pin an installation
 
@@ -73,7 +73,7 @@ When an authorized tag is pushed, the existing release workflow verifies and pub
 
 Static validation and live client behavior are separate. The regression suite covers missing/extra files, stale packages, invalid manifests, incorrect catalog sources, invocation drift, missing resources, archive tampering, path containment, deterministic output, and executable modes. The system tar implementation also reads the generated archives independently of the JavaScript reader.
 
-Local verification on 2026-09-02 used temporary profiles without importing personal credentials:
+Local verification on 2026-09-02 used temporary profiles without importing personal credentials. These installation results cover version 1.0.0 with the earlier `smyrick` marketplace ID, before the catalog rename in 1.0.1:
 
 | Client | Result |
 | --- | --- |

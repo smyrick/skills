@@ -6,6 +6,7 @@ import { buildTargetFiles, validateTargetFiles, TARGETS } from "./target-package
 import { validatePluginManifest, validatePortableManifest } from "./plugin-contract.js";
 
 export const PLUGIN_TARGETS = ["portable", ...TARGETS];
+const MARKETPLACE_NAME = "shane-personal-plugins";
 export const CATALOG_PATHS = {
   openai: ".agents/plugins/marketplace.json",
   claude: ".claude-plugin/marketplace.json",
@@ -71,8 +72,8 @@ export function marketplace(inputs, target) {
   const source = "./" + pluginDirectory(target, manifest.name);
   if (target === "openai")
     return {
-      name: "smyrick",
-      interface: { displayName: "Shane Myrick's Skills" },
+      name: MARKETPLACE_NAME,
+      interface: { displayName: "Shane's Personal Plugins" },
       plugins: [{
         name: manifest.name,
         source: { source: "local", path: source },
@@ -82,7 +83,7 @@ export function marketplace(inputs, target) {
     };
   if (target === "claude")
     return {
-      name: "smyrick",
+      name: MARKETPLACE_NAME,
       owner: { name: manifest.author.name },
       plugins: [{ name: manifest.name, source, description: manifest.description }],
     };
