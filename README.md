@@ -1,8 +1,32 @@
 # Shane Myrick's Skills Library
 
-A personal library of reusable AI-agent workflows. Each skill has a portable `SKILL.md` core. OpenAI adapters supply interface metadata; the repository invocation policy also generates a Claude Code collection.
+A personal library of reusable AI-agent workflows. Each skill has a portable `SKILL.md` core. OpenAI adapters supply interface metadata; the repository invocation policy also generates a Claude Code collection. The entire library ships as the `smyrick-skills` plugin, with portable Agent Plugins, Codex, and Claude Code packages.
 
 ## Install
+
+### All skills as one plugin
+
+Add this repository as a marketplace, then install the bundle:
+
+**Codex CLI** (with plugin commands available):
+
+```bash
+codex plugin marketplace add smyrick/skills
+codex plugin add smyrick-skills@smyrick
+```
+
+**Claude Code**:
+
+```bash
+claude plugin marketplace add smyrick/skills
+claude plugin install smyrick-skills@smyrick
+```
+
+Each client reads its own catalog and receives the package with its invocation controls. The plugin includes all 11 skills and their resources. Choose the bundle or standalone copies for a given client to avoid duplicate skills. Existing installations are never automatically removed.
+
+Portable, Codex, and Claude archives with checksums are attached to [tagged GitHub releases](https://github.com/smyrick/skills/releases). See [plugin installation, version pinning, and development](docs/plugins.md) for details and current runtime validation coverage.
+
+### Individual skills / standalone collection
 
 For Codex CLI, install every skill with the [skills CLI](https://github.com/vercel-labs/skills):
 
@@ -25,7 +49,7 @@ The generated `SKILL.md` files include Claude Code invocation controls. Use `--c
 
 ## Skill Index
 
-Invocation is intentional. **User** skills are configured for explicit invocation in the OpenAI and generated Claude Code collections. **Model** skills may also be selected automatically or reached by another skill. Use the host's invocation syntax (`$skill-name` in Codex CLI, `/skill-name` in Claude Code); live routing tests are separate from static validation.
+Invocation is intentional. **User** skills are configured for explicit invocation in the OpenAI and generated Claude Code collections. **Model** skills may also be selected automatically or reached by another skill. Use the host's invocation syntax (`$skill-name` for standalone Codex skills, `/skill-name` for standalone Claude skills, or `/smyrick-skills:skill-name` for Claude plugin skills); live routing tests are separate from static validation.
 
 | Skill | Invocation | Description | Key capabilities |
 |-------|------------|-------------|------------------|
@@ -75,6 +99,7 @@ Validation requires Node.js, Python 3.11+, and [uv](https://docs.astral.sh/uv/).
 npm ci
 npm run setup:spec
 npm run format
+npm run build:plugins
 npm run check
 npm run oci:smoke
 ```
@@ -89,13 +114,13 @@ npm run oci:smoke
 | `npm run check:policy` | Our adapter requirements, invocation choices, neutral instructions, and README index |
 | `npm run check:package` | Local links and icons resolve inside package contents |
 | `npm run check:parity` | Target generation preserves instructions/resources and maps invocation policy |
-| `npm run check:plugins` | Conditional skill-only native plugin manifest profiles |
+| `npm run check:plugins` | Pinned portable schema, native manifests, marketplace catalogs, and committed plugin parity |
 
 The core check calls the upstream `skills_ref.validate` API; it does not maintain a second implementation of the spec. `tools/skills-ref/pyproject.toml` pins the source commit and `uv.lock` pins its dependencies. Checks run offline after setup and fail explicitly if the reference validator cannot run.
 
 Formatting preserves YAML values and comments, including unknown fields; validation reports unsupported fields without deleting them. A malformed batch is rejected before any formatting writes.
 
-`npm run oci:smoke` builds both target collections and verifies their actual archived contents, descriptors, paths, references, and index entries. Native plugin checks report `SKIP` when no manifests exist. Live client discovery, invocation, and execution report `NOT RUN`; schema and artifact parity checks do not prove runtime behavior. See [validation coverage and source baselines](docs/validation.md).
+`npm run oci:smoke` builds both target collections and verifies their actual archived contents, descriptors, paths, references, and index entries. Plugin checks require current committed packages and catalogs. `npm run plugin:package` builds three deterministic downloads; `npm run plugin:verify` independently checks their archived contents and checksums. Live client discovery, invocation, and execution report `NOT RUN`; schema and artifact parity checks do not prove runtime behavior. See [validation coverage and source baselines](docs/validation.md).
 
 ## OCI Package
 
@@ -107,7 +132,7 @@ ghcr.io/smyrick/skills:vYYYY.MM.DD
 ghcr.io/smyrick/skills:latest
 ```
 
-Use digest pins when a consumer needs immutable installs. The archive retains the original `skills/` collection and additionally includes `targets/openai/skills/` and `targets/claude/skills/`. The index retains existing fields and adds per-target paths. These collections do not include native plugin manifests.
+Use digest pins when a consumer needs immutable installs. The archive retains the original `skills/` collection and additionally includes `targets/openai/skills/` and `targets/claude/skills/`. The index retains existing fields and adds per-target paths. The archive also includes the portable `plugin.json`, native plugins under `plugins/`, and both marketplace catalogs. Existing index fields and media types remain compatible.
 
 ## Contributing
 

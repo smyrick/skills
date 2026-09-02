@@ -1,0 +1,6 @@
+interface:
+  display_name: "Research and Plan"
+  short_description: "Research code changes and produce implementation plans"
+  default_prompt: "Use $research-and-plan to research this code change and produce a decision-complete implementation plan."
+policy:
+  allow_implicit_invocation: false

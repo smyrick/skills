@@ -1,6 +1,7 @@
-/** Conditional manifest checks. Complex components fail as uncovered, never silently pass. */
+/** Skill-only manifest profiles. Complex components fail as uncovered, never silently pass. */
 import fs from "node:fs";
 import path from "node:path";
+import Ajv2020 from "ajv/dist/2020.js";
 import { fields, string, stringList } from "./validation.js";
 import {
   collectPackageFiles,
@@ -9,6 +10,23 @@ import {
 } from "./package-integrity.js";
 import { parseSkillContent, validateSkillDocument } from "./skill-contract.js";
 import { validateClaudeDocument } from "./claude-contract.js";
+
+// Vendored at a documented upstream commit; never retrieve schemas during checks.
+const portableSchema = JSON.parse(
+  fs.readFileSync(new URL("../../tools/agent-plugins/plugin.schema.json", import.meta.url), "utf8"),
+);
+const validatePortableSchema = new Ajv2020({ allErrors: true }).compile(portableSchema);
+
+export function validatePortableManifest(manifest) {
+  if (!validatePortableSchema(manifest))
+    return validatePortableSchema.errors.map(
+      (error) => `Agent Plugins manifest ${error.instancePath || "/"}: ${error.message}`,
+    );
+  // This repository ships skills only; extension semantics need their own coverage.
+  return Object.keys(manifest.extensions ?? {}).length
+    ? ["Agent Plugins extensions: coverage unavailable for this skill-only package"]
+    : [];
+}
 
 const COMMON = [
   "name",
@@ -193,11 +211,13 @@ export function findPluginManifests(root) {
       )
         continue;
       if ([".codex-plugin", ".claude-plugin"].includes(entry.name)) {
-        result.push({
-          root: dir,
-          path: path.join(dir, entry.name, "plugin.json"),
-          target: entry.name === ".codex-plugin" ? "openai" : "claude",
-        });
+        const manifestPath = path.join(dir, entry.name, "plugin.json");
+        if (fs.existsSync(manifestPath))
+          result.push({
+            root: dir,
+            path: manifestPath,
+            target: entry.name === ".codex-plugin" ? "openai" : "claude",
+          });
       } else visit(path.join(dir, entry.name));
     }
   }

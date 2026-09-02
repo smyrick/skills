@@ -1,0 +1,20 @@
+{
+  "name": "smyrick",
+  "interface": {
+    "displayName": "Shane Myrick's Skills"
+  },
+  "plugins": [
+    {
+      "name": "smyrick-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/openai/smyrick-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
