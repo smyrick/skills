@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { parseSkillContent, serializeSkill } from "../scripts/lib/skill-contract.js";
 import { buildTargetFiles, buildTargets, validateTargetFiles } from "../scripts/lib/target-packages.js";
 import { collectPackageFiles, validatePackageReferences } from "../scripts/lib/package-integrity.js";
+import { buildPlugins } from "../scripts/lib/plugin-packages.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 function sourceFiles() {
@@ -164,6 +165,8 @@ test("OCI verification inspects archived invocation controls even when all diges
   fs.symlinkSync(path.join(repoRoot, "node_modules"), path.join(root, "node_modules"));
   fs.symlinkSync(path.join(repoRoot, "tools"), path.join(root, "tools"));
   fs.writeFileSync(path.join(root, "package.json"), '{"type":"module"}');
+  for (const name of ["plugin.json", "LICENSE"])
+    fs.copyFileSync(path.join(repoRoot, name), path.join(root, name));
   fs.mkdirSync(path.join(root, "docs"));
   fs.writeFileSync(path.join(root, "docs/validation.md"), "Validation coverage.\n");
   fs.writeFileSync(path.join(root, "README.md"), "Read [coverage](docs/validation.md).\n");
@@ -174,6 +177,7 @@ test("OCI verification inspects archived invocation controls even when all diges
   }
   const run = (script) =>
     spawnSync(process.execPath, [path.join(root, "scripts", script)], { encoding: "utf8", cwd: root });
+  buildPlugins(root);
   const packaged = run("package-oci.js");
   assert.equal(packaged.status, 0, packaged.stderr);
   const verified = run("verify-oci.js");

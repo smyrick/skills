@@ -11,6 +11,7 @@ import { validateReadme, validateRepositorySkill } from "./lib/repository-policy
 import { collectPackageFiles, validatePackageReferences } from "./lib/package-integrity.js";
 import { buildTargetFiles, validateTargetFiles, TARGETS } from "./lib/target-packages.js";
 import { findPluginManifests, checkPlugin } from "./lib/plugin-contract.js";
+import { checkGeneratedPlugins } from "./lib/plugin-packages.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const skills = listSkillPackages(path.join(root, "skills"));
@@ -24,7 +25,6 @@ let failures = 0;
 const read = (file) => fs.readFileSync(file, "utf8");
 for (const group of requested.length ? requested : groups) {
   const errors = [];
-  let skipped = false;
   try {
     if (!skills.length) throw new Error("No skill packages found");
     if (group === "skills") {
@@ -83,8 +83,8 @@ for (const group of requested.length ? requested : groups) {
           );
     }
     if (group === "plugins") {
+      errors.push(...checkGeneratedPlugins(root));
       const manifests = findPluginManifests(root);
-      skipped = !manifests.length;
       for (const entry of manifests)
         errors.push(...checkPlugin(entry).map((error) => `${path.relative(root, entry.path)}: ${error}`));
     }
@@ -92,7 +92,7 @@ for (const group of requested.length ? requested : groups) {
     errors.push(error.message);
   }
   console.log(
-    `[${group}] ${errors.length ? "FAIL" : skipped ? "SKIP — no native plugin manifests" : "PASS"}`,
+    `[${group}] ${errors.length ? "FAIL" : "PASS"}`,
   );
   for (const error of errors) console.error(`  ${error}`);
   failures += errors.length;

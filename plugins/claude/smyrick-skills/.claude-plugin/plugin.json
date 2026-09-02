@@ -1,0 +1,20 @@
+{
+  "name": "smyrick-skills",
+  "version": "1.0.0",
+  "description": "Shane Myrick's reusable workflows for research, planning, code review, and writing.",
+  "author": {
+    "name": "Shane Myrick",
+    "url": "https://github.com/smyrick"
+  },
+  "homepage": "https://github.com/smyrick/skills#readme",
+  "repository": "https://github.com/smyrick/skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "research",
+    "planning",
+    "code-review",
+    "writing"
+  ],
+  "skills": "./skills/"
+}

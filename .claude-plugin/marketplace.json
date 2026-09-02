@@ -1,0 +1,13 @@
+{
+  "name": "shane-personal-plugins",
+  "owner": {
+    "name": "Shane Myrick"
+  },
+  "plugins": [
+    {
+      "name": "smyrick-skills",
+      "source": "./plugins/claude/smyrick-skills",
+      "description": "Shane Myrick's reusable workflows for research, planning, code review, and writing."
+    }
+  ]
+}

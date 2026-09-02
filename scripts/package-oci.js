@@ -13,6 +13,8 @@ import YAML from "yaml";
 import { MODEL_INVOKED_SKILLS } from "./lib/repository-policy.js";
 import { buildTargets } from "./lib/target-packages.js";
 import { collectPackageFiles } from "./lib/package-integrity.js";
+import { buildTar } from "./lib/archive.js";
+import { checkGeneratedPlugins, fileMode, jsonBytes, readPluginInputs } from "./lib/plugin-packages.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -117,7 +119,8 @@ function shouldSkip(relPath) {
 }
 
 function collectEntries() {
-  const roots = ["README.md", "LICENSE", "CONTRIBUTING.md", "AGENTS.md", "docs", "skills"].map((name) => ({
+  const roots = ["README.md", "LICENSE", "CONTRIBUTING.md", "AGENTS.md", "docs", "skills",
+    "plugin.json", "plugins", ".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"].map((name) => ({
     abs: path.join(repoRoot, name),
     rel: name,
   }));
@@ -145,71 +148,12 @@ function collectEntries() {
   return entries.sort((a, b) => comparePath(a.relPath, b.relPath));
 }
 
-function writeString(buffer, offset, length, value) {
-  buffer.write(value.slice(0, length), offset, length, "utf8");
-}
-
-function writeOctal(buffer, offset, length, value) {
-  const text = value.toString(8).padStart(length - 1, "0");
-  buffer.write(`${text}\0`, offset, length, "ascii");
-}
-
-function tarHeader(entry, size, typeflag, linkname = "") {
-  const header = Buffer.alloc(512);
-  const name = typeflag === "5" && !entry.relPath.endsWith("/") ? `${entry.relPath}/` : entry.relPath;
-  if (Buffer.byteLength(name) > 100) {
-    throw new Error(`Tar path is too long for ustar header: ${name}`);
-  }
-
-  const mode = entry.stat.isDirectory() ? 0o755 : entry.stat.mode & 0o777;
-  writeString(header, 0, 100, name);
-  writeOctal(header, 100, 8, mode);
-  writeOctal(header, 108, 8, 0);
-  writeOctal(header, 116, 8, 0);
-  writeOctal(header, 124, 12, size);
-  writeOctal(header, 136, 12, 0);
-  header.fill(0x20, 148, 156);
-  writeString(header, 156, 1, typeflag);
-  writeString(header, 157, 100, linkname);
-  writeString(header, 257, 6, "ustar");
-  writeString(header, 263, 2, "00");
-
-  let checksum = 0;
-  for (const byte of header) checksum += byte;
-  const checksumText = checksum.toString(8).padStart(6, "0");
-  header.write(`${checksumText}\0 `, 148, 8, "ascii");
-  return header;
-}
-
-function buildTar() {
-  const chunks = [];
-  for (const entry of collectEntries()) {
-    if (entry.stat.isDirectory()) {
-      chunks.push(tarHeader(entry, 0, "5"));
-      continue;
-    }
-
-    if (entry.stat.isSymbolicLink()) {
-      chunks.push(tarHeader(entry, 0, "2", fs.readlinkSync(entry.absPath)));
-      continue;
-    }
-
-    if (!entry.stat.isFile()) continue;
-
-    const content = fs.readFileSync(entry.absPath);
-    chunks.push(tarHeader(entry, content.length, "0"));
-    chunks.push(content);
-    const padding = (512 - (content.length % 512)) % 512;
-    if (padding) chunks.push(Buffer.alloc(padding));
-  }
-
-  chunks.push(Buffer.alloc(1024));
-  return Buffer.concat(chunks);
-}
-
 function main() {
   // Preflight source symlinks, then build fresh target collections before archiving.
   collectPackageFiles(skillsDir);
+  const pluginInputs = readPluginInputs(repoRoot);
+  const pluginErrors = checkGeneratedPlugins(repoRoot, pluginInputs);
+  if (pluginErrors.length) throw new Error(pluginErrors.join("\n"));
   buildTargets(repoRoot);
   fs.mkdirSync(outDir, { recursive: true });
 
@@ -220,7 +164,13 @@ function main() {
       ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000).toISOString()
       : runGit(["show", "-s", "--format=%cI", "HEAD"], new Date().toISOString());
 
-  const archive = zlib.gzipSync(buildTar(), { level: 9, mtime: 0 });
+  const archive = zlib.gzipSync(buildTar(collectEntries()
+    .filter((entry) => entry.stat.isFile())
+    .map((entry) => ({
+      name: entry.relPath,
+      content: entry.relPath === "plugin.json" ? jsonBytes(pluginInputs.manifest) : fs.readFileSync(entry.absPath),
+      mode: fileMode(entry.absPath),
+    }))), { level: 9, mtime: 0 });
   const index = Buffer.from(`${JSON.stringify(buildSkillsIndex(revision, created), null, 2)}\n`);
   const config = EMPTY_JSON;
 
