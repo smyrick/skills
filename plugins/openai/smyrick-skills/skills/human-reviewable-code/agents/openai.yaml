@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human-Reviewable Code"
+  short_description: "Shape reviewable changes and concise PR descriptions"
+  default_prompt: "Use $human-reviewable-code to shape this request, conversation, or change into reviewable chunks and prepare concise PR documentation."
+policy:
+  allow_implicit_invocation: false

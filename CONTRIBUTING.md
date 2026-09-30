@@ -51,7 +51,7 @@ Do not add client-specific fields such as `disable-model-invocation` to portable
 - Claude Code: generated `disable-model-invocation` in target `SKILL.md` files; explicit user invocation stays enabled
 - Other clients: add an explicit mapping and validation profile before claiming compatibility
 
-The builder emits generated targets under `.dist/targets/`. Never edit them as source. Static parity checks compare each target with the portable source and the reviewed invocation policy. They do not establish live routing behavior.
+The target builder emits collections under `.dist/targets/`. `npm run build:plugins` also writes committed native packages under `plugins/` and both marketplace catalogs so Git installers need no build step. Never edit generated files as source; change `skills/`, the root `plugin.json`, or the generator. Static parity checks compare each target with the portable source and the reviewed invocation policy. They do not establish live routing behavior.
 
 This policy follows the user-invocation default described in Matt Pocock's [writing-great-skills guidance](https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-great-skills/SKILL.md).
 
@@ -179,3 +179,9 @@ The formatter preserves YAML values and comments, including unsupported fields. 
 - [ ] Invocation tests cover positive, ambient, and near-miss cases three times.
 - [ ] Forward tests compare the revision with the previous skill or a no-skill baseline.
 - [ ] `npm run format`, `npm run check`, and `npm run oci:smoke` pass.
+
+## Plugin distribution changes
+
+Keep the initial plugin at `1.0.0` until its first release. After that release, bump the stable `major.minor.patch` version in the root `plugin.json` for skill or distributed metadata changes. Run `npm run format` and `npm run build:plugins`, then include both source and generated changes. Compatible fixes normally increment the patch version. Calendar release tags remain independent of the plugin version. A changed package must not reuse a previously released version.
+
+Run `npm run check`, `npm run plugin:package`, `npm run plugin:verify`, `npm run oci:smoke`, and `git diff --check`. Checks never repair committed output. The three download archives are generated into `.dist/plugins/` and stay untracked. Schema tooling and dependencies are development-only. See [plugin distribution](docs/plugins.md) for installation, publishing, and runtime coverage.

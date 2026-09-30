@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human Review PR"
+  short_description: "Review code and product decisions with a human"
+  default_prompt: "Use $human-review-pr to help me review this PR or local diff with a compact brief, then guide me through the areas I choose."
+policy:
+  allow_implicit_invocation: false

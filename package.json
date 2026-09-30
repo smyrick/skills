@@ -25,9 +25,13 @@
     "check:parity": "node scripts/validate-skills.js parity",
     "check:plugins": "node scripts/validate-skills.js plugins",
     "build:targets": "node scripts/build-targets.js",
-    "setup:spec": "uv sync --locked --project tools/skills-ref"
+    "setup:spec": "uv sync --locked --project tools/skills-ref",
+    "build:plugins": "node scripts/build-plugins.js",
+    "plugin:package": "node scripts/package-plugins.js",
+    "plugin:verify": "node scripts/verify-plugins.js"
   },
   "devDependencies": {
+    "ajv": "8.20.0",
     "yaml": "^2.8.3"
   }
 }
