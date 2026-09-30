@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "smyrick-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shane Myrick's reusable workflows for research, planning, code review, and writing.",
   "author": {
     "name": "Shane Myrick",

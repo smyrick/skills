@@ -22,9 +22,15 @@ State the chunk's outcome, important invariant, included work, exclusions, and c
 
 ## Keep implementation understandable
 
-Follow existing conventions and keep consequential behavior traceable. Make permissions, defaults, failure handling, ordering, and state changes apparent. Prefer abstractions that clarify this change over speculative generalization or unnecessary indirection. Explain non-obvious rationale and constraints without narrating obvious code.
+Coherent scope also needs readable implementation. Separate concrete responsibilities, such as version discovery, process execution, package-manager decisions, downloads, and environment changes, into purpose-named modules where they clarify ownership or testing. Use small public APIs and private helpers; merely relocating dense code does not improve reviewability. Keep orchestration readable in execution order so permissions, defaults, side effects, install/check branches, errors, and rechecks are easy to trace.
 
-Avoid unrelated cleanup and code compression intended merely to shrink the diff. Keep enduring rationale close to the code or in appropriate documentation; do not remove useful comments or docs to shorten a PR.
+Prefer descriptive functions and clear multi-line control flow over compressed statements or nested conditionals. Split at real responsibility or testing boundaries, without generic frameworks, excessive files, speculative abstractions, or arbitrary file-size and export-count limits. Follow the repository's language and module conventions deliberately rather than prescribing one language, module system, or directory layout.
+
+Organize focused behavioral unit tests around the owning modules and retain tests of the composed workflow and actual public entrypoint. A wrapper that drops a read-only flag can turn an audit into an installation even when helper tests pass. Check consequential argument forwarding, working directory, exit status, and side effects at that boundary. Preserve behavior during refactors; use targeted before/after comparisons when useful. Simulated platform tests or another platform's interpreter running locally do not establish native installation acceptance; retain those verification gaps.
+
+Document the current usable system so it stands on its own. Keep roadmaps, deferred commands, review checkpoints, tickets, and conversation history in planning or handoff records, while retaining relevant limitations and native-validation gaps in usage docs. For command catalogs, keep one short discoverability index and place detailed usage, prerequisites, defaults, side effects, failures, and verification beside the implementation, such as in a command-family README. Link to owning runbooks rather than duplicating inventories; explain naming grammar and how public commands map to implementation using working examples. Adapt this organization to existing repository conventions.
+
+Avoid unrelated cleanup and code compression intended merely to shrink the diff. Explain non-obvious rationale and constraints close to the code or in appropriate documentation; do not remove useful comments or docs to shorten a PR.
 
 Reassess at meaningful discoveries and before handoff, not after every edit. Pause before introducing independent behavior, materially changing another contract, taking on a new subsystem responsibility, or substantially increasing risk beyond the agreed chunk. Ordinary implementation details and necessary tests within the agreed behavior are not automatically scope expansion.
 
