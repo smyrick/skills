@@ -1,0 +1,6 @@
+interface:
+  display_name: "Shorten Response"
+  short_description: "Use concise coworker-style technical responses"
+  default_prompt: "Use $shorten-response to answer in concise coworker mode without losing technical depth."
+policy:
+  allow_implicit_invocation: false

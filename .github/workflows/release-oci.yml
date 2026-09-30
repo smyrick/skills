@@ -1,4 +1,4 @@
-name: Release OCI package
+name: Release skills and plugins
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
       - name: Validate repository policy and target parity
         run: npm run check:policy && npm run check:parity
 
-      - name: Validate native plugin manifests when present
+      - name: Validate plugin manifests, catalogs, and generated parity
         run: npm run check:plugins
 
       - name: Run contract and packaging regression tests
@@ -60,21 +60,24 @@ jobs:
       - name: Package and verify OCI artifact
         run: npm run oci:smoke
 
+      - name: Package and independently verify plugin downloads
+        run: npm run plugin:package && npm run plugin:verify
+
       - name: Publish OCI artifact
         run: npm run oci:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release and upload plugin downloads
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            echo "Release already exists for $GITHUB_REF_NAME"
-            exit 0
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes \
+              --verify-tag
           fi
-
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --generate-notes \
-            --verify-tag
+          gh release upload "$GITHUB_REF_NAME" \
+            .dist/plugins/*.tar.gz .dist/plugins/SHA256SUMS \
+            --clobber
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture: {{PROJECT_NAME_HTML}}</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --fg: #18202b;
+      --muted: #566273;
+      --accent: #175cd3;
+      --border: #c9d2df;
+      --surface: #f4f7fa;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --fg: #e6edf3;
+        --muted: #a8b3c2;
+        --accent: #79b8ff;
+        --border: #3d4857;
+        --surface: #161b22;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.6 system-ui, sans-serif;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
+      gap: 2rem;
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    nav { position: sticky; top: 1rem; align-self: start; }
+    nav a { display: block; padding: .2rem 0; color: var(--accent); }
+    main { min-width: 0; }
+    h1 { margin-top: 0; }
+    h2 { margin-top: 2rem; border-bottom: 1px solid var(--border); }
+    .meta, cite { color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .55rem .7rem; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th, code, pre { background: var(--surface); }
+    code, pre { border-radius: .25rem; }
+    pre { padding: 1rem; overflow-x: auto; }
+    svg { display: block; max-width: 100%; height: auto; margin: 1rem 0; }
+    .node { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+    .label { fill: var(--fg); font: 14px system-ui, sans-serif; text-anchor: middle; }
+    @media (max-width: 44rem) {
+      .layout { grid-template-columns: 1fr; padding: 1rem; }
+      nav { position: static; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav aria-label="Table of contents">
+      <a href="#overview">Overview</a>
+      <a href="#entry-points">Entry points</a>
+      <a href="#modules">Core modules</a>
+      <a href="#diagram">Architecture diagram</a>
+      <a href="#questions">Open questions</a>
+    </nav>
+    <main>
+      <h1>Architecture: {{PROJECT_NAME_HTML}}</h1>
+      <p class="meta">Scope: {{SCOPE_HTML}} · Updated: {{DATE_HTML}}</p>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        {{OVERVIEW_SAFE_HTML}}
+      </section>
+
+      <section id="entry-points">
+        <h2>Entry points</h2>
+        {{ENTRY_POINTS_SAFE_HTML}}
+      </section>
+
+      <section id="modules">
+        <h2>Core modules</h2>
+        <table>
+          <thead><tr><th>Module</th><th>Responsibility</th><th>Source</th></tr></thead>
+          <tbody>{{MODULE_ROWS_SAFE_HTML}}</tbody>
+        </table>
+      </section>
+
+      <section id="diagram">
+        <h2>Architecture diagram</h2>
+        <svg viewBox="0 0 640 240" width="100%" role="img" aria-labelledby="arch-1-title arch-1-desc">
+          <title id="arch-1-title">{{DIAGRAM_TITLE_XML}}</title>
+          <desc id="arch-1-desc">{{DIAGRAM_DESCRIPTION_XML}}</desc>
+          <defs>
+            <marker id="arch-1-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="currentColor"></path>
+            </marker>
+          </defs>
+          {{DIAGRAM_SAFE_SVG}}
+        </svg>
+        <p><cite><code>{{DIAGRAM_SOURCES_HTML}}</code></cite></p>
+      </section>
+
+      <section id="questions">
+        <h2>Open questions</h2>
+        {{OPEN_QUESTIONS_SAFE_HTML}}
+      </section>
+    </main>
+  </div>
+</body>
+</html>

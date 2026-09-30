@@ -46,7 +46,7 @@ jobs:
       - name: Validate repository policy and target parity
         run: npm run check:policy && npm run check:parity
 
-      - name: Validate native plugin manifests when present
+      - name: Validate plugin manifests, catalogs, and generated parity
         run: npm run check:plugins
 
       - name: Run contract and packaging regression tests
@@ -54,3 +54,6 @@ jobs:
 
       - name: Smoke-test OCI packaging
         run: npm run oci:smoke
+
+      - name: Package and independently verify plugin downloads
+        run: npm run plugin:package && npm run plugin:verify

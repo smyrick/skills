@@ -1,0 +1,6 @@
+interface:
+  display_name: "Research Orchestrator"
+  short_description: "Coordinate durable multi-pass research handoffs"
+  default_prompt: "Use $research-orchestrator to coordinate durable research and return a reusable evidence handoff."
+policy:
+  allow_implicit_invocation: true

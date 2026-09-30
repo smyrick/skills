@@ -10,6 +10,8 @@ import { listSkillPackages } from "./lib/skill-contract.js";
 import { MODEL_INVOKED_SKILLS } from "./lib/repository-policy.js";
 import { collectPackageFiles, validatePackageReferences } from "./lib/package-integrity.js";
 import { TARGETS, validateTargetFiles } from "./lib/target-packages.js";
+import { parseTar } from "./lib/archive.js";
+import { CATALOG_PATHS, jsonBytes, marketplace, pluginDirectory, readPluginInputs, validatePluginFiles } from "./lib/plugin-packages.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -31,40 +33,6 @@ function assertDescriptor(descriptor, filePath, label) {
   const actualDigest = digest(content);
   if (descriptor.digest !== actualDigest) {
     throw new Error(`${label} digest mismatch: expected ${descriptor.digest}, got ${actualDigest}`);
-  }
-}
-
-function parseOctal(buffer, start, length) {
-  const raw = buffer
-    .subarray(start, start + length)
-    .toString("ascii")
-    .replace(/\0.*$/s, "")
-    .trim();
-  return raw ? Number.parseInt(raw, 8) : 0;
-}
-
-function parseTar(buffer) {
-  const entries = [];
-  for (let offset = 0; offset + 512 <= buffer.length; ) {
-    const header = buffer.subarray(offset, offset + 512);
-    if (header.every((byte) => byte === 0)) break;
-    const name = header.subarray(0, 100).toString("utf8").replace(/\0.*$/s, "");
-    const size = parseOctal(header, 124, 12);
-    const type = header.subarray(156, 157).toString("ascii") || "0";
-    const linkname = header.subarray(157, 257).toString("utf8").replace(/\0.*$/s, "");
-    if (!Number.isSafeInteger(size) || size < 0 || offset + 512 + size > buffer.length)
-      throw new Error(`Invalid tar size for ${name}`);
-    if (!["0", "5"].includes(type)) throw new Error(`Unsupported archive entry type for ${name}`);
-    entries.push({ name, type, linkname, content: buffer.subarray(offset + 512, offset + 512 + size) });
-    offset += 512 + Math.ceil(size / 512) * 512;
-  }
-  return entries;
-}
-
-function assertSafeTarPath(value, label) {
-  const normalized = path.posix.normalize(value);
-  if (!value || value.startsWith("/") || normalized === ".." || normalized.startsWith("../")) {
-    throw new Error(`Unsafe ${label} in archive: ${value}`);
   }
 }
 
@@ -99,7 +67,6 @@ function main() {
   const tarEntries = parseTar(zlib.gunzipSync(fs.readFileSync(paths.archive)));
   const archivedPaths = new Set();
   for (const entry of tarEntries) {
-    assertSafeTarPath(entry.name, "path");
     const normalizedName = entry.name.replace(/\/$/, "");
     if (archivedPaths.has(normalizedName)) throw new Error(`Duplicate archive path: ${normalizedName}`);
     archivedPaths.add(normalizedName);
@@ -128,6 +95,20 @@ function main() {
         (error) => `${target}: ${error}`,
       ),
     );
+  const pluginInputs = readPluginInputs(repoRoot);
+  const modes = new Map(tarEntries.filter((entry) => entry.type === "0")
+    .map((entry) => [entry.name, entry.mode]));
+  const portable = new Map([...archivedFiles].filter(([name]) =>
+    name === "plugin.json" || name === "LICENSE" || name.startsWith("skills/")));
+  errors.push(...validatePluginFiles(pluginInputs, "portable", portable, modes));
+  for (const target of TARGETS) {
+    const prefix = pluginDirectory(target, pluginInputs.manifest.name) + "/";
+    const pluginModes = new Map([...modes].filter(([name]) => name.startsWith(prefix))
+      .map(([name, mode]) => [name.slice(prefix.length), mode]));
+    errors.push(...validatePluginFiles(pluginInputs, target, subtree(prefix), pluginModes));
+    if (!archivedFiles.get(CATALOG_PATHS[target])?.equals(jsonBytes(marketplace(pluginInputs, target))))
+      errors.push("Archived marketplace differs: " + CATALOG_PATHS[target]);
+  }
   if (errors.length) throw new Error(errors.join("\n"));
 
   const skills = listSkillPackages(path.join(repoRoot, "skills"));
@@ -156,7 +137,7 @@ function main() {
   }
 
   console.log(
-    `OCI smoke test passed for ${skills.length} skills, both target collections, and ${tarEntries.length} archive entries.`,
+    `OCI smoke test passed for ${skills.length} skills, both target collections, plugin packages/catalogs, and ${tarEntries.length} archive entries.`,
   );
 }
 
