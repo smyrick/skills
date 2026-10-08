@@ -53,17 +53,17 @@ Invocation is intentional. **User** skills are configured for explicit invocatio
 
 | Skill | Invocation | Description | Key capabilities |
 |-------|------------|-------------|------------------|
-| [codebase-summary](./skills/codebase-summary/SKILL.md) | User | Document codebase architecture and key flows, with an optional self-contained HTML artifact | Repository exploration, diagrams, HTML validation |
-| [human-review-pr](./skills/human-review-pr/SKILL.md) | User | Help Shane review PRs and local diffs with a compact brief and discussion calibrated to his enterprise architecture background | Code and product decisions, light architecture review, contextual refreshers, evidence-backed findings |
-| [human-reviewable-code](./skills/human-reviewable-code/SKILL.md) | User | Shape coding work and long conversations into reviewable chunks with concise PR documentation | Scope boundaries, readable modules, behavioral verification, current usage docs, fresh-task handoffs |
-| [humanize-text](./skills/humanize-text/SKILL.md) | User | Rewrite prose while preserving facts, protected text, and the writer's voice | Text transformation, fidelity checks |
-| [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create or update scoped `PRODUCT_TERMS.md` glossaries linked to product rules and code | Repository search, terminology management |
-| [mock-interview](./skills/mock-interview/SKILL.md) | User | Run source-grounded interview practice with stage-specific feedback | Interactive interviewing, evidence-based scoring |
-| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | User | Plan a non-code decision through direct research, read-only leaf scouts, or an internal durable research subworkflow | Current research, decision analysis |
-| [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Plan a code change through direct research, focused read-only delegation, or an internal durable research subworkflow, with selective independent review | Codebase research, implementation planning |
-| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate authorization-gated durable research with clear assignment limits, flexible exploration, bounded passes, recovery, and a research-only handoff | Evidence handoffs, bounded delegation |
-| [shorten-response](./skills/shorten-response/SKILL.md) | User | Apply concise coworker-style response mode without losing technical depth or caveats | Response shaping |
-| [write-a-prd](./skills/write-a-prd/SKILL.md) | User | Create a bounded, decision-ready product requirements document | Product discovery, optional codebase context |
+| [codebase-summary](./skills/codebase-summary/SKILL.md) | User | Explain a codebase’s architecture from repository evidence, with optional documentation and self-contained HTML diagrams. | Repository exploration, diagrams, HTML validation |
+| [human-review-pr](./skills/human-review-pr/SKILL.md) | User | Guide Shane through a PR or local diff with a compact brief on defects, architecture, and consequential technical and product choices. | Code and product decisions, light architecture review, contextual refreshers, evidence-backed findings |
+| [human-reviewable-code](./skills/human-reviewable-code/SKILL.md) | User | Organize planned or ongoing code changes and long coding conversations into reviewable chunks, self-contained handoffs, and concise PR documentation. | Scope boundaries, readable modules, behavioral verification, current usage docs, fresh-task handoffs |
+| [humanize-text](./skills/humanize-text/SKILL.md) | User | Remove generic AI-writing patterns from prose while preserving facts, meaning, and the writer’s voice. | Text transformation, fidelity checks |
+| [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create and maintain scoped PRODUCT_TERMS.md glossaries defining product terms, domain rules, and relevant code references. | Repository search, terminology management |
+| [mock-interview](./skills/mock-interview/SKILL.md) | User | Run mock interviews tailored to available candidate, role, and interview-stage information, with evidence-based feedback and optional notes. | Interactive interviewing, evidence-based scoring |
+| [personal-research-and-plan](./skills/personal-research-and-plan/SKILL.md) | User | Research a non-code decision, recommend an option, and outline concrete next steps. | Current research, decision analysis |
+| [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Research a proposed code change and resolve the decisions needed for an implementation plan. | Codebase research, implementation planning |
+| [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate research with authorized persistence and return a reusable evidence handoff. | Evidence handoffs, bounded delegation |
+| [shorten-response](./skills/shorten-response/SKILL.md) | User | Make the current response concise and direct while preserving technical depth, caveats, and required safety communication. | Response shaping |
+| [write-a-prd](./skills/write-a-prd/SKILL.md) | User | Turn a product problem into a requirements document with explicit scope, product decisions, and testable acceptance criteria. | Product discovery, optional codebase context |
 
 The portfolio deliberately has no router today: the explicit skills are distinct, few enough to scan here, and their names map cleanly to deliberate workflows. Add a router only if observed invocation tests show that remembering the names is a recurring burden.
 

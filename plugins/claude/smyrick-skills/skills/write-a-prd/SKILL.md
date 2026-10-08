@@ -1,6 +1,6 @@
 ---
 name: "write-a-prd"
-description: "Create a product requirements document through bounded discovery, codebase context when available, and explicit product decisions."
+description: "Turn a product problem into a requirements document with explicit scope, product decisions, and testable acceptance criteria."
 disable-model-invocation: true
 user-invocable: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: "research-orchestrator"
-description: "Coordinate authorization-gated durable research for another skill or user request. Use when planning or decision work needs multiple focused passes, persistent findings, recovery, or a reusable evidence handoff."
+description: "Coordinate research with authorized persistence and return a reusable evidence handoff. Use when planning or decision work needs multiple focused passes, persistent findings, recovery, or a reusable evidence handoff."
 ---
 
 # Research Orchestrator

@@ -1,6 +1,6 @@
 ---
 name: "research-and-plan"
-description: "Research a code change and produce a decision-complete implementation plan. Select direct inspection, focused read-only leaf scouts, or an internal durable research subworkflow without modifying code."
+description: "Research a proposed code change and resolve the decisions needed for an implementation plan. Select direct inspection, focused read-only leaf scouts, or an internal durable research subworkflow without modifying code."
 disable-model-invocation: true
 user-invocable: true
 ---
