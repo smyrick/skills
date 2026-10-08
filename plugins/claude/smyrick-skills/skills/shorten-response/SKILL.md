@@ -1,6 +1,6 @@
 ---
 name: "shorten-response"
-description: "Apply a concise coworker-style response mode that preserves technical depth, caveats, and required safety communication."
+description: "Make the current response concise and direct while preserving technical depth, caveats, and required safety communication."
 disable-model-invocation: true
 user-invocable: true
 ---

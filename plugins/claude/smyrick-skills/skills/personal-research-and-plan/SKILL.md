@@ -1,6 +1,6 @@
 ---
 name: "personal-research-and-plan"
-description: "Research a non-code decision and produce a concrete recommendation and action plan. Select direct research, focused read-only leaf scouts, or an internal durable research subworkflow based on the evidence needed."
+description: "Research a non-code decision, recommend an option, and outline concrete next steps. Select direct research, focused read-only leaf scouts, or an internal durable research subworkflow based on the evidence needed."
 disable-model-invocation: true
 user-invocable: true
 ---

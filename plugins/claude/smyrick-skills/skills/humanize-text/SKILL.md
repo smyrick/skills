@@ -1,6 +1,6 @@
 ---
 name: "humanize-text"
-description: "Rewrite prose to remove generic AI-writing patterns while preserving facts, meaning, and the writer's voice."
+description: "Remove generic AI-writing patterns from prose while preserving facts, meaning, and the writer’s voice."
 disable-model-invocation: true
 user-invocable: true
 ---

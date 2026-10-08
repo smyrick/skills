@@ -1,6 +1,6 @@
 ---
 name: "human-review-pr"
-description: "Help Shane review a PR or local diff with a compact brief, consequential code and product decisions, a light architecture review, and guided discussion calibrated to his background."
+description: "Guide Shane through a PR or local diff with a compact brief on defects, architecture, and consequential technical and product choices."
 ---
 
 # Human Review PR

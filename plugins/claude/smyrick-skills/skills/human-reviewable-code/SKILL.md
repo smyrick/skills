@@ -1,6 +1,6 @@
 ---
 name: "human-reviewable-code"
-description: "Shape coding requests, ongoing implementations, and long AI conversations into coherent, verifiable chunks with fresh-task-ready handoffs and scannable PR documentation."
+description: "Organize planned or ongoing code changes and long coding conversations into reviewable chunks, self-contained handoffs, and concise PR documentation."
 disable-model-invocation: true
 user-invocable: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: "manage-product-glossary"
-description: "Create and maintain scoped PRODUCT_TERMS.md glossaries that connect product language, domain rules, and code references."
+description: "Create and maintain scoped PRODUCT_TERMS.md glossaries defining product terms, domain rules, and relevant code references."
 ---
 
 # Manage Product Glossary

@@ -1,6 +1,6 @@
 ---
 name: "mock-interview"
-description: "Run a source-grounded mock interview with stage-specific practice, evidence-based feedback, and optional session notes."
+description: "Run mock interviews tailored to available candidate, role, and interview-stage information, with evidence-based feedback and optional notes."
 disable-model-invocation: true
 user-invocable: true
 ---

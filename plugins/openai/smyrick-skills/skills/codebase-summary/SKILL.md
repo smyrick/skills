@@ -1,6 +1,6 @@
 ---
 name: "codebase-summary"
-description: "Create source-grounded codebase architecture documentation with optional self-contained HTML diagrams."
+description: "Explain a codebase’s architecture from repository evidence, with optional documentation and self-contained HTML diagrams."
 ---
 
 # Codebase Summary
