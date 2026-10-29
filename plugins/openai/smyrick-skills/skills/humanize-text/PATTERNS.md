@@ -78,23 +78,13 @@ If a repo is available as the writing corpus, prefer published content files ove
 
 ---
 
-## Colon-led impact statements
+## Lead-ins that announce the point
 
-**Look for:** A short noun phrase, a colon, then "the big reveal." Very common in AI-written marketing and blog posts.
+Try reading from the first substantive words, even when they appear on the next line. If the reader gets the same meaning, start there. Changing the colon to a period can leave the same empty setup in place.
 
-**Rewrites:**
-
-- Before: "The result: a 40% drop in latency."
-  After: "The result was a 40% drop in latency." or "Latency dropped 40%."
-- Before: "Our mission: ship software that works."
-  After: "Our mission is to ship software that works."
-- Before: "Bottom line: we need to hire."
-  After: "We need to hire."
-
-**Leave it alone when:**
-
-- The colon introduces a genuine list or definition ("Three options: A, B, C").
-- It's a heading or subheading, not a sentence.
+- “Here’s the question we keep coming back to: what does an engineer still need to verify before shipping?” becomes “What does an engineer still need to verify before shipping?” when the recurrence is incidental. If it matters, write “We keep asking what an engineer still needs to verify before shipping.”
+- If “Two edits I’d make to the draft:” sits above two clearly marked edits, start with the first edit.
+- Keep the qualifier in “On older clients only: retries can fail.” Write “Only older clients can hit this retry failure.” Keep a useful heading, definition, or list label when the reader needs it to interpret what follows.
 
 ---
 

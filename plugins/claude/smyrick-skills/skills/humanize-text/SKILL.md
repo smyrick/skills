@@ -57,6 +57,8 @@ Remove patterns that are generic rather than characteristic of the writer:
 - clustered hype, vague abstractions, and fashionable AI vocabulary;
 - forced bulletization, uniform cadence, excessive hedging, and empty repetition.
 
+Read past the lead-in, especially when it ends in a colon. If the next sentence or list makes the same point on its own, delete the whole lead-in. If the lead-in supplies context the reader needs, keep it or fold it into the sentence. Apply the same test when the setup ends in a period or dash.
+
 Prefer plain, precise phrasing and varied sentence rhythm. Do not replace one tell with another: avoid fake typos, forced lowercase, conspicuous slang, uniform fragments, or contorted em-dash avoidance.
 
 Read [PATTERNS.md](./PATTERNS.md) only when the text presents an edge case or needs a detailed pattern checklist. The fidelity and protection rules in this file take precedence over any heuristic in that reference.
