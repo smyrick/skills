@@ -57,6 +57,19 @@ Focus on consequential technical, product, and business choices rather than narr
 - Keep pre-existing problems, speculative concerns, intentional tradeoffs, and cosmetic nits out of the defect list. Retain material product choices and open questions for discussion; an intentional feature change can still introduce unintended defects.
 - Inspect relevant tests and available CI results first. Describe what changed behavior they cover and the important gaps. Green CI is not proof that an untested path works. Offer focused checks when they would resolve uncertainty; do not execute tests just because the skill was invoked.
 
+## Evaluate existing review comments
+
+When asked to evaluate PR feedback, read the review summaries, inline comments, and thread replies. Account for every finding, including any since addressed. Link each assessment to its comment and check the claim against the current PR head. Group duplicates only if each comment remains traceable. If any feedback is inaccessible, identify the gap.
+
+For each finding, answer four questions:
+
+1. **What could go wrong?** Explain the claim in plain language using a concrete example. Say who would see the effect and what they would observe.
+2. **Is the reviewer right?** Give a direct verdict (agree, partly agree, disagree, or insufficient evidence). Cite the code, caller, or test that supports it. Judge the problem separately from the proposed fix.
+3. **How realistic is it?** Walk through the inputs, state, and sequence required to trigger it. Explain how likely those conditions are in actual use, which safeguards apply, and what remains unknown.
+4. **What should we do?** Recommend fixing before merge, deferring, or taking no action. For a fix, describe the simplest maintainable change that addresses the cause and how to verify it. For deferral or no action, explain why and what risk remains. Avoid unrelated cleanup and speculative abstractions.
+
+When Shane needs to merge today, lead with the findings that should block today's merge and why. Keep the assessment of every other comment visible. Use the deadline to prioritize work while evaluating correctness and impact on their merits.
+
 ## Give a brief, then guide the discussion
 
 Open with a short, evidence-backed assessment and the reviewed revision; surface any critical concern immediately. Group the brief by logical changes rather than producing a file-by-file inventory. Cover these areas compactly, adapting headings and combining sections when that reads more naturally, without padding empty categories:
