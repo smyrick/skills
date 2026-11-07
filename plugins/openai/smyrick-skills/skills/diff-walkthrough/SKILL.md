@@ -1,11 +1,9 @@
 ---
-name: "human-review-pr"
+name: "diff-walkthrough"
 description: "Walk Shane through a PR or local diff in plain English. Trace behavior before and after the change, explain design choices, and assess defects and review comments."
-disable-model-invocation: true
-user-invocable: true
 ---
 
-# Human Review PR
+# Diff Walkthrough
 
 Help Shane decide what he thinks of a change. Start with a compact brief he can understand without opening the diff. Link to the code so he can challenge the explanation, then walk through the parts he chooses.
 
