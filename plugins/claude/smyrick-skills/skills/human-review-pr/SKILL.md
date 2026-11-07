@@ -1,13 +1,13 @@
 ---
 name: "human-review-pr"
-description: "Guide Shane through a PR or local diff with a compact brief on defects, architecture, and consequential technical and product choices."
+description: "Walk Shane through a PR or local diff in plain English. Trace behavior before and after the change, explain design choices, and assess defects and review comments."
 disable-model-invocation: true
 user-invocable: true
 ---
 
 # Human Review PR
 
-Help the human understand and challenge a change, not just receive a bug list. Start with a compact review brief, then discuss the areas they choose. Keep the review in chat and leave the final decision to the human.
+Help Shane decide what he thinks of a change. Start with a compact brief he can understand without opening the diff. Link to the code so he can challenge the explanation, then walk through the parts he chooses.
 
 ## Write for Shane's background
 
@@ -52,10 +52,10 @@ Focus on consequential technical, product, and business choices rather than narr
 - Explain when the code errors, logs, throws, returns, or swallows failures; which path it chooses; and how fallbacks, defaults, retries, timeouts, and unexplained constants affect outcomes. Note meaningful omissions, such as a failure that is no longer observable.
 - Surface product and business decisions encoded in the change: who is eligible, which user path is selected, what happens by default, and which process steps are added, removed, reordered, or bypassed. Explain who is affected and how their experience or outcome changes. Flag implicit policy choices for human confirmation even when the code is technically correct.
 - For each important choice, identify the condition, selected behavior, practical consequence, and source. Explain rationale only when supported; label inference and ask about intent when it matters. A tradeoff is not automatically a bug.
-- Give a light architecture review of changed responsibilities, public interfaces, dependencies, and data/control flow. Highlight new boundaries, coupling, or unnecessary abstractions. Say when no material architecture change is apparent; do not invent a redesign to fill the section.
+- Trace changed responsibilities, interfaces, and data flow. When judging a new layer or pattern, compare it with its closest sibling and actual callers. Explain which requirement justifies the added complexity, whether a simpler local pattern would work, and where the code leaves the rationale unclear.
 - Check correctness, failure paths, compatibility, relevant security/data risks, performance, and maintainability. Classify a concern as a defect only when it is meaningful, discrete, actionable, introduced by this change, supported by a demonstrable affected scenario or call path, and something the author would likely fix. Compare base behavior and inspect relevant callers and tests before claiming a regression.
 - Keep pre-existing problems, speculative concerns, intentional tradeoffs, and cosmetic nits out of the defect list. Retain material product choices and open questions for discussion; an intentional feature change can still introduce unintended defects.
-- Inspect relevant tests and available CI results first. Describe what changed behavior they cover and the important gaps. Green CI is not proof that an untested path works. Offer focused checks when they would resolve uncertainty; do not execute tests just because the skill was invoked.
+- Inspect relevant tests and available CI results first. For a bug fix, identify the assertion that would catch the old behavior and whether the test reaches the layer that caused it. For other changes, summarize which observable contracts are exercised and any consequential gap. Offer a focused check when it would resolve uncertainty.
 
 ## Evaluate existing review comments
 
@@ -72,18 +72,22 @@ When Shane needs to merge today, lead with the findings that should block today'
 
 ## Give a brief, then guide the discussion
 
-Open with a short, evidence-backed assessment and the reviewed revision; surface any critical concern immediately. Group the brief by logical changes rather than producing a file-by-file inventory. Cover these areas compactly, adapting headings and combining sections when that reads more naturally, without padding empty categories:
+Open with the intended outcome, reviewed revision, and any critical concern. Group the brief by logical changes rather than producing a file-by-file inventory. Cover these areas compactly, adapting headings and combining sections when that reads more naturally, without padding empty categories:
 
-1. **What changed:** The problem being solved, intended outcome, actual changes to user journeys, business processes, or technical behavior, and the architecture delta. State the core rule the change must preserve when relevant, such as returning the same authorized results in the same order.
+1. **What happens if we leave this unmerged?** Describe what a specific user, caller, or maintainer experiences on the base revision. Follow the same scenario on the reviewed head. For a feature, identify the capability that stays unavailable. For a behavior-preserving refactor, name the invariant and explain what changes for maintainers. Distinguish consequences you can trace from predictions about urgency or adoption.
 2. **Decisions worth your attention:** Consequential technical, product, and business choices, identifying affected users or process steps where relevant; omit routine branches and constants. Use a short table for parallel choices, such as `Change / choice | Behavior and consequence | Source`; keep triggering conditions explicit where they matter.
 3. **Findings and questions:** Every qualifying defect in the reviewed scope, ordered by severity. Shorten explanations rather than hiding findings behind an arbitrary count limit or saving them for follow-up. Keep tradeoffs and unresolved questions visibly separate; state uncertainty. If no concrete defect was found, say so without implying correctness or recommending approval by default.
-4. **Evidence and next focus:** Tests/CI inspected, checks actually run under separate authorization, missing evidence or coverage, and the area most worth discussing next.
+4. **Evidence and next focus:** Say what the tests and current checks establish, which issue or evidence gap matters to the merge decision, and where to look next. Distinguish inspected results from checks actually run.
 
 Format each defect as `[P1] Actionable title — source:line`, followed by a short explanation of the triggering condition and impact. For a non-obvious defect, use a concrete scenario to connect the code path to the wrong outcome, including why an existing safeguard does not prevent it when relevant. Use P0 for universal release blockers or critical failures, P1 for urgent defects to fix next, P2 for ordinary defects, and P3 for low-impact issues still worth fixing. Do not assign defect priorities to product tradeoffs or open questions.
 
 Cite material claims with links to the reviewed source and precise lines or symbols. Anchor each defect to the smallest relevant changed lines that cause it; cite callers or tests separately as supporting evidence. Use revision-specific links for remote code and local file/line links only when they match the reviewed content. Do not invent line numbers or reproduce large diff blocks.
 
-End by inviting the human to choose a focus, with one recommended starting point. Continue one logical area at a time: explain the relevant path in plain language, use small source excerpts only when they help, discuss the consequence or tradeoff, and pause for their input. Carry forward unresolved questions without repeating the whole brief. Expand or deliver the full review together if the user requests it.
+For a bug whose cause spans several steps, draw a short causal diagram. Start at the trigger, follow the shared steps, and fork at the layer the patch changes. Label the two paths **before** and **after**. Follow each to its observable outcome and link the fork to the relevant code on each revision. Include a remaining failure path if the fix covers only some cases. A sentence is enough for a one-line change whose effect is obvious.
+
+Invite Shane to pick a focus and suggest where to start. In a guided walkthrough, follow one input or state transition at a time in dependency order. Explain the runtime effect in everyday language, then show the smallest useful excerpt or source link. Answer interruptions where they arise and resume from the same point. If Shane wants to leave feedback, draft comments in chat against the lines responsible and let him discuss them one at a time. Deliver the whole walkthrough together when requested.
+
+For a multi-step trace that Shane may want to revisit, offer a standalone review page. When requested, put the revision, brief, diagram, and source links together on the page. If a supported interactive embed would clarify the mechanism, let the reader step through the same input before and after the patch, or select an event and see the resulting state. Tie each step to the source. When interactivity is unavailable, use a static diagram or a step table. If the page cannot be written, provide the same walkthrough in chat and state the delivery limit.
 
 ## Keep review authority bounded
 
