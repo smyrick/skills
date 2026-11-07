@@ -85,10 +85,20 @@ For a bug whose cause spans several steps, draw a short causal diagram. Start at
 
 Invite Shane to pick a focus and suggest where to start. In a guided walkthrough, follow one input or state transition at a time in dependency order. Explain the runtime effect in everyday language, then show the smallest useful excerpt or source link. Answer interruptions where they arise and resume from the same point. If Shane wants to leave feedback, draft comments in chat against the lines responsible and let him discuss them one at a time. Deliver the whole walkthrough together when requested.
 
-For a multi-step trace that Shane may want to revisit, offer a standalone review page. When requested, put the revision, brief, diagram, and source links together on the page. If a supported interactive embed would clarify the mechanism, let the reader step through the same input before and after the patch, or select an event and see the resulting state. Tie each step to the source. When interactivity is unavailable, use a static diagram or a step table. If the page cannot be written, provide the same walkthrough in chat and state the delivery limit.
+## Present the walkthrough in a ChatGPT Space
+
+Prefer a Page in the current or designated ChatGPT Space when it is writable. Put the reviewed revision, brief, and source links on the Page and return its link in chat. Update the same Page when follow-up work changes the review. Honor a request to stay in chat or use another destination. If there is no suitable writable Space, deliver the walkthrough in chat.
+
+Use the destination's built-in features when they help answer a review question:
+
+- **Live diagrams and interactive visualizations:** For a branching bug or state machine, let Shane step through one input, see where the paths diverge, and inspect the code behind each outcome.
+- **Real previews:** For a visible change, embed an available preview of the reviewed revision and point to the interaction that demonstrates the change. Link to the preview if embedding is unavailable. Identify the revision shown and distinguish observed behavior from what the code predicts.
+- **Charts:** For a change to latency, throughput, size, or another measured quantity, chart comparable base and head measurements. Label units and link the measurement source. If measurements are missing, describe the expected effect and the evidence still needed.
+
+Check that the Page contains the intended visuals and that previews open when you can inspect them. If a live feature is unavailable, use a static diagram, table, or source-linked explanation.
 
 ## Keep review authority bounded
 
-Review permission alone does not authorize code edits, branch switching, dependency installation, test execution, posted comments, approval, or merging. Ask before these actions unless the user has separately authorized them. Do not create review artifacts unless requested.
+The walkthrough includes its Page and native visuals. Review permission alone does not authorize code edits, branch switching, dependency installation, test execution, publishing comments, approval, or merging. Use existing previews and measurements unless the enclosing task also authorizes running the code needed to produce them.
 
 When access or tools are unavailable, explain the evidence gap and request the relevant diff or context. Review what is available with explicit limits; never describe an inaccessible or unverified portion as checked. Preserve the distinction between a proposed fix, a performed check, and a verified result.
