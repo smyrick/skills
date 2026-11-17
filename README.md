@@ -54,7 +54,7 @@ Invocation is intentional. **User** skills are configured for explicit invocatio
 | Skill | Invocation | Description | Key capabilities |
 |-------|------------|-------------|------------------|
 | [codebase-summary](./skills/codebase-summary/SKILL.md) | User | Explain a codebase’s architecture from repository evidence, with optional documentation and self-contained HTML diagrams. | Repository exploration, diagrams, HTML validation |
-| [human-review-pr](./skills/human-review-pr/SKILL.md) | User | Walk through an existing PR or local diff in plain English and assess what matters to the merge decision. | Before/after traces, design tradeoffs, review-comment triage, ChatGPT Space Pages with live diagrams, real previews, and charts |
+| [diff-walkthrough](./skills/diff-walkthrough/SKILL.md) | User | Walk through an existing PR or local diff in plain English and assess what matters to the merge decision. | Before/after traces, design tradeoffs, review-comment triage, ChatGPT Space Pages with live diagrams, real previews, and charts |
 | [human-reviewable-code](./skills/human-reviewable-code/SKILL.md) | User | Organize planned or ongoing code changes and long coding conversations into reviewable chunks, self-contained handoffs, and concise PR documentation. | Scope boundaries, readable modules, behavioral verification, current usage docs, fresh-task handoffs |
 | [humanize-text](./skills/humanize-text/SKILL.md) | User | Remove generic AI-writing patterns from prose while preserving facts, meaning, and the writer’s voice. | Text transformation, fidelity checks |
 | [manage-product-glossary](./skills/manage-product-glossary/SKILL.md) | User | Create and maintain scoped PRODUCT_TERMS.md glossaries defining product terms, domain rules, and relevant code references. | Repository search, terminology management |
@@ -68,6 +68,8 @@ Invocation is intentional. **User** skills are configured for explicit invocatio
 The portfolio deliberately has no router today: the explicit skills are distinct, few enough to scan here, and their names map cleanly to deliberate workflows. Add a router only if observed invocation tests show that remembering the names is a recurring burden.
 
 ## Use
+
+Starting with plugin 2.0.0, use `diff-walkthrough` in place of `human-review-pr` in saved prompts.
 
 Explicitly invoke a user skill by name:
 
