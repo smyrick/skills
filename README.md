@@ -22,7 +22,7 @@ claude plugin marketplace add smyrick/skills
 claude plugin install smyrick-skills@shane-personal-plugins
 ```
 
-Each client reads its own catalog and receives the package with its invocation controls. The plugin includes all 11 skills and their resources. Choose the bundle or standalone copies for a given client to avoid duplicate skills. Existing installations are never automatically removed.
+Each client reads its own catalog and receives the package with its invocation controls. The plugin includes all 12 skills and their resources. Choose the bundle or standalone copies for a given client to avoid duplicate skills. Existing installations are never automatically removed.
 
 Portable, Codex, and Claude archives with checksums are attached to [tagged GitHub releases](https://github.com/smyrick/skills/releases). See [plugin installation, version pinning, and development](docs/plugins.md) for details and current runtime validation coverage.
 
@@ -63,6 +63,7 @@ Invocation is intentional. **User** skills are configured for explicit invocatio
 | [research-and-plan](./skills/research-and-plan/SKILL.md) | User | Research a proposed code change and resolve the decisions needed for an implementation plan. | Codebase research, implementation planning |
 | [research-orchestrator](./skills/research-orchestrator/SKILL.md) | Model | Coordinate research with authorized persistence and return a reusable evidence handoff. | Evidence handoffs, bounded delegation |
 | [shorten-response](./skills/shorten-response/SKILL.md) | User | Make the current response concise and direct while preserving technical depth, caveats, and required safety communication. | Response shaping |
+| [simplify-slides](./skills/simplify-slides/SKILL.md) | User | Edit live presentations for a clear story, readable evidence, and purposeful visuals. | Slide copy, generated artwork, editable graphics, presenter-controlled reveals |
 | [write-a-prd](./skills/write-a-prd/SKILL.md) | User | Turn a product problem into a requirements document with explicit scope, product decisions, and testable acceptance criteria. | Product discovery, optional codebase context |
 
 The portfolio deliberately has no router today: the explicit skills are distinct, few enough to scan here, and their names map cleanly to deliberate workflows. Add a router only if observed invocation tests show that remembering the names is a recurring burden.
